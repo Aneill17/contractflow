@@ -1,0 +1,5 @@
+unzip contractflow.zip
+cd contractflow
+git init && git add . && git commit -m "init"
+git remote add origin https://github.com/YOURUSERNAME/contractflow.git
+git push -u origin main
