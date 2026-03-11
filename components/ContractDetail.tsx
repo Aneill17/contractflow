@@ -204,32 +204,72 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {/* SIGNING */}
       {tab === 'signing' && (
         <div>
+          {/* Signature status cards */}
           <div className="grid2" style={{ marginBottom: 14 }}>
             {[
-              { label: 'Client Signature', sub: `${c.contact_name} · ${c.client_name}`, sig: c.client_sig, val: clientSig, set: setClientSig, apply: applyClientSig },
-              { label: 'Provider Signature', sub: 'Authorized Representative', sig: c.provider_sig, val: providerSig, set: setProviderSig, apply: applyProviderSig },
+              { label: 'Client Signature', sub: `${c.contact_name} · ${c.client_name}`, sig: c.client_sig },
+              { label: 'Provider Signature', sub: 'Authorized Representative', sig: c.provider_sig },
             ].map((s, i) => (
               <div key={i} className="card" style={{ padding: 22, border: s.sig ? '1px solid #4CAF9333' : '1px solid #ffffff0D' }}>
                 <div className="lbl" style={{ marginBottom: 4 }}>{s.label}</div>
                 <div className="mono" style={{ fontSize: 11, color: '#ffffff33', marginBottom: 14 }}>{s.sub}</div>
-                {!s.sig ? (
-                  <>
-                    <input className="inp-sig" placeholder="Type full legal name..." value={s.val} onChange={e => s.set(e.target.value)} />
-                    <div className="mono" style={{ fontSize: 10, color: '#ffffff22', margin: '8px 0 12px' }}>Entering your name is a legal e-signature.</div>
-                    <button className="btn btn-ghost" style={{ width: '100%', opacity: s.val.length < 3 ? 0.4 : 1 }} disabled={s.val.length < 3} onClick={s.apply}>Apply Signature</button>
-                  </>
-                ) : (
+                {s.sig ? (
                   <div style={{ borderTop: '1px solid #4CAF9333', paddingTop: 12 }}>
                     <div style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 26, color: '#4CAF93' }}>{s.sig}</div>
-                    <div className="mono" style={{ fontSize: 10, color: '#4CAF9366', marginTop: 6 }}>✓ Signed</div>
+                    <div className="mono" style={{ fontSize: 10, color: '#4CAF9366', marginTop: 6 }}>✓ Signed via DocuSeal</div>
                   </div>
+                ) : (
+                  <div className="mono" style={{ fontSize: 11, color: '#ffffff22' }}>Awaiting signature</div>
                 )}
               </div>
             ))}
           </div>
+
+          {/* DocuSeal send button */}
+          {!(c as any).docuseal_submission_id && !c.client_sig && (
+            <div className="card" style={{ padding: 22, marginBottom: 14 }}>
+              <div className="section-title">Send for Signing via DocuSeal</div>
+              <div style={{ fontSize: 13, color: '#ffffff55', marginBottom: 16, lineHeight: 1.7 }}>
+                This will generate the contract document, automatically add signature fields for both parties, and send the client an email with a signing link. You'll be notified to countersign once they've completed their signature.
+              </div>
+              <button className="btn btn-gold" onClick={async () => {
+                const res = await fetch('/api/docuseal', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ contract_id: c.id }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                  showToast('DocuSeal signing request sent to client')
+                  onRefresh()
+                } else {
+                  showToast('DocuSeal error — check console', 'error')
+                  console.error(data)
+                }
+              }}>
+                Send Contract for Signing →
+              </button>
+            </div>
+          )}
+
+          {/* DocuSeal sent confirmation */}
+          {(c as any).docuseal_submission_id && !c.client_sig && (
+            <div style={{ background: '#4C7BC915', border: '1px solid #4C7BC955', borderRadius: 8, padding: '14px 18px', color: '#7BA7E2', fontFamily: 'IBM Plex Mono', fontSize: 12, marginBottom: 14 }}>
+              ✉ Signing request sent via DocuSeal. Waiting for client to sign. They will receive a reminder email automatically.
+            </div>
+          )}
+
+          {/* Fully executed */}
           {c.client_sig && c.provider_sig && (
             <div style={{ background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 8, padding: '14px 18px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
-              ✓ Both parties signed. Agreement is fully executed.
+              ✓ Agreement fully executed by both parties via DocuSeal.
+              {c.contract_file_url && (
+                <div style={{ marginTop: 10 }}>
+                  <a href={c.contract_file_url} target="_blank" rel="noreferrer">
+                    <button className="btn btn-ghost btn-sm">↓ Download Signed Document</button>
+                  </a>
+                </div>
+              )}
             </div>
           )}
         </div>
