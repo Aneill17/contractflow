@@ -29,7 +29,10 @@ export async function POST(req: NextRequest) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+if (error) {
+  console.error('Supabase insert error:', JSON.stringify(error))
+  return NextResponse.json({ error: error.message, details: error }, { status: 500 })
+}
 
   // Insert occupants
   if (occupants?.length) {
