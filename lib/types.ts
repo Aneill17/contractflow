@@ -1,36 +1,28 @@
-export type Stage =
-  | 0  // Request
-  | 1  // Quote Sent
-  | 2  // Quote Approved
-  | 3  // Confirmed
-  | 4  // Signed
-  | 5  // Operations
-  | 6  // Logistics
-  | 7  // Guest Services
-  | 8  // Complete
+export type Stage = 0 | 1 | 2 | 3 | 4 | 5
+
+// 0: Request received
+// 1: Quote Sent (awaiting client approval)
+// 2: Contract (quote approved - build & review contract internally)
+// 3: Contract Sent (sent to DocuSeal for signing)
+// 4: Signed (fully executed by both parties)
+// 5: Complete (team handoff done)
 
 export const STAGE_LABELS: Record<number, string> = {
   0: 'Request',
   1: 'Quote Sent',
-  2: 'Quote Approved',
-  3: 'Confirmed',
+  2: 'Contract',
+  3: 'Contract Sent',
   4: 'Signed',
-  5: 'Operations',
-  6: 'Logistics',
-  7: 'Guest Services',
-  8: 'Complete',
+  5: 'Complete',
 }
 
 export const STAGE_COLORS: Record<number, string> = {
   0: '#888888',
   1: '#C9A84C',
-  2: '#E2A830',
-  3: '#4C7BC9',
+  2: '#4C7BC9',
+  3: '#9B59B6',
   4: '#4CAF93',
-  5: '#9B59B6',
-  6: '#E67E22',
-  7: '#27AE60',
-  8: '#4CAF93',
+  5: '#27AE60',
 }
 
 export interface Occupant {
@@ -69,6 +61,7 @@ export interface Contract {
   exclusions?: string
   quote_notes?: string
   quote_line_items?: QuoteLineItem[]
+  generated_contract?: string
   start_date: string
   end_date: string
   payment_due: string
@@ -80,19 +73,30 @@ export interface Contract {
   provider_sig: string | null
   contract_file_url: string | null
   docuseal_submission_id?: string
+  docuseal_client_slug?: string
+  docuseal_provider_slug?: string
   created_at: string
   updated_at: string
   occupants?: Occupant[]
   audit_logs?: AuditLog[]
 }
 
-export const calcTotal = (c: Contract) => {
-  const months = Math.max(1, Math.round(
+export const calcMonths = (c: Contract): number =>
+  Math.max(1, Math.round(
     (new Date(c.end_date).getTime() - new Date(c.start_date).getTime())
     / (1000 * 60 * 60 * 24 * 30)
   ))
-  return c.units * c.price_per_unit * months
+
+export const calcTotal = (c: Contract): number => {
+  const months = calcMonths(c)
+  const base = c.units * (c.price_per_unit || 0) * months
+  const lineItems = (c.quote_line_items || []).reduce((s, li) => s + (li.amount || 0), 0)
+  const deposit = c.damage_deposit || 0
+  return base + lineItems + deposit
 }
 
 export const formatDate = (d: string) =>
   d ? new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : ''
+
+export const formatDateLong = (d: string) =>
+  d ? new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : ''
