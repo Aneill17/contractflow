@@ -177,9 +177,9 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
 
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid #ffffff0D', marginBottom: 22 }}>
-        {['overview','quote','review','signing','handoff','audit'].map(t => (
+        {['overview','quote','review','handoff','audit'].map(t => (
           <div key={t} className={`tab ${tab === t ? 'on' : ''}`} onClick={() => setTab(t)}>
-            {t === 'overview' ? 'Overview' : t === 'quote' ? '✦ Quote Builder' : t === 'review' ? '📋 Contract Review' : t === 'signing' ? 'Signatures' : t === 'handoff' ? 'Team Handoff' : 'Audit Trail'}
+            {t === 'overview' ? 'Overview' : t === 'quote' ? '✦ Quote Builder' : t === 'review' ? '📋 Contract & Signing' : t === 'handoff' ? 'Team Handoff' : 'Audit Trail'}
           </div>
         ))}
       </div>
@@ -237,144 +237,6 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {/* CONTRACT REVIEW */}
       {tab === 'review' && (
         <ContractReview contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />
-      )}
-
-
-      {/* SIGNING */}
-      {tab === 'signing' && (
-        <div>
-          {/* Signature status cards */}
-          <div className="grid2" style={{ marginBottom: 14 }}>
-            {[
-              { label: 'Client Signature', sub: `${c.contact_name} · ${c.client_name}`, sig: c.client_sig },
-              { label: 'Provider Signature', sub: 'Authorized Representative', sig: c.provider_sig },
-            ].map((s, i) => (
-              <div key={i} className="card" style={{ padding: 22, border: s.sig ? '1px solid #4CAF9333' : '1px solid #ffffff0D' }}>
-                <div className="lbl" style={{ marginBottom: 4 }}>{s.label}</div>
-                <div className="mono" style={{ fontSize: 11, color: '#ffffff33', marginBottom: 14 }}>{s.sub}</div>
-                {s.sig ? (
-                  <div style={{ borderTop: '1px solid #4CAF9333', paddingTop: 12 }}>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 26, color: '#4CAF93' }}>{s.sig}</div>
-                    <div className="mono" style={{ fontSize: 10, color: '#4CAF9366', marginTop: 6 }}>✓ Signed via DocuSeal</div>
-                  </div>
-                ) : (
-                  <div className="mono" style={{ fontSize: 11, color: '#ffffff22' }}>Awaiting signature</div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* DocuSeal send button */}
-          {!(c as any).docuseal_submission_id && !c.client_sig && (
-            <div className="card" style={{ padding: 22, marginBottom: 14 }}>
-              <div className="section-title">Send for Signing via DocuSeal</div>
-              <div style={{ fontSize: 13, color: '#ffffff55', marginBottom: 16, lineHeight: 1.7 }}>
-                This will generate the contract document, automatically add signature fields for both parties, and send the client an email with a signing link. You'll be notified to countersign once they've completed their signature.
-              </div>
-              <button className="btn btn-gold" onClick={async () => {
-                const res = await fetch('/api/docuseal', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ contract_id: c.id }),
-                })
-                const data = await res.json()
-                if (data.success) {
-                  showToast('DocuSeal signing request sent to client')
-                  onRefresh()
-                } else {
-                  showToast('DocuSeal error — check console', 'error')
-                  console.error(data)
-                }
-              }}>
-                Send Contract for Signing →
-              </button>
-            </div>
-          )}
-
-          {/* DocuSeal sent confirmation */}
-          {(c as any).docuseal_submission_id && !c.client_sig && (
-            <div style={{ background: '#4C7BC915', border: '1px solid #4C7BC955', borderRadius: 8, padding: '14px 18px', color: '#7BA7E2', fontFamily: 'IBM Plex Mono', fontSize: 12, marginBottom: 14 }}>
-              ✉ Signing request sent via DocuSeal. Waiting for client to sign. They will receive a reminder email automatically.
-            </div>
-          )}
-
-          {/* Fully executed */}
-          {c.client_sig && c.provider_sig && (
-            <div style={{ background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 8, padding: '14px 18px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
-              ✓ Agreement fully executed by both parties via DocuSeal.
-              {c.contract_file_url && (
-                <div style={{ marginTop: 10 }}>
-                  <a href={c.contract_file_url} target="_blank" rel="noreferrer">
-                    <button className="btn btn-ghost btn-sm">↓ Download Signed Document</button>
-                  </a>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* CONTRACT */}
-      {tab === 'contract' && (
-        <div>
-          {/* Generated contract — internal review */}
-          {(c as any).generated_contract && (
-            <div className="card" style={{ padding: 22, marginBottom: 14, border: '1px solid #C9A84C2A' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <div className="section-title" style={{ margin: 0 }}>AI-Generated Lease Agreement — Internal Review</div>
-                {c.stage === 3 && (
-                  <button className="btn btn-gold btn-sm" onClick={async () => {
-                    const res = await fetch('/api/docuseal', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ contract_id: c.id }),
-                    })
-                    const data = await res.json()
-                    if (data.success) { showToast('Contract sent to client for signing via DocuSeal'); await onRefresh() }
-                    else { showToast('DocuSeal error', 'error'); console.error(data) }
-                  }}>Approve & Send for Signing →</button>
-                )}
-              </div>
-              {c.stage === 3 && (
-                <div style={{ background: '#C9A84C11', border: '1px solid #C9A84C33', borderRadius: 8, padding: '12px 16px', marginBottom: 14, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#C9A84C' }}>
-                  ⚠ Review the contract below carefully. Click "Approve & Send for Signing" to send it to the client via DocuSeal for authenticated signature.
-                </div>
-              )}
-              <pre style={{ fontFamily: 'Georgia, serif', fontSize: 12, lineHeight: 1.9, color: '#DDD5C8', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 520, overflowY: 'auto', background: '#0C0E14', padding: '20px 22px', borderRadius: 8, border: '1px solid #ffffff08' }}>
-                {(c as any).generated_contract}
-              </pre>
-            </div>
-          )}
-
-          <div className="card" style={{ padding: 22, marginBottom: 14 }}>
-            <div className="section-title">Upload Contract Document</div>
-            {c.contract_file_url ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 8 }}>
-                <span style={{ fontSize: 20 }}>📄</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13 }}>Contract on file</div>
-                  <a href={c.contract_file_url} target="_blank" rel="noreferrer" style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#4CAF93' }}>View document ↗</a>
-                </div>
-                <button className="btn btn-red btn-sm" onClick={() => onUpdate(c.id, { contract_file_url: null }, 'Contract document removed')}>Remove</button>
-              </div>
-            ) : (
-              <div className={`drop-zone ${isDragOver ? 'over' : ''}`}
-                onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
-                onDragLeave={() => setIsDragOver(false)}
-                onDrop={e => { e.preventDefault(); setIsDragOver(false); const f = e.dataTransfer.files[0]; if (f) handleUpload(f) }}
-                onClick={() => fileRef.current?.click()}>
-                <input type="file" ref={fileRef} style={{ display: 'none' }} accept=".pdf,.doc,.docx" onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f) }} />
-                <div style={{ fontSize: 28, marginBottom: 8 }}>📎</div>
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C9A84C' }}>{uploading ? 'Uploading...' : 'Drop contract file or click to browse'}</div>
-                <div className="lbl" style={{ marginTop: 6 }}>PDF, DOC, DOCX</div>
-              </div>
-            )}
-          </div>
-          <div className="card" style={{ padding: 22 }}>
-            <div className="section-title">Standard Terms</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff44', lineHeight: 1.9, whiteSpace: 'pre-wrap', maxHeight: 340, overflowY: 'auto' }}>{defaultTerms}</div>
-          </div>
-        </div>
       )}
 
       {/* HANDOFF */}
