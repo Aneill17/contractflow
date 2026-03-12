@@ -1,7 +1,7 @@
 # ContractFlow — Corporate Housing Contract Management
 
 A full-stack contract management platform built with Next.js, Supabase, and Resend.
-
+  
 ---
 
 ## Stack
