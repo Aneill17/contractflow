@@ -23,7 +23,8 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServerClient()
   const body = await req.json()
-  const { audit_action, actor = 'System', occupants, ...patch } = body
+  const { audit_action, _audit, actor = 'System', occupants, ...patch } = body
+  const auditMsg = audit_action || _audit
 
   // Fetch current contract for email triggers
   const { data: current } = await supabase
@@ -31,6 +32,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     .select('*, occupants(*)')
     .eq('id', params.id)
     .single()
+
+  // ── GUARD: Stage 1 → 2 can ONLY be done by the client themselves ──
+  if (patch.stage === 2 && current?.stage === 1 && actor !== 'Client') {
+    return NextResponse.json(
+      { error: 'Quote must be approved by the client before advancing.' },
+      { status: 403 }
+    )
+  }
 
   // Update contract
   const { data: updated, error } = await supabase
@@ -53,11 +62,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   // Audit log
-  if (audit_action) {
+  if (auditMsg) {
     await supabase.from('audit_logs').insert({
       contract_id: params.id,
       actor,
-      action: audit_action,
+      action: auditMsg,
     })
   }
 
@@ -65,7 +74,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (patch.stage !== undefined && current) {
     const occ = current.occupants || []
     try {
-      if (patch.stage === 1) await sendQuoteEmail(updated, occ)
+      if (patch.stage === 1 && current.stage === 0) await sendQuoteEmail(updated, occ)
       if (patch.stage === 3) await sendConfirmationEmail(updated)
       if (patch.stage === 4 && updated.client_sig && updated.provider_sig) {
         await sendExecutedEmail(updated)
