@@ -1,81 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
-import { sendExecutedEmail } from '@/lib/emails'
-
-// DocuSeal calls this URL when signatures are completed
-// Set this in your DocuSeal dashboard → Settings → Webhooks
-// Webhook URL: https://YOUR-VERCEL-URL.vercel.app/api/docuseal/webhook
 
 export async function POST(req: NextRequest) {
   const supabase = createServerClient()
   const body = await req.json()
 
-  const { event_type, data } = body
+  const eventType = body.event_type
+  const submission = body.data
 
-  // Find contract by DocuSeal submission ID
-  const submissionId = data?.submission?.id
-  if (!submissionId) return NextResponse.json({ ok: true })
+  if (!submission) return NextResponse.json({ ok: true })
 
+  // Find contract by docuseal_submission_id
   const { data: contract } = await supabase
     .from('contracts')
     .select('*')
-    .eq('docuseal_submission_id', submissionId)
+    .eq('docuseal_submission_id', submission.submission_id)
     .single()
 
   if (!contract) return NextResponse.json({ ok: true })
 
-  // ── Submitter completed (one party signed) ────────────────────
-  if (event_type === 'submission.submitter_completed') {
-    const role = data?.submitter?.role
-    const name = data?.submitter?.name || role
-
-    if (role === 'Client') {
-      await supabase.from('contracts').update({
-        client_sig: name,
-      }).eq('id', contract.id)
-
+  // A submitter completed their signature
+  if (eventType === 'submission.submitter_completed') {
+    const role = submission.role?.toLowerCase()
+    if (role === 'client') {
+      await supabase.from('contracts').update({ client_sig: 'DocuSeal' }).eq('id', contract.id)
       await supabase.from('audit_logs').insert({
-        contract_id: contract.id,
-        actor: contract.contact_name,
-        action: 'Contract signed by client via DocuSeal',
+        contract_id: contract.id, actor: 'Client',
+        action: 'Client signed the lease agreement via DocuSeal',
       })
-    }
-
-    if (role === 'Provider') {
-      await supabase.from('contracts').update({
-        provider_sig: name,
-      }).eq('id', contract.id)
-
+    } else if (role === 'provider') {
+      await supabase.from('contracts').update({ provider_sig: 'DocuSeal' }).eq('id', contract.id)
       await supabase.from('audit_logs').insert({
-        contract_id: contract.id,
-        actor: 'Provider',
-        action: 'Contract signed by provider via DocuSeal',
+        contract_id: contract.id, actor: 'Provider',
+        action: 'Provider countersigned the lease agreement via DocuSeal',
       })
     }
   }
 
-  // ── Submission fully completed (all parties signed) ──────────
-  if (event_type === 'submission.completed') {
-    const documentUrl = data?.submission?.documents?.[0]?.url
-
+  // Both parties signed — advance to stage 4 (Signed) and store document URL
+  if (eventType === 'submission.completed') {
+    const documentUrl = submission.documents?.[0]?.url || null
     await supabase.from('contracts').update({
-      stage: Math.max(contract.stage, 5), // Advance to Operations
-      contract_file_url: documentUrl || contract.contract_file_url,
+      stage: 4,
+      client_sig: 'DocuSeal',
+      provider_sig: 'DocuSeal',
+      ...(documentUrl ? { contract_file_url: documentUrl } : {}),
     }).eq('id', contract.id)
 
     await supabase.from('audit_logs').insert({
-      contract_id: contract.id,
-      actor: 'System',
-      action: 'Contract fully executed via DocuSeal — advanced to Operations',
+      contract_id: contract.id, actor: 'System',
+      action: 'Lease agreement fully executed — both parties signed via DocuSeal',
     })
-
-    // Send fully executed email to client
-    try {
-      const { data: updated } = await supabase.from('contracts').select('*').eq('id', contract.id).single()
-      if (updated) await sendExecutedEmail(updated)
-    } catch (e) {
-      console.error('Executed email failed:', e)
-    }
   }
 
   return NextResponse.json({ ok: true })
