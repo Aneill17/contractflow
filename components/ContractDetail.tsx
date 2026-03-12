@@ -524,3 +524,4 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
     </div>
   )
 }
+
