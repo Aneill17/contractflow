@@ -60,7 +60,7 @@ function RequestTab({ c }: { c: Contract }) {
 }
 
 // ── TAB: Quote Builder ──────────────────────────────────────
-function QuoteTab({ c, onUpdate, onRefresh, showToast }: Props) {
+function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const occupants = (c as any).occupants || []
   const months = calcMonths(c)
   const [pricePerUnit, setPricePerUnit] = useState(c.price_per_unit || 0)
@@ -230,7 +230,7 @@ function QuoteTab({ c, onUpdate, onRefresh, showToast }: Props) {
 }
 
 // ── TAB: Contract ──────────────────────────────────────────
-function ContractTab({ c, onUpdate, onRefresh, showToast }: Props) {
+function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [generating, setGenerating] = useState(false)
   const [sending, setSending] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -415,7 +415,7 @@ function ContractTab({ c, onUpdate, onRefresh, showToast }: Props) {
 }
 
 // ── TAB: Audit Trail ───────────────────────────────────────
-function AuditTab({ c }: { c: Contract }) {
+function AuditTab({ contract: c }: { contract: Contract }) {
   const logs = [...((c as any).audit_logs || [])].reverse()
   return (
     <div style={styles.card}>
