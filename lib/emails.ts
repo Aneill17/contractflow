@@ -3,7 +3,9 @@ import { Contract, calcTotal, formatDate } from './types'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://contractflow-omega.vercel.app'
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://contractflow-omega.vercel.app')
 
 // ── Quote Sent ────────────────────────────────────────────────
 export async function sendQuoteEmail(contract: Contract, occupants: { name: string }[]) {
