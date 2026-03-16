@@ -11,7 +11,7 @@ interface Props {
 }
 
 // ── TAB: Request Review ──────────────────────────────────────
-function RequestTab({ c }: { c: Contract }) {
+function RequestTab({ contract: c }: { contract: Contract }) {
   const occupants = (c as any).occupants || []
   return (
     <div>
@@ -517,10 +517,10 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
         ))}
       </div>
 
-      {tab === 'request' && <RequestTab c={c} />}
-      {tab === 'quote' && <QuoteTab c={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
-      {tab === 'contract' && <ContractTab c={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
-      {tab === 'audit' && <AuditTab c={c} />}
+      {tab === 'request' && <RequestTab contract={c} />}
+      {tab === 'quote' && <QuoteTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
+      {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
+      {tab === 'audit' && <AuditTab contract={c} />}
     </div>
   )
 }

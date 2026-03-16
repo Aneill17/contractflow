@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 import { sendQuoteEmail, sendExecutedEmail } from '@/lib/emails'
+import { getAuthUser } from '@/lib/auth'
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServerClient()
@@ -76,4 +77,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   return NextResponse.json(updated)
+}
+
+// DELETE — owner role only
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const user = await getAuthUser(req)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (user.role !== 'owner') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const supabase = createServerClient()
+  const { error } = await supabase.from('contracts').delete().eq('id', params.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ ok: true })
 }
