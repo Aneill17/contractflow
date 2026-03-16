@@ -4,7 +4,7 @@ import { getAuthUser } from '@/lib/auth'
 import { Resend } from 'resend'
 
 const DOCUSEAL_API_KEY = process.env.DOCUSEAL_API_KEY!
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://contractflow-omega.vercel.app'
 const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
 const PROVIDER_EMAIL =
   process.env.PROVIDER_EMAIL ||

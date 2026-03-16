@@ -63,8 +63,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (patch.stage !== undefined) {
     const occ = current.occupants || []
     try {
-      // Quote sent (0 → 1)
-      if (patch.stage === 1 && current.stage === 0) {
+      // Quote sent or resent (any time stage is set to 1)
+      if (patch.stage === 1) {
         await sendQuoteEmail(updated, occ)
       }
       // Both signed (→ 4)

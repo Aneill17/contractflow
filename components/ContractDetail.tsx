@@ -379,7 +379,9 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [contractText, setContractText] = useState(c.generated_contract || '')
   const [saving, setSaving] = useState(false)
   const isQuoteApproved = c.stage >= 2
-  const isSent = c.stage >= 3
+  // isSent means DocuSeal has actually been triggered — not just stage number
+  // Stage can be >= 3 from manual testing without a real submission
+  const isSent = !!c.docuseal_submission_id
 
   const generateContract = async () => {
     setGenerating(true)
@@ -451,11 +453,11 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setSending(false)
   }
 
-  if (!isQuoteApproved) {
+  if (c.stage < 1) {
     return (
       <div style={{ ...styles.card, textAlign: 'center', padding: '48px 28px', opacity: 0.5 }}>
         <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#ffffff44' }}>
-          Contract tab unlocks after the client approves the quote.
+          Send the quote first before generating a contract.
         </div>
       </div>
     )
