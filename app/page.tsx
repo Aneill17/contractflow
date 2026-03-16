@@ -161,6 +161,12 @@ export default function HomePage() {
             </div>
             <div
               className="nav-item"
+              onClick={() => window.location.href = '/dashboard/ap-ar'}
+            >
+              <span style={{ fontSize: 14 }}>💰</span>AP / AR
+            </div>
+            <div
+              className="nav-item"
               onClick={() => window.open('/diagnostics', '_blank')}
             >
               <span style={{ fontSize: 14 }}>⚡</span>System Health
