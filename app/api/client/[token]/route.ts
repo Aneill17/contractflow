@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
+import { sendQuoteApprovedEmail } from '@/lib/emails'
 
 export async function GET(_: NextRequest, { params }: { params: { token: string } }) {
   const supabase = createServerClient()
@@ -42,6 +43,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       actor: contract.contact_name,
       action: audit_action,
     })
+  }
+
+  // Notify Austin when client approves the quote
+  if (patch.stage === 2 && updated) {
+    try {
+      await sendQuoteApprovedEmail(updated)
+    } catch (e) {
+      console.error('Quote approved email failed:', e)
+    }
   }
 
   return NextResponse.json(updated)

@@ -123,6 +123,40 @@ export async function sendSigningEmail(contract: Contract) {
 }
 
 // ── Fully Executed ────────────────────────────────────────────
+// ── Quote Approved — notify Austin ───────────────────────────
+export async function sendQuoteApprovedEmail(contract: Contract) {
+  const dashboardUrl = APP_URL
+  await resend.emails.send({
+    from: FROM,
+    to: 'austin@eliasrangestays.ca',
+    subject: `✓ Quote Approved — ${contract.reference} — ${contract.client_name}`,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
+        <div style="background:#f0faf5;border:1px solid #4CAF9333;border-radius:10px;padding:24px;margin-bottom:28px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">✅</div>
+          <h1 style="font-size:22px;font-weight:400;color:#2d8a60;margin:0;">Quote Approved</h1>
+          <p style="font-family:monospace;font-size:11px;color:#4CAF93;margin:6px 0 0;">${contract.reference}</p>
+        </div>
+        <p style="font-size:15px;color:#333;line-height:1.8;">
+          <strong>${contract.contact_name}</strong> at <strong>${contract.client_name}</strong> has approved their quote.
+        </p>
+        <div style="background:#f9f7f4;border-radius:10px;padding:20px 24px;margin:20px 0;font-size:13px;line-height:2;">
+          <div><span style="color:#999;font-family:monospace;font-size:10px;text-transform:uppercase;">Location</span><br>${contract.location}</div>
+          <div style="margin-top:12px;"><span style="color:#999;font-family:monospace;font-size:10px;text-transform:uppercase;">Dates</span><br>${formatDate(contract.start_date)} → ${formatDate(contract.end_date)}</div>
+          <div style="margin-top:12px;"><span style="color:#999;font-family:monospace;font-size:10px;text-transform:uppercase;">Units / Value</span><br>${contract.units} unit${contract.units > 1 ? 's' : ''} · $${(contract.price_per_unit * contract.units).toLocaleString()}/mo</div>
+        </div>
+        <p style="font-size:14px;color:#555;line-height:1.8;">
+          Log in to generate their contract with AI, review it, then send for signing.
+        </p>
+        <div style="text-align:center;margin:28px 0;">
+          <a href="${dashboardUrl}" style="background:#1B4353;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;font-weight:600;letter-spacing:0.04em;">Open ContractFlow →</a>
+        </div>
+        <p style="font-family:monospace;font-size:10px;color:#bbb;text-align:center;margin-top:24px;">${contract.reference} · Elias Range Stays</p>
+      </div>
+    `,
+  })
+}
+
 export async function sendExecutedEmail(contract: Contract) {
   const portalUrl = `${APP_URL}/client/${contract.client_token}`
   await resend.emails.send({
