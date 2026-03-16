@@ -3,8 +3,10 @@ import { Contract, calcTotal, formatDate } from './types'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
-// NEXT_PUBLIC_APP_URL is set in .env.production (committed to repo, read by Vercel at build time)
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://contractflow-omega.vercel.app'
+// Hardcoded production URL — avoids all Vercel env var / build-time substitution issues
+const APP_URL = process.env.NODE_ENV === 'production'
+  ? 'https://contractflow-omega.vercel.app'
+  : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
 
 // ── Quote Sent ────────────────────────────────────────────────
 export async function sendQuoteEmail(contract: Contract, occupants: { name: string }[]) {
