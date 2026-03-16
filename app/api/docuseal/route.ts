@@ -69,17 +69,18 @@ export async function POST(req: NextRequest) {
       template_id: templateId,
       send_email: true,
       submitters: [
+        // Landlord signs first, Tenant second (sequential)
         {
-          role: 'Client',
-          name: contract.contact_name,
-          email: contract.contact_email,
-          completed_redirect_url: `${APP_URL}/client/${contract.client_token}`,
-        },
-        {
-          role: 'Provider',
+          role: 'Landlord',
           name: 'Austin Neill',
           email: PROVIDER_EMAIL,
           completed_redirect_url: APP_URL,
+        },
+        {
+          role: 'Tenant',
+          name: contract.contact_name,
+          email: contract.contact_email,
+          completed_redirect_url: `${APP_URL}/client/${contract.client_token}`,
         },
       ],
     }),
@@ -106,8 +107,8 @@ export async function POST(req: NextRequest) {
 
   // submission is an array of submitter objects
   const submitters: any[] = Array.isArray(submission) ? submission : []
-  const clientSubmitter = submitters.find((s: any) => s.role === 'Client')
-  const providerSubmitter = submitters.find((s: any) => s.role === 'Provider')
+  const clientSubmitter = submitters.find((s: any) => s.role === 'Tenant')
+  const providerSubmitter = submitters.find((s: any) => s.role === 'Landlord')
   const submissionId = clientSubmitter?.submission_id || submitters[0]?.submission_id || null
 
   // Save to DB and advance to stage 3 (Contract Sent)
@@ -176,11 +177,41 @@ export async function POST(req: NextRequest) {
   })
 }
 
+// Strip signature blocks already present in the generated contract text
+// so we don't get duplicate signature fields in DocuSeal
+function stripSignatureSection(text: string): string {
+  const lines = text.split('\n')
+  // Find where the signature section starts — look for lines with underscores,
+  // or headings like "SIGNATURES", "EXECUTION", "IN WITNESS WHEREOF"
+  const sigPatterns = [
+    /^_{3,}/,
+    /SIGNATURE/i,
+    /IN WITNESS WHEREOF/i,
+    /EXECUTION/i,
+    /SIGNED BY/i,
+    /^Landlord[:\s]*$/i,
+    /^Tenant[:\s]*$/i,
+  ]
+  let cutAt = lines.length
+  for (let i = lines.length - 1; i >= Math.floor(lines.length * 0.6); i--) {
+    const t = lines[i].trim()
+    if (sigPatterns.some(p => p.test(t))) {
+      cutAt = i
+    }
+  }
+  return lines.slice(0, cutAt).join('\n').trim()
+}
+
 // Wrap generated contract text into DocuSeal-compatible HTML with signature fields
 function wrapForDocuSeal(contract: any) {
-  const lines = (contract.generated_contract as string).split('\n').map((line: string) => {
+  const cleanText = stripSignatureSection(contract.generated_contract as string)
+
+  const lines = cleanText.split('\n').map((line: string) => {
     const trimmed = line.trim()
     if (!trimmed) return '<br/>'
+    if (trimmed.startsWith('## ')) return `<h2>${trimmed.replace(/^##\s*/, '')}</h2>`
+    if (trimmed.startsWith('# ')) return `<h1>${trimmed.replace(/^#\s*/, '')}</h1>`
+    if (trimmed.startsWith('**') && trimmed.endsWith('**')) return `<strong>${trimmed.slice(2, -2)}</strong><br/>`
     if (trimmed === trimmed.toUpperCase() && trimmed.length > 3 && !/^\$/.test(trimmed) && !/^\d/.test(trimmed)) {
       return `<h2>${trimmed}</h2>`
     }
@@ -189,27 +220,45 @@ function wrapForDocuSeal(contract: any) {
 
   return `<!DOCTYPE html><html><head><style>
     body { font-family: Georgia, serif; max-width: 800px; margin: 40px auto; padding: 40px; color: #1a1a1a; line-height: 1.7; font-size: 13px; }
-    h1 { font-size: 24px; font-weight: 400; border-bottom: 2px solid #C9A84C; padding-bottom: 12px; margin-bottom: 24px; }
-    h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #666; margin-top: 28px; margin-bottom: 6px; }
+    h1 { font-size: 24px; font-weight: 400; border-bottom: 2px solid #1B4353; padding-bottom: 12px; margin-bottom: 24px; color: #1B4353; }
+    h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #1B4353; margin-top: 28px; margin-bottom: 6px; font-weight: 600; }
     p { margin: 3px 0; }
-    .sig-block { display: flex; gap: 60px; margin-top: 48px; padding-top: 24px; border-top: 2px solid #e0d9d0; }
+    .parties { display: flex; gap: 40px; background: #f9f7f4; border-radius: 8px; padding: 16px 20px; margin-bottom: 28px; font-size: 12px; }
+    .party { flex: 1; }
+    .party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #999; font-family: monospace; margin-bottom: 4px; }
+    .party-name { font-weight: 600; color: #1a1a1a; }
+    .party-sub { color: #666; font-size: 11px; }
+    .sig-block { display: flex; gap: 60px; margin-top: 48px; padding-top: 24px; border-top: 2px solid #1B4353; }
     .sig { flex: 1; }
-    .sig-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #999; font-family: monospace; margin-bottom: 8px; }
+    .sig-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #1B4353; font-family: monospace; margin-bottom: 8px; font-weight: 600; }
     .sig-name { font-size: 12px; color: #666; margin-bottom: 14px; }
   </style></head><body>
+  <h1>Lease Agreement — ${contract.reference}</h1>
+  <div class="parties">
+    <div class="party">
+      <div class="party-label">Landlord</div>
+      <div class="party-name">Austin Neill</div>
+      <div class="party-sub">Elias Range Stays</div>
+    </div>
+    <div class="party">
+      <div class="party-label">Tenant</div>
+      <div class="party-name">${contract.contact_name}</div>
+      <div class="party-sub">${contract.client_name}</div>
+    </div>
+  </div>
   ${lines}
   <div class="sig-block">
     <div class="sig">
-      <div class="sig-label">Tenant Signature</div>
-      <div class="sig-name">${contract.contact_name} · ${contract.client_name}</div>
-      <signature-field name="Client Signature" role="Client" required="true" style="width:220px;height:60px;display:block;"></signature-field>
-      <date-field name="Client Date" role="Client" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
+      <div class="sig-label">Landlord</div>
+      <div class="sig-name">Austin Neill · Elias Range Stays</div>
+      <signature-field name="Landlord Signature" role="Landlord" required="true" style="width:220px;height:60px;display:block;"></signature-field>
+      <date-field name="Landlord Date" role="Landlord" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
     </div>
     <div class="sig">
-      <div class="sig-label">Landlord Signature</div>
-      <div class="sig-name">Austin Neill · Elias Range Stays</div>
-      <signature-field name="Provider Signature" role="Provider" required="true" style="width:220px;height:60px;display:block;"></signature-field>
-      <date-field name="Provider Date" role="Provider" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
+      <div class="sig-label">Tenant</div>
+      <div class="sig-name">${contract.contact_name} · ${contract.client_name}</div>
+      <signature-field name="Tenant Signature" role="Tenant" required="true" style="width:220px;height:60px;display:block;"></signature-field>
+      <date-field name="Tenant Date" role="Tenant" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
     </div>
   </div>
   </body></html>`
@@ -249,14 +298,14 @@ function buildFallbackHtml(contract: any) {
     <div class="sig">
       <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#999;font-family:monospace;">Tenant</p>
       <p style="font-size:12px;color:#666;">${contract.contact_name} · ${contract.client_name}</p>
-      <signature-field name="Client Signature" role="Client" required="true" style="width:220px;height:60px;display:block;"></signature-field>
-      <date-field name="Client Date" role="Client" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
+      <signature-field name="Tenant Signature" role="Tenant" required="true" style="width:220px;height:60px;display:block;"></signature-field>
+      <date-field name="Tenant Date" role="Tenant" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
     </div>
     <div class="sig">
       <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#999;font-family:monospace;">Landlord</p>
       <p style="font-size:12px;color:#666;">Austin Neill · Elias Range Stays</p>
-      <signature-field name="Provider Signature" role="Provider" required="true" style="width:220px;height:60px;display:block;"></signature-field>
-      <date-field name="Provider Date" role="Provider" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
+      <signature-field name="Landlord Signature" role="Landlord" required="true" style="width:220px;height:60px;display:block;"></signature-field>
+      <date-field name="Landlord Date" role="Landlord" required="true" style="width:140px;height:28px;display:inline-block;margin-top:10px;"></date-field>
     </div>
   </div>
   </body></html>`
