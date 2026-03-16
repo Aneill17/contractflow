@@ -150,14 +150,21 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* System Health — owner only */}
+        {/* Units Registry + System Health — owner only */}
         <OwnerOnly>
-          <div
-            className="nav-item"
-            onClick={() => window.open('/diagnostics', '_blank')}
-            style={{ marginTop: 8 }}
-          >
-            <span style={{ fontSize: 14 }}>⚡</span>System Health
+          <div style={{ marginTop: 8, borderTop: '1px solid #ffffff08', paddingTop: 8 }}>
+            <div
+              className="nav-item"
+              onClick={() => window.location.href = '/dashboard/units'}
+            >
+              <span style={{ fontSize: 14 }}>🏘️</span>Units
+            </div>
+            <div
+              className="nav-item"
+              onClick={() => window.open('/diagnostics', '_blank')}
+            >
+              <span style={{ fontSize: 14 }}>⚡</span>System Health
+            </div>
           </div>
         </OwnerOnly>
 

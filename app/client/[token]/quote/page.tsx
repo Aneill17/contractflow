@@ -128,6 +128,71 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
 
         <div style={{ padding: '40px 48px' }}>
 
+          {/* Benchmark comparison — only if client provided current rate */}
+          {contract.current_housing_rate > 0 && (() => {
+            const months = Math.max(1, Math.round(
+              (new Date(contract.end_date).getTime() - new Date(contract.start_date).getTime())
+              / (1000 * 60 * 60 * 24 * 30)
+            ))
+            const ersDailyRate = contract.price_per_unit / 30
+            const theirRate = contract.current_housing_rate
+            const savingsPerUnit = (theirRate - ersDailyRate) * 30 * months
+            const totalSavings = savingsPerUnit * contract.units
+            const savingsPct = Math.round(((theirRate - ersDailyRate) / theirRate) * 100)
+            return (
+              <div style={{ marginBottom: 36, background: '#f0faf5', border: '2px solid #4CAF9333', borderRadius: 14, overflow: 'hidden' }}>
+                <div style={{ background: '#2d6a4f', padding: '14px 24px' }}>
+                  <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#a8dfbf', letterSpacing: '0.14em' }}>YOUR SAVINGS COMPARISON</div>
+                </div>
+                <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                  {/* Current */}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+                      {contract.current_housing_location ? contract.current_housing_location.split(',')[0] : 'Current Solution'}
+                    </div>
+                    <div style={{ fontSize: 28, color: '#e74c3c', fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+                      ${theirRate}<span style={{ fontSize: 14, color: '#999' }}>/night</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>per room</div>
+                  </div>
+                  {/* vs */}
+                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>vs</div>
+                    <div style={{ background: '#4CAF9322', border: '2px solid #4CAF93', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 22, color: '#2d6a4f', fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+                        {savingsPct}% less
+                      </div>
+                      <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#4CAF93', marginTop: 4 }}>
+                        Save ${totalSavings.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  {/* ERS */}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Elias Range Stays</div>
+                    <div style={{ fontSize: 28, color: '#2d6a4f', fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+                      ${ersDailyRate.toFixed(0)}<span style={{ fontSize: 14, color: '#999' }}>/night</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>per unit</div>
+                  </div>
+                </div>
+                <div style={{ padding: '0 24px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  {[
+                    ['Single Invoice', 'One invoice per month — all units consolidated', '✓', '#4CAF93'],
+                    ['24/7 Support', 'Dedicated support line for your team on-site', '✓', '#4CAF93'],
+                    ['Healthcare Focused', 'Properties selected near hospitals & work sites', '✓', '#4CAF93'],
+                  ].map(([title, desc, icon, color]) => (
+                    <div key={title as string} style={{ background: 'white', borderRadius: 8, padding: '12px 14px' }}>
+                      <div style={{ fontSize: 16, color: color as string, marginBottom: 4 }}>{icon}</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{title}</div>
+                      <div style={{ fontSize: 11, color: '#777', lineHeight: 1.5 }}>{desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+
           {/* Booking details */}
           <div style={{ marginBottom: 32 }}>
             <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 16 }}>Booking Details</div>

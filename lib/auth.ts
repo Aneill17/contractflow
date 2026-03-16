@@ -44,6 +44,21 @@ export async function getAuthUser(req: NextRequest): Promise<AuthUser | null> {
   }
 }
 
+// Client-side helper: get auth headers from supabase session
+// Import supabase browser client to avoid circular deps
+export async function getAuthHeaders(): Promise<Record<string, string>> {
+  if (typeof window === 'undefined') return {}
+  try {
+    const { createBrowserClient } = await import('@supabase/ssr')
+    const sb = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { session } } = await sb.auth.getSession()
+    return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+  } catch { return {} }
+}
+
 // Strip financial fields from contract for staff role
 export function stripFinancials(contract: Record<string, unknown>) {
   const stripped = { ...contract }
