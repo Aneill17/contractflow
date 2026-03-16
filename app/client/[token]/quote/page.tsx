@@ -14,10 +14,13 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
     fetch(`/api/client/${params.token}`)
       .then(r => r.json())
       .then(data => {
-        setContract(data.contract)
+        // API returns the contract directly (with occupants embedded)
+        if (data.error) { setLoading(false); return }
+        setContract(data)
         setOccupants(data.occupants || [])
         setLoading(false)
       })
+      .catch(() => setLoading(false))
   }, [params.token])
 
   const copyLink = () => {
@@ -28,10 +31,11 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
 
   const approveQuote = async () => {
     setApproving(true)
-    await fetch(`/api/contracts/${contract.id}`, {
+    // Use token-based API — no auth required on client-facing routes
+    await fetch(`/api/client/${params.token}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stage: 2, _audit: 'Quote approved by client' }),
+      body: JSON.stringify({ stage: 2, audit_action: 'Quote approved by client' }),
     })
     setApproved(true)
     setApproving(false)

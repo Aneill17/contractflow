@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
+import { getAuthUser } from '@/lib/auth'
 import { Resend } from 'resend'
 
 const DOCUSEAL_API_KEY = process.env.DOCUSEAL_API_KEY!
@@ -11,6 +12,9 @@ const PROVIDER_EMAIL =
   'austin@eliasrangestays.ca'
 
 export async function POST(req: NextRequest) {
+  const user = await getAuthUser(req)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const supabase = createServerClient()
   const { contract_id } = await req.json()
 
