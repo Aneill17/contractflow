@@ -22,17 +22,17 @@ export async function POST(req: NextRequest) {
   // A submitter completed their signature
   if (eventType === 'submission.submitter_completed') {
     const role = submission.role?.toLowerCase()
-    if (role === 'client') {
+    if (role === 'tenant') {
       await supabase.from('contracts').update({ client_sig: 'DocuSeal' }).eq('id', contract.id)
       await supabase.from('audit_logs').insert({
-        contract_id: contract.id, actor: 'Client',
-        action: 'Client signed the lease agreement via DocuSeal',
+        contract_id: contract.id, actor: 'Tenant',
+        action: `Tenant (${submission.name || submission.email}) signed the lease agreement via DocuSeal`,
       })
-    } else if (role === 'provider') {
+    } else if (role === 'landlord') {
       await supabase.from('contracts').update({ provider_sig: 'DocuSeal' }).eq('id', contract.id)
       await supabase.from('audit_logs').insert({
-        contract_id: contract.id, actor: 'Provider',
-        action: 'Provider countersigned the lease agreement via DocuSeal',
+        contract_id: contract.id, actor: 'Landlord',
+        action: 'Landlord (Austin Neill) signed the lease agreement via DocuSeal',
       })
     }
   }

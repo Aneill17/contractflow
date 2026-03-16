@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       template_id: templateId,
       send_email: true,
+      submitters_order: 'preserved',
       submitters: [
         // Landlord signs first, Tenant second (sequential)
         {

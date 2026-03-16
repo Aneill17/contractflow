@@ -371,6 +371,80 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   )
 }
 
+// ── Signature Status Panel ─────────────────────────────────
+function SignatureStatusPanel({ contract: c, onRefresh, showToast }: { contract: Contract, onRefresh: () => Promise<void>, showToast: (m: string, t?: string) => void }) {
+  const [syncing, setSyncing] = useState(false)
+
+  const syncStatus = async () => {
+    setSyncing(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`
+      const res = await fetch(`/api/contracts/${c.id}/sync-signatures`, {
+        method: 'POST',
+        headers,
+      })
+      const data = await res.json()
+      if (res.ok) {
+        showToast('Signature status updated')
+        await onRefresh()
+      } else {
+        showToast(data.error || 'Sync failed', 'error')
+      }
+    } catch { showToast('Sync failed', 'error') }
+    setSyncing(false)
+  }
+
+  const landlordSigned = !!c.provider_sig
+  const tenantSigned = !!c.client_sig
+  const bothSigned = landlordSigned && tenantSigned
+
+  return (
+    <div style={{ ...styles.card, padding: '18px 22px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={styles.sectionTitle}>Signatures</div>
+        {!bothSigned && (
+          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '5px 12px' }} onClick={syncStatus} disabled={syncing}>
+            {syncing ? 'Checking...' : '↻ Refresh Status'}
+          </button>
+        )}
+      </div>
+      <div style={{ display: 'flex', gap: 12 }}>
+        {[
+          { label: 'Landlord', name: 'Austin Neill', signed: landlordSigned },
+          { label: 'Tenant', name: c.contact_name, signed: tenantSigned },
+        ].map(({ label, name, signed }) => (
+          <div key={label} style={{
+            flex: 1, padding: '12px 16px', borderRadius: 8,
+            background: signed ? '#4CAF9310' : '#ffffff06',
+            border: `1px solid ${signed ? '#4CAF9344' : '#ffffff12'}`,
+          }}>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
+            <div style={{ fontSize: 13, color: '#DDD5C8', marginBottom: 6 }}>{name}</div>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: signed ? '#4CAF93' : '#C9A84C' }}>
+              {signed ? '✓ Signed' : '⏳ Awaiting signature'}
+            </div>
+          </div>
+        ))}
+      </div>
+      {bothSigned && (
+        <div style={{ marginTop: 12, background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 7, padding: '10px 14px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
+          ✓ Fully executed — both parties have signed.
+          {(c as any).contract_file_url && (
+            <a href={(c as any).contract_file_url} target="_blank" rel="noreferrer" style={{ color: '#4CAF93', marginLeft: 16 }}>↓ Download signed PDF</a>
+          )}
+        </div>
+      )}
+      {!bothSigned && !tenantSigned && landlordSigned && (
+        <div style={{ marginTop: 10, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff44' }}>
+          Tenant signing email sent to {c.contact_email}. Check their spam if not received.
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── TAB: Contract ──────────────────────────────────────────
 function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [generating, setGenerating] = useState(false)
@@ -547,26 +621,9 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         </div>
       )}
 
-      {/* Status after sending */}
-      {isSent && !c.client_sig && (
-        <div style={{ background: '#9B59B615', border: '1px solid #9B59B655', borderRadius: 8, padding: '14px 18px', color: '#C09BE0', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
-          ✉ Contract sent to {c.contact_email} via DocuSeal — awaiting their signature.
-        </div>
-      )}
-      {c.client_sig && !c.provider_sig && (
-        <div style={{ background: '#C9A84C15', border: '1px solid #C9A84C44', borderRadius: 8, padding: '14px 18px', color: '#C9A84C', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
-          ✓ Client has signed. Check your email — DocuSeal will send you a countersignature link.
-        </div>
-      )}
-      {c.client_sig && c.provider_sig && (
-        <div style={{ background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 8, padding: '14px 18px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
-          ✓ Fully executed by both parties.
-          {c.contract_file_url && (
-            <div style={{ marginTop: 10 }}>
-              <a href={c.contract_file_url} target="_blank" rel="noreferrer" style={{ color: '#4CAF93' }}>↓ Download signed agreement</a>
-            </div>
-          )}
-        </div>
+      {/* Signature status panel */}
+      {isSent && (
+        <SignatureStatusPanel contract={c} onRefresh={onRefresh} showToast={showToast} />
       )}
     </div>
   )
