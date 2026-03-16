@@ -4,27 +4,22 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-const TEAM_EMAIL = process.env.TEAM_NOTIFICATION_EMAIL || 'your@email.com'
-const FROM = 'ContractFlow <onboarding@resend.dev>'
+const TEAM_EMAIL = process.env.TEAM_NOTIFICATION_EMAIL || 'austin@eliasrangestays.ca'
+const FROM = process.env.FROM_EMAIL || 'ContractFlow <austin@eliasrangestays.ca>'
 
 export async function POST(req: NextRequest) {
   const supabase = createServerClient()
   const body = await req.json()
   const { occupants, ...contractData } = body
 
-  // Generate reference number
-  const { count } = await supabase.from('contracts').select('*', { count: 'exact', head: true })
-  const year = new Date().getFullYear()
-  const ref = `QT-${year}-${String((count || 0) + 1).padStart(4, '0')}`
-
+  // Reference auto-assigned by DB trigger (CF-XXXXXX)
   // Create contract at stage 0 (request received)
   const { data: contract, error } = await supabase
     .from('contracts')
     .insert({
       ...contractData,
-      reference: ref,
       stage: 0,
-      price_per_unit: 0, // TBD — will be set when quote is generated
+      price_per_unit: contractData.price_per_unit || 0, // ERS sets this when building the quote
     })
     .select()
     .single()
@@ -53,12 +48,12 @@ if (error) {
     await resend.emails.send({
       from: FROM,
       to: TEAM_EMAIL,
-      subject: `New Housing Request — ${ref}`,
+      subject: `New Housing Request — ${contract.reference}`,
       html: `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
           <div style="background:#fff8e8;border:2px solid #C9A84C;border-radius:10px;padding:20px;margin-bottom:28px;">
             <h1 style="font-size:20px;font-weight:400;margin:0 0 4px;color:#1a1a1a;">🏠 New Housing Request</h1>
-            <p style="font-family:monospace;font-size:12px;color:#C9A84C;margin:0;">${ref}</p>
+            <p style="font-family:monospace;font-size:12px;color:#C9A84C;margin:0;">${contract.reference}</p>
           </div>
           <table style="width:100%;font-size:14px;border-collapse:collapse;">
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Company</td><td style="text-align:right;font-weight:500;">${contractData.client_name}</td></tr>
@@ -87,13 +82,13 @@ if (error) {
     await resend.emails.send({
       from: FROM,
       to: contractData.contact_email,
-      subject: `We've received your housing request — ${ref}`,
+      subject: `We've received your housing request — ${contract.reference}`,
       html: `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
           <h1 style="font-size:26px;font-weight:400;border-bottom:2px solid #C9A84C;padding-bottom:12px;">Request Received</h1>
           <p style="font-size:15px;line-height:1.7;">Hello ${contractData.contact_name.split(' ')[0]},</p>
           <p style="font-size:14px;color:#555;line-height:1.8;">Thank you for submitting your workforce housing request. Our team will review your requirements and have a formal quote back to you within <strong>24 hours</strong>.</p>
-          <p style="font-size:14px;color:#555;">Your reference number is <strong style="color:#C9A84C;">${ref}</strong> — keep this handy for any follow-up.</p>
+          <p style="font-size:14px;color:#555;">Your reference number is <strong style="color:#C9A84C;">${contract.reference}</strong> — keep this handy for any follow-up.</p>
           <div style="background:#f9f7f4;border-radius:10px;padding:24px;margin:24px 0;">
             <p style="font-family:monospace;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 12px;">Your Request Summary</p>
             <table style="width:100%;font-size:13px;border-collapse:collapse;">
@@ -113,5 +108,5 @@ if (error) {
     console.error('Client confirmation email failed:', e)
   }
 
-  return NextResponse.json({ reference: ref, id: contract.id }, { status: 201 })
+  return NextResponse.json({ reference: contract.reference, id: contract.id }, { status: 201 })
 }
