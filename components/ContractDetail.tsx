@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
@@ -372,45 +372,66 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 }
 
 // ── Signature Status Panel ─────────────────────────────────
-function SignatureStatusPanel({ contract: c, onRefresh, showToast }: { contract: Contract, onRefresh: () => Promise<void>, showToast: (m: string, t?: string) => void }) {
+function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: { contract: Contract, onRefresh: () => Promise<void>, showToast: (m: string, t?: string) => void, onUpdate: (id: string, patch: Partial<Contract>, msg?: string) => Promise<void> }) {
   const [syncing, setSyncing] = useState(false)
-
-  const syncStatus = async () => {
-    setSyncing(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`
-      const res = await fetch(`/api/contracts/${c.id}/sync-signatures`, {
-        method: 'POST',
-        headers,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        showToast('Signature status updated')
-        await onRefresh()
-      } else {
-        showToast(data.error || 'Sync failed', 'error')
-      }
-    } catch { showToast('Sync failed', 'error') }
-    setSyncing(false)
-  }
 
   const landlordSigned = !!c.provider_sig
   const tenantSigned = !!c.client_sig
   const bothSigned = landlordSigned && tenantSigned
 
+  const syncStatus = async (silent = false) => {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`
+      const res = await fetch(`/api/contracts/${c.id}/sync-signatures`, { method: 'POST', headers })
+      const data = await res.json()
+      if (res.ok) {
+        const changed = (data.landlord?.signed && !landlordSigned) || (data.tenant?.signed && !tenantSigned)
+        if (changed || !silent) {
+          if (!silent) showToast('Signature status updated')
+          await onRefresh()
+        }
+      }
+    } catch { if (!silent) showToast('Sync failed', 'error') }
+    setSyncing(false)
+  }
+
+  // Auto-poll every 30s when awaiting signatures
+  useEffect(() => {
+    if (bothSigned) return
+    const interval = setInterval(() => syncStatus(true), 30000)
+    return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bothSigned, c.id])
+
+  const markComplete = async () => {
+    await onUpdate(c.id, { stage: 5 }, 'Contract marked as complete — housing active')
+    showToast('Marked as complete')
+  }
+
   return (
     <div style={{ ...styles.card, padding: '18px 22px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={styles.sectionTitle}>Signatures</div>
-        {!bothSigned && (
-          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '5px 12px' }} onClick={syncStatus} disabled={syncing}>
-            {syncing ? 'Checking...' : '↻ Refresh Status'}
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {!bothSigned && (
+            <button style={{ ...styles.btnGhost, fontSize: 11, padding: '5px 12px' }} onClick={() => syncStatus(false)} disabled={syncing}>
+              {syncing ? '↻ Checking...' : '↻ Refresh'}
+            </button>
+          )}
+          {bothSigned && c.stage < 5 && (
+            <button style={{ ...styles.btnGold, fontSize: 11, padding: '5px 16px' }} onClick={markComplete}>
+              ✓ Mark as Complete
+            </button>
+          )}
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: 12 }}>
+
+      {/* Signature cards */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
         {[
           { label: 'Landlord', name: 'Austin Neill', signed: landlordSigned },
           { label: 'Tenant', name: c.contact_name, signed: tenantSigned },
@@ -428,17 +449,18 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast }: { contract:
           </div>
         ))}
       </div>
+
       {bothSigned && (
-        <div style={{ marginTop: 12, background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 7, padding: '10px 14px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
+        <div style={{ background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 7, padding: '10px 14px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
           ✓ Fully executed — both parties have signed.
           {(c as any).contract_file_url && (
             <a href={(c as any).contract_file_url} target="_blank" rel="noreferrer" style={{ color: '#4CAF93', marginLeft: 16 }}>↓ Download signed PDF</a>
           )}
         </div>
       )}
-      {!bothSigned && !tenantSigned && landlordSigned && (
-        <div style={{ marginTop: 10, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff44' }}>
-          Tenant signing email sent to {c.contact_email}. Check their spam if not received.
+      {!tenantSigned && landlordSigned && (
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff33', marginTop: 4 }}>
+          Signing email sent to {c.contact_email} — auto-refreshing every 30s. Ask client to check spam.
         </div>
       )}
     </div>
@@ -623,7 +645,7 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
       {/* Signature status panel */}
       {isSent && (
-        <SignatureStatusPanel contract={c} onRefresh={onRefresh} showToast={showToast} />
+        <SignatureStatusPanel contract={c} onRefresh={onRefresh} showToast={showToast} onUpdate={onUpdate} />
       )}
     </div>
   )
