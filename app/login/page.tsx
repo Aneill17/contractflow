@@ -18,16 +18,28 @@ function LoginForm() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
-      setError('Invalid email or password.')
+      if (error) {
+        setError(error.message || 'Invalid email or password.')
+        setLoading(false)
+        return
+      }
+
+      if (!data.session) {
+        setError('Login succeeded but no session was created. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      // Small delay to let the cookie settle before redirect
+      await new Promise(r => setTimeout(r, 200))
+      window.location.href = next
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unexpected error. Please try again.')
       setLoading(false)
-      return
     }
-
-    router.push(next)
-    router.refresh()
   }
 
   return (
