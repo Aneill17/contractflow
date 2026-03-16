@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
 // Public routes — no auth required
 const PUBLIC_PATHS = [
   '/login',
-  '/request',         // public client intake form
-  '/client/',         // client portal (token-gated at the page level)
-  '/api/client/',     // client token API
-  '/api/booking',     // public booking submission
+  '/request',
+  '/client/',
+  '/api/client/',
+  '/api/booking',
   '/_next',
   '/favicon',
 ]
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Allow public paths
@@ -19,18 +20,39 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check for Supabase session cookie
-  const hasSession =
-    req.cookies.has('sb-dfcsqpgltjlbzdwxughu-auth-token') ||
-    req.cookies.has(`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`)
+  let res = NextResponse.next({
+    request: { headers: req.headers },
+  })
 
-  if (!hasSession) {
+  // Use @supabase/ssr to read session from cookies
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll()
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value))
+          res = NextResponse.next({ request: req })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            res.cookies.set(name, value, options as Parameters<typeof res.cookies.set>[2])
+          )
+        },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
     const loginUrl = new URL('/login', req.url)
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  return NextResponse.next()
+  return res
 }
 
 export const config = {
