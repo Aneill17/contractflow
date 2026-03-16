@@ -98,11 +98,9 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // ── Step 3: Clean up the one-use template ────────────────────
-  fetch(`https://api.docuseal.com/templates/${templateId}`, {
-    method: 'DELETE',
-    headers: { 'X-Auth-Token': DOCUSEAL_API_KEY },
-  }).catch(e => console.error('Template cleanup failed:', e))
+  // Note: do NOT delete the template — DocuSeal needs it to render the signing page.
+  // Templates are referenced by active submissions until all parties have signed.
+  // Cleanup can be done manually in the DocuSeal dashboard or via webhook after completion.
 
   // submission is an array of submitter objects
   const submitters: any[] = Array.isArray(submission) ? submission : []
