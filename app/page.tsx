@@ -150,6 +150,17 @@ export default function HomePage() {
           ))}
         </div>
 
+        {/* System Health — owner only */}
+        <OwnerOnly>
+          <div
+            className="nav-item"
+            onClick={() => window.open('/diagnostics', '_blank')}
+            style={{ marginTop: 8 }}
+          >
+            <span style={{ fontSize: 14 }}>⚡</span>System Health
+          </div>
+        </OwnerOnly>
+
         {/* User + sign out */}
         <div style={{ marginTop: 'auto', paddingTop: 14, borderTop: '1px solid #ffffff08' }}>
           <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff22', paddingLeft: 14 }}>

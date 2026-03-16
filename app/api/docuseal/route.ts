@@ -4,6 +4,11 @@ import { Resend } from 'resend'
 
 const DOCUSEAL_API_KEY = process.env.DOCUSEAL_API_KEY!
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
+const PROVIDER_EMAIL =
+  process.env.PROVIDER_EMAIL ||
+  process.env.TEAM_NOTIFICATION_EMAIL ||
+  'austin@eliasrangestays.ca'
 
 export async function POST(req: NextRequest) {
   const supabase = createServerClient()
@@ -22,8 +27,8 @@ export async function POST(req: NextRequest) {
     ? wrapForDocuSeal(contract)
     : buildFallbackHtml(contract)
 
-  // Create DocuSeal submission from HTML
-  const response = await fetch('https://api.docuseal.com/submissions/html', {
+  // ── Step 1: Create a one-use template from HTML ──────────────
+  const templateResponse = await fetch('https://api.docuseal.com/templates/html', {
     method: 'POST',
     headers: {
       'X-Auth-Token': DOCUSEAL_API_KEY,
@@ -32,8 +37,31 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       name: `${contract.reference} — Lease Agreement`,
       html: contractHtml,
+    }),
+  })
+
+  const template = await templateResponse.json()
+
+  if (!templateResponse.ok) {
+    console.error('DocuSeal template creation error:', template)
+    return NextResponse.json(
+      { error: 'DocuSeal template creation failed', details: template },
+      { status: 500 }
+    )
+  }
+
+  const templateId = template.id
+
+  // ── Step 2: Create submission from the template ───────────────
+  const submissionResponse = await fetch('https://api.docuseal.com/submissions', {
+    method: 'POST',
+    headers: {
+      'X-Auth-Token': DOCUSEAL_API_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      template_id: templateId,
       send_email: true,
-      submitters_order: 'preserved',
       submitters: [
         {
           role: 'Client',
@@ -44,26 +72,43 @@ export async function POST(req: NextRequest) {
         {
           role: 'Provider',
           name: 'Austin Neill',
-          email: process.env.PROVIDER_EMAIL || process.env.TEAM_NOTIFICATION_EMAIL,
+          email: PROVIDER_EMAIL,
           completed_redirect_url: APP_URL,
         },
       ],
     }),
   })
 
-  const submission = await response.json()
+  const submission = await submissionResponse.json()
 
-  if (!response.ok) {
-    console.error('DocuSeal error:', submission)
-    return NextResponse.json({ error: 'DocuSeal submission failed', details: submission }, { status: 500 })
+  if (!submissionResponse.ok) {
+    console.error('DocuSeal submission error:', submission)
+    // Clean up the template on failure
+    fetch(`https://api.docuseal.com/templates/${templateId}`, {
+      method: 'DELETE',
+      headers: { 'X-Auth-Token': DOCUSEAL_API_KEY },
+    }).catch(() => {})
+    return NextResponse.json(
+      { error: 'DocuSeal submission failed', details: submission },
+      { status: 500 }
+    )
   }
 
-  const clientSubmitter = submission.find((s: any) => s.role === 'Client')
-  const providerSubmitter = submission.find((s: any) => s.role === 'Provider')
+  // ── Step 3: Clean up the one-use template ────────────────────
+  fetch(`https://api.docuseal.com/templates/${templateId}`, {
+    method: 'DELETE',
+    headers: { 'X-Auth-Token': DOCUSEAL_API_KEY },
+  }).catch(e => console.error('Template cleanup failed:', e))
+
+  // submission is an array of submitter objects
+  const submitters: any[] = Array.isArray(submission) ? submission : []
+  const clientSubmitter = submitters.find((s: any) => s.role === 'Client')
+  const providerSubmitter = submitters.find((s: any) => s.role === 'Provider')
+  const submissionId = clientSubmitter?.submission_id || submitters[0]?.submission_id || null
 
   // Save to DB and advance to stage 3 (Contract Sent)
   await supabase.from('contracts').update({
-    docuseal_submission_id: submission[0]?.submission_id || null,
+    docuseal_submission_id: submissionId,
     docuseal_client_slug: clientSubmitter?.slug || null,
     docuseal_provider_slug: providerSubmitter?.slug || null,
     stage: 3,
@@ -78,10 +123,12 @@ export async function POST(req: NextRequest) {
   // Notify Austin (provider) with his signing link
   try {
     const resend = new Resend(process.env.RESEND_API_KEY)
-    const providerSignUrl = `https://docuseal.com/s/${providerSubmitter?.slug}`
+    const providerSignUrl = providerSubmitter?.slug
+      ? `https://docuseal.com/s/${providerSubmitter.slug}`
+      : `https://docuseal.com`
     await resend.emails.send({
-      from: 'Elias Range Stays <onboarding@resend.dev>',
-      to: process.env.TEAM_NOTIFICATION_EMAIL!,
+      from: FROM,
+      to: PROVIDER_EMAIL,
       subject: `Contract Sent for Signing — ${contract.reference}`,
       html: `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">

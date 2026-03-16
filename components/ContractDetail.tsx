@@ -1,8 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
+
+// Lazy-load PDF button — browser only
+const ContractPDFButton = dynamic(() => import('./ContractPDFButton'), {
+  ssr: false,
+  loading: () => null,
+})
 
 const getAuthHeader = async (): Promise<Record<string, string>> => {
   const { data: { session } } = await supabase.auth.getSession()
@@ -14,6 +21,133 @@ interface Props {
   onUpdate: (id: string, patch: Partial<Contract>, auditMsg?: string) => Promise<void>
   onRefresh: () => Promise<void>
   showToast: (msg: string, type?: string) => void
+}
+
+// ── Contract text renderer (markdown-like → styled HTML) ─────
+function renderContractMarkdown(text: string): JSX.Element {
+  const docStyle: React.CSSProperties = {
+    background: '#FAFAF8',
+    color: '#1a1a1a',
+    fontFamily: 'Georgia, serif',
+    fontSize: 13,
+    lineHeight: 1.8,
+    padding: '40px 44px',
+    borderRadius: 10,
+    maxWidth: 760,
+    overflowY: 'auto' as const,
+    maxHeight: 640,
+    border: '1px solid #e8e2d9',
+  }
+  const headingStyle: React.CSSProperties = {
+    fontFamily: "'IBM Plex Mono', monospace",
+    fontSize: 9,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.15em',
+    color: '#1B4353',
+    margin: '22px 0 8px',
+    paddingBottom: 4,
+    borderBottom: '1px solid #1B435333',
+  }
+  const h1Style: React.CSSProperties = {
+    fontFamily: 'Georgia, serif',
+    fontSize: 22,
+    fontWeight: 400,
+    color: '#1a1a1a',
+    borderBottom: '2px solid #C9A84C',
+    paddingBottom: 10,
+    marginBottom: 20,
+    marginTop: 0,
+  }
+  const paraStyle: React.CSSProperties = {
+    margin: '4px 0',
+    color: '#2a2a2a',
+  }
+
+  const lines = text.split('\n')
+  const elements: JSX.Element[] = []
+  let tableBuffer: string[] = []
+  let inTable = false
+
+  const flushTable = (key: string) => {
+    if (!tableBuffer.length) return
+    const rows = tableBuffer.map(r => r.split('|').map(c => c.trim()).filter(c => c !== ''))
+    const isHeader = (row: string[]) => row.every(c => /^[-:]+$/.test(c))
+    const dataRows = rows.filter(r => !isHeader(r))
+    elements.push(
+      <table key={key} style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, margin: '12px 0' }}>
+        {dataRows.map((row, ri) => (
+          <tr key={ri} style={{ borderBottom: '1px solid #e8e2d9', background: ri === 0 ? '#f5f0e8' : ri % 2 === 0 ? '#fafaf8' : '#fff' }}>
+            {row.map((cell, ci) => (
+              <td key={ci} style={{ padding: '7px 10px', fontFamily: ri === 0 ? "'IBM Plex Mono', monospace" : 'Georgia, serif', fontSize: ri === 0 ? 10 : 12, fontWeight: ri === 0 ? 600 : 400, color: ri === 0 ? '#1B4353' : '#1a1a1a', borderRight: ci < row.length - 1 ? '1px solid #e8e2d9' : 'none' }}>
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </table>
+    )
+    tableBuffer = []
+    inTable = false
+  }
+
+  const renderInline = (line: string, key: string | number): JSX.Element => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/)
+    if (parts.length === 1) return <span key={key}>{line}</span>
+    return (
+      <span key={key}>
+        {parts.map((p, i) =>
+          p.startsWith('**') && p.endsWith('**')
+            ? <strong key={i} style={{ color: '#1a1a1a' }}>{p.slice(2, -2)}</strong>
+            : <span key={i}>{p}</span>
+        )}
+      </span>
+    )
+  }
+
+  lines.forEach((line, i) => {
+    const trimmed = line.trim()
+
+    // Table rows
+    if (trimmed.startsWith('|')) {
+      if (!inTable) { inTable = true; tableBuffer = [] }
+      tableBuffer.push(trimmed)
+      return
+    } else if (inTable) {
+      flushTable(`tbl-${i}`)
+    }
+
+    if (!trimmed) {
+      elements.push(<div key={i} style={{ height: 6 }} />)
+      return
+    }
+    if (trimmed.startsWith('# ')) {
+      elements.push(<h1 key={i} style={h1Style}>{trimmed.slice(2)}</h1>)
+      return
+    }
+    if (trimmed.startsWith('## ')) {
+      elements.push(<div key={i} style={headingStyle}>{trimmed.slice(3)}</div>)
+      return
+    }
+    if (/^---+$/.test(trimmed)) {
+      elements.push(<hr key={i} style={{ border: 'none', borderTop: '1px solid #e8e2d9', margin: '12px 0' }} />)
+      return
+    }
+    // Signature block detection
+    if (/signature|signed by|__+/i.test(trimmed)) {
+      elements.push(
+        <div key={i} style={{ display: 'flex', alignItems: 'flex-end', gap: 8, margin: '6px 0' }}>
+          <p style={{ ...paraStyle, marginBottom: 0 }}>{renderInline(trimmed, `il-${i}`)}</p>
+          <div style={{ flex: 1, borderBottom: '1px solid #555', minWidth: 120, maxWidth: 220, marginBottom: 2 }} />
+        </div>
+      )
+      return
+    }
+    elements.push(<p key={i} style={paraStyle}>{renderInline(trimmed, `il-${i}`)}</p>)
+  })
+
+  if (inTable) flushTable('tbl-end')
+
+  return <div style={docStyle}>{elements}</div>
 }
 
 // ── TAB: Request Review ──────────────────────────────────────
@@ -103,9 +237,10 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const sendQuote = async () => {
     if (!pricePerUnit) { showToast('Set a price per unit first', 'error'); return }
     setSending(true)
+    const authHeader = await getAuthHeader()
     const res = await fetch(`/api/contracts/${c.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader },
       body: JSON.stringify({
         price_per_unit: pricePerUnit, damage_deposit: damageDeposit,
         payment_schedule: paymentSchedule, inclusions, exclusions,
@@ -131,7 +266,8 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
           </div>
           {c.stage === 1 && (
             <button style={styles.btnGhost} onClick={async () => {
-              const res = await fetch(`/api/contracts/${c.id}/remind`, { method: 'POST' })
+              const authHeader = await getAuthHeader()
+              const res = await fetch(`/api/contracts/${c.id}/remind`, { method: 'POST', headers: { ...authHeader } })
               if (res.ok) showToast('Reminder sent to client')
               else showToast('Failed to send reminder', 'error')
             }}>✉ Send Reminder</button>
@@ -272,9 +408,10 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
   const saveEdits = async () => {
     setSaving(true)
+    const authHeader = await getAuthHeader()
     await fetch(`/api/contracts/${c.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader },
       body: JSON.stringify({ generated_contract: contractText, actor: 'Team', audit_action: 'Contract text edited manually' }),
     })
     setEditing(false)
@@ -286,15 +423,15 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const sendForSigning = async () => {
     setSending(true)
     try {
+      const authHeader = await getAuthHeader()
       // Save latest edits first
       if (contractText !== c.generated_contract) {
         await fetch(`/api/contracts/${c.id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...authHeader },
           body: JSON.stringify({ generated_contract: contractText }),
         })
       }
-      const authHeader = await getAuthHeader()
       const res = await fetch('/api/docuseal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeader },
@@ -376,9 +513,20 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
               style={{ background: '#0C0E14', border: '1px solid #C9A84C44', borderRadius: 8, padding: '24px 28px', fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#DDD5C8', lineHeight: 2, width: '100%', minHeight: 600, outline: 'none', resize: 'vertical' }}
             />
           ) : (
-            <pre style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#DDD5C8', lineHeight: 2, whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: '#0C0E14', padding: '24px 28px', borderRadius: 8, border: '1px solid #ffffff08', maxHeight: 600, overflowY: 'auto', margin: 0 }}>
-              {contractText}
-            </pre>
+            renderContractMarkdown(contractText)
+          )}
+
+          {/* PDF Download button */}
+          {!editing && contractText && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+              <ContractPDFButton
+                contractText={contractText}
+                reference={c.reference}
+                contactName={c.contact_name}
+                clientName={c.client_name}
+                btnStyle={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px', cursor: 'pointer' }}
+              />
+            </div>
           )}
         </div>
       )}

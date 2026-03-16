@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import { Contract, calcTotal, formatDate } from './types'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Elias Range Stays <onboarding@resend.dev>'
+const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 // ── Quote Sent ────────────────────────────────────────────────

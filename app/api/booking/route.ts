@@ -5,9 +5,7 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 const TEAM_EMAIL = process.env.TEAM_NOTIFICATION_EMAIL || 'austin@eliasrangestays.ca'
-// Use onboarding@resend.dev until eliasrangestays.ca domain is verified in Resend
-// To verify: Resend dashboard → Domains → Add domain → add DNS records
-const FROM = 'Elias Range Stays <onboarding@resend.dev>'
+const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
 
 export async function POST(req: NextRequest) {
   const supabase = createServerClient()

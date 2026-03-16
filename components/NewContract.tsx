@@ -46,8 +46,8 @@ export default function NewContract({ onSave }: Props) {
         .field { margin-bottom: 14px; }
       `}</style>
 
-      <div className="pf" style={{ fontSize: 28, marginBottom: 4 }}>New Contract</div>
-      <div className="mono" style={{ fontSize: 11, color: '#ffffff33', marginBottom: 28 }}>Create a new housing request</div>
+      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, marginBottom: 4 }}>New Contract</div>
+      <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#ffffff33', marginBottom: 28 }}>Create a new housing request</div>
 
       <div className="grid2" style={{ marginBottom: 14 }}>
         <div className="card" style={{ padding: 22 }}>
