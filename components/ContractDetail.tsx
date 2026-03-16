@@ -2,6 +2,12 @@
 
 import { useState } from 'react'
 import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate } from '@/lib/types'
+import { supabase } from '@/lib/supabase'
+
+const getAuthHeader = async (): Promise<Record<string, string>> => {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+}
 
 interface Props {
   contract: Contract
@@ -243,9 +249,10 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setGenerating(true)
     showToast('Generating contract with AI...')
     try {
+      const authHeader = await getAuthHeader()
       const res = await fetch(`/api/contracts/${c.id}/generate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify({ contract_id: c.id }),
       })
       const data = await res.json()
@@ -287,9 +294,10 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
           body: JSON.stringify({ generated_contract: contractText }),
         })
       }
+      const authHeader = await getAuthHeader()
       const res = await fetch('/api/docuseal', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify({ contract_id: c.id }),
       })
       const data = await res.json()
