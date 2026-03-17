@@ -20,8 +20,10 @@ function SignedContent({ token }: { token: string }) {
       <div style={{ maxWidth: 520, margin: '0 auto' }}>
         <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 4px 40px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
           {/* Header */}
-          <div style={{ background: '#1B4353', padding: '36px 40px', textAlign: 'center' }}>
-            <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 36, marginBottom: 16, display: 'inline-block' }} />
+          <div style={{ background: 'linear-gradient(135deg, #0C2030 0%, #1B4353 100%)', padding: '36px 40px', textAlign: 'center' }}>
+            <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 11, fontWeight: 700, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20 }}>
+              Elias Range Stays
+            </div>
             <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#2D5A3D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
               <span style={{ color: 'white', fontSize: 26 }}>✓</span>
             </div>

@@ -206,33 +206,48 @@ function RequestForm() {
           </div>
         </div>
       ) : (
-        /* Standalone hero: white card with teal accent */
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ height: 5, background: '#1B4353', borderRadius: '6px 6px 0 0' }} />
-          <div style={{ background: 'white', padding: '44px 48px 36px', border: '1px solid #E5E5E3', borderTop: 'none' }}>
-            <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#4F87A0', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
-              Workforce Housing Request
-            </div>
-            <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 44, fontWeight: 700, color: '#1A1A1A', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-              Request a Quote
-            </h1>
-            <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 16, color: '#4F87A0', margin: 0, lineHeight: 1.6 }}>
-              Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
-            </p>
-            <div style={{ display: 'flex', gap: 0, marginTop: 28, borderTop: '1px solid #E5E5E3', paddingTop: 24, flexWrap: 'wrap' }}>
-              {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l], i) => (
-                <div key={l} style={{ flex: 1, minWidth: 100, paddingRight: 20, borderRight: i < 3 ? '1px solid #E5E5E3' : 'none', paddingLeft: i > 0 ? 20 : 0 }}>
-                  <div style={{ fontSize: 28, color: '#1B4353', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
-                  <div style={{ fontSize: 10, color: '#9CA3AF', letterSpacing: '0.1em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
-                </div>
-              ))}
+        /* Standalone hero: deep teal full-bleed with ERS brand feel */
+        <div style={{ borderRadius: 12, overflow: 'hidden', marginBottom: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+          {/* Main hero — deep teal with topographic texture feel */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0C2030 0%, #1B4353 50%, #163847 100%)',
+            padding: '52px 48px 44px',
+            position: 'relative',
+          }}>
+            {/* Subtle topo line overlay */}
+            <div style={{
+              position: 'absolute', inset: 0, opacity: 0.04,
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(168,209,231,1) 29px)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{ position: 'relative' }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 16 }}>
+                Workforce Housing · British Columbia
+              </div>
+              <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 48, fontWeight: 700, color: '#FFFFFF', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.0 }}>
+                Request a Quote
+              </h1>
+              <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 17, color: 'rgba(168,209,231,0.85)', margin: '0 0 36px', lineHeight: 1.65 }}>
+                Tell us about your team&apos;s needs —<br/>we&apos;ll respond within 24 hours.
+              </p>
+              {/* Stats */}
+              <div style={{ display: 'flex', gap: 36, flexWrap: 'wrap' }}>
+                {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
+                  <div key={l}>
+                    <div style={{ fontSize: 30, color: '#FFFFFF', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
+                    <div style={{ fontSize: 9, color: 'rgba(168,209,231,0.6)', letterSpacing: '0.14em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+          {/* Forest green accent strip */}
+          <div style={{ height: 4, background: 'linear-gradient(90deg, #2D5A3D, #4F87A0, #2D5A3D)' }} />
         </div>
       )}
 
       {/* Form */}
-      <div style={{ background: 'white', borderRadius: embed ? 4 : '0 0 12px 12px', boxShadow: embed ? 'none' : '0 4px 20px rgba(0,0,0,0.05)', padding: '36px 40px', border: embed ? '1px solid #E5E5E3' : '1px solid #E5E5E3', borderTop: embed ? '1px solid #E5E5E3' : 'none' }}>
+      <div style={{ background: 'white', borderRadius: embed ? 8 : 12, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '36px 40px', border: '1px solid #E8E8E6', marginTop: embed ? 0 : 0 }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Company */}
