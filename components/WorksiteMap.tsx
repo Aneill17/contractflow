@@ -111,11 +111,11 @@ export default function WorksiteMap({ onLocationSelect, initialAddress }: Worksi
   }
 
   const inputStyle: React.CSSProperties = {
-    background: '#0C0E14',
-    border: '1px solid #ffffff12',
+    background: 'white',
+    border: '1px solid #D5D5D5',
     borderRadius: '6px 0 0 6px',
     padding: '9px 14px',
-    color: '#DDD5C8',
+    color: '#1A1A1A',
     fontSize: 12,
     fontFamily: 'IBM Plex Mono, monospace',
     width: '100%',
@@ -137,7 +137,7 @@ export default function WorksiteMap({ onLocationSelect, initialAddress }: Worksi
           onClick={geocodeSearch}
           disabled={searching}
           style={{
-            background: '#1B4353', color: '#4F87A0', border: '1px solid #4F87A033',
+            background: '#1B4353', color: 'white', border: '1px solid #1B4353',
             borderLeft: 'none', borderRadius: '0 6px 6px 0',
             padding: '9px 16px', cursor: 'pointer',
             fontFamily: 'IBM Plex Mono, monospace', fontSize: 11,
@@ -151,12 +151,12 @@ export default function WorksiteMap({ onLocationSelect, initialAddress }: Worksi
         ref={mapRef}
         style={{
           height: 220, borderRadius: 8,
-          border: '1px solid #ffffff10',
-          background: '#1a1f2e',
+          border: '1px solid #D5D5D5',
+          background: '#f0f0f0',
           overflow: 'hidden',
         }}
       />
-      <div style={{ fontSize: 10, color: '#ffffff33', marginTop: 6, fontFamily: 'IBM Plex Mono, monospace' }}>
+      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 6, fontFamily: 'IBM Plex Mono, monospace' }}>
         Search your work site address or click the map to drop a pin
       </div>
     </div>
