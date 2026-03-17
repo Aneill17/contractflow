@@ -152,35 +152,50 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         /* ── FOOTER ── */
         .cl-footer {
           background: linear-gradient(135deg, #0C2030 0%, #1B4353 100%);
-          text-align: center;
-          padding: 52px 24px 40px;
+          padding: 28px 48px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
         }
 
-        /* Trimmed logo inverted white — 301×152 content at 90px height = crisp */
-        .cl-footer-logo {
-          height: 90px;
-          width: auto;
-          display: inline-block;
-          filter: brightness(0) invert(1);
-          opacity: 0.88;
-          margin-bottom: 18px;
+        .cl-footer-text {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
         }
 
         .cl-footer-tagline {
           font-family: 'League Spartan', sans-serif;
           font-size: 15px;
           font-weight: 600;
-          color: rgba(168,209,231,0.85);
+          color: rgba(168,209,231,0.90);
           letter-spacing: 0.03em;
-          margin-bottom: 14px;
         }
 
         .cl-footer-meta {
-          font-size: 12px;
+          font-size: 11px;
           color: rgba(255,255,255,0.30);
           font-family: sans-serif;
         }
-        .cl-footer-meta a { color: rgba(168,209,231,0.75); text-decoration: none; }
+        .cl-footer-meta a { color: rgba(168,209,231,0.65); text-decoration: none; }
+
+        /* Logo in white box — original brand colours preserved */
+        .cl-footer-logo-wrap {
+          background: #FFFFFF;
+          border-radius: 10px;
+          padding: 8px 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .cl-footer-logo {
+          height: 44px;
+          width: auto;
+          display: block;
+        }
 
         /* ── MOBILE ── */
         @media (max-width: 960px) {
@@ -213,13 +228,18 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           <div className="cl-center">
             <div className="cl-content">{children}</div>
 
-            {/* Footer */}
+            {/* Footer — tagline left, logo in white box right */}
             <footer className="cl-footer">
-              <img src="/logo-v2-trim.png" alt="Elias Range Stays" className="cl-footer-logo" />
-              <div className="cl-footer-tagline">Healthy Living, Stronger Communities</div>
-              <div className="cl-footer-meta">
-                <a href="mailto:austin@eliasrangestays.ca">austin@eliasrangestays.ca</a>
-                &nbsp;·&nbsp; Registered in British Columbia, Canada
+              <div className="cl-footer-text">
+                <span className="cl-footer-tagline">Healthy Living, Stronger Communities</span>
+                <span className="cl-footer-meta">
+                  <a href="mailto:austin@eliasrangestays.ca">austin@eliasrangestays.ca</a>
+                  &nbsp;·&nbsp; Registered in British Columbia, Canada
+                </span>
+              </div>
+              {/* Original colours preserved — white box makes logo legible on dark bg */}
+              <div className="cl-footer-logo-wrap">
+                <img src="/logo-v2-trim.png" alt="Elias Range Stays" className="cl-footer-logo" />
               </div>
             </footer>
           </div>

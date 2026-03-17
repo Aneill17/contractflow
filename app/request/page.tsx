@@ -239,14 +239,17 @@ function RequestForm() {
               pointerEvents: 'none',
             }} />
             <div style={{ position: 'relative' }}>
-              {/* ERS Logo — trimmed PNG, white via CSS filter. 301×152 content at 72px = 143px wide, crisp */}
-              <img
-                src="/logo-v2-trim.png"
-                alt="Elias Range Stays"
-                style={{ height: 72, width: 'auto', display: 'block', marginBottom: 28, filter: 'brightness(0) invert(1)', opacity: 0.92 }}
-              />
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 14 }}>
-                Workforce Housing · British Columbia
+              {/* Top row: label left, logo right — inline, no extra height */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase' }}>
+                  Workforce Housing · British Columbia
+                </div>
+                {/* Logo white version — right-aligned, same row as label, no added height */}
+                <img
+                  src="/logo-v2-trim.png"
+                  alt="Elias Range Stays"
+                  style={{ height: 36, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)', opacity: 0.88, flexShrink: 0 }}
+                />
               </div>
               <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 48, fontWeight: 700, color: '#FFFFFF', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.0 }}>
                 Request a Quote
