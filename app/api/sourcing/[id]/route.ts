@@ -19,8 +19,9 @@ export async function PATCH(
     'title', 'address', 'city', 'region', 'monthly_rent',
     'furnished', 'bedrooms', 'bathrooms', 'unit_type',
     'available_date', 'listing_url', 'source',
-    'landlord_name', 'landlord_contact',
+    'landlord_name', 'landlord_contact', 'landlord_phone',
     'monthly_cost_ers', 'nightly_rate_client',
+    'photo_url', 'lease_term', 'available_date_text',
   ]
   for (const key of allowed) {
     if (key in body) update[key] = body[key]
