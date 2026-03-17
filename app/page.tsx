@@ -120,11 +120,14 @@ export default function HomePage() {
 
       {/* Sidebar */}
       <div style={{ width: 220, borderRight: '1px solid #ffffff0A', padding: '24px 14px', display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
-        <div style={{ padding: '4px 14px 20px' }}>
-          <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 18, color: '#DDD5C8' }}>
-            Contract<span style={{ color: '#C9A84C' }}>Flow</span>
+        <div style={{ padding: '4px 14px 20px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+          <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 28, display: 'block', opacity: 0.92 }} />
+          <div>
+            <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 16, fontWeight: 700, color: '#DDD5C8', lineHeight: 1 }}>
+              Contract<span style={{ color: '#C9A84C' }}>Flow</span>
+            </div>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff22', letterSpacing: '0.18em', marginTop: 3 }}>HOUSING MGMT</div>
           </div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff22', letterSpacing: '0.18em', marginTop: 2 }}>HOUSING MGMT</div>
         </div>
 
         {[

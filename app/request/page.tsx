@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import ClientLayout from '@/components/ClientLayout'
 
 const WorksiteMap = dynamic(() => import('@/components/WorksiteMap'), { ssr: false })
 
@@ -72,128 +73,158 @@ export default function RequestPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    background: '#0C0E14',
-    border: '1px solid #ffffff12',
-    borderRadius: 7,
+    background: 'white',
+    border: '1px solid #D5D5D5',
+    borderRadius: 8,
     padding: '10px 14px',
-    color: '#DDD5C8',
-    fontSize: 13,
-    fontFamily: 'IBM Plex Mono, monospace',
+    color: '#1A1A1A',
+    fontSize: 14,
+    fontFamily: "'Source Serif 4', serif",
     width: '100%',
     outline: 'none',
   }
 
   const labelStyle: React.CSSProperties = {
     fontSize: 10,
-    color: '#ffffff44',
+    color: '#6B7280',
     letterSpacing: '0.12em',
     marginBottom: 6,
     display: 'block',
-    fontFamily: 'IBM Plex Mono, monospace',
+    fontFamily: 'sans-serif',
+    textTransform: 'uppercase',
   }
 
   const cardStyle: React.CSSProperties = {
-    background: '#13161D',
-    border: '1px solid #ffffff0D',
-    borderRadius: 10,
-    padding: '20px 20px',
+    background: 'white',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    borderRadius: 12,
+    padding: '28px',
   }
 
-  const sectionLabel = (label: string, color = '#C9A84C') => (
-    <div style={{ fontSize: 11, color, letterSpacing: '0.1em', marginBottom: 16 }}>{label}</div>
+  const sectionLabel = (label: string) => (
+    <div style={{
+      fontFamily: "'League Spartan', sans-serif",
+      fontWeight: 600,
+      fontSize: 13,
+      color: '#1B4353',
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      marginBottom: 16,
+    }}>{label}</div>
   )
 
   if (step === 'submitted') {
     return (
-      <div style={{ minHeight: '100vh', background: '#0C0E14', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'IBM Plex Mono' }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600&display=swap');`}</style>
-        <div style={{ textAlign: 'center', maxWidth: 480, padding: '0 24px' }}>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#1B435322', border: '2px solid #4F87A0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24, color: '#4F87A0' }}>✓</div>
-          <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 26, color: '#DDD5C8', marginBottom: 12 }}>
-            Request Received
+      <ClientLayout>
+        <style>{`input::placeholder, textarea::placeholder { color: #aaa; }`}</style>
+        <div style={{ textAlign: 'center', padding: '60px 40px' }}>
+          <div style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            background: '#2D5A3D',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 24,
+          }}>
+            <span style={{ color: 'white', fontSize: 28 }}>✓</span>
           </div>
-          <div style={{ fontSize: 13, color: '#ffffff55', lineHeight: 1.8, marginBottom: 24 }}>
-            Thank you. Our team will review your housing request and get back to you with a quote within{' '}
-            <strong style={{ color: '#4F87A0' }}>24 hours</strong>.
-          </div>
-          <div style={{ background: '#13161D', borderRadius: 10, padding: '18px 20px', textAlign: 'left' }}>
-            <div style={{ fontSize: 10, color: '#ffffff33', letterSpacing: '0.12em', marginBottom: 12 }}>WHAT HAPPENS NEXT</div>
+          <h2 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 24, color: '#1A1A1A', marginBottom: 12 }}>
+            Request Submitted
+          </h2>
+          <p style={{ fontFamily: "'Source Serif 4', serif", fontSize: 15, color: '#555', marginTop: 12, lineHeight: 1.8 }}>
+            Thank you. Our team will review your request and respond within 24 hours.<br />
+            Questions?{' '}
+            <a href="mailto:austin@eliasrangestays.ca" style={{ color: '#1B4353' }}>
+              austin@eliasrangestays.ca
+            </a>
+          </p>
+
+          <div style={{ background: 'white', borderRadius: 12, padding: '24px 28px', marginTop: 32, textAlign: 'left', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div style={{ fontFamily: "'League Spartan', sans-serif", fontWeight: 600, fontSize: 11, color: '#1B4353', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>What Happens Next</div>
             {[
               ['1', 'Our team reviews your request'],
               ['2', 'We prepare a custom housing quote'],
               ['3', 'You receive a quote link by email'],
               ['4', 'Approve and we prepare your agreement'],
             ].map(([n, t]) => (
-              <div key={n} style={{ display: 'flex', gap: 12, marginBottom: 10, alignItems: 'flex-start' }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#1B4353', border: '1px solid #4F87A066', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#4F87A0', flexShrink: 0 }}>{n}</div>
-                <div style={{ fontSize: 12, color: '#ffffff66', paddingTop: 2 }}>{t}</div>
+              <div key={n} style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-start' }}>
+                <div style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: '#1B4353',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 11,
+                  color: 'white',
+                  flexShrink: 0,
+                  fontFamily: "'League Spartan', sans-serif",
+                  fontWeight: 600,
+                }}>{n}</div>
+                <div style={{ fontSize: 14, color: '#555', fontFamily: "'Source Serif 4', serif", paddingTop: 3 }}>{t}</div>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 20, fontSize: 11, color: '#ffffff33' }}>
-            Questions?{' '}
-            <a href="mailto:austin@eliasrangestays.ca" style={{ color: '#4F87A0', textDecoration: 'none' }}>
-              austin@eliasrangestays.ca
-            </a>
-          </div>
         </div>
-      </div>
+      </ClientLayout>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0C0E14', padding: '48px 24px', fontFamily: 'IBM Plex Mono' }}>
+    <ClientLayout>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600&display=swap');
-        input::placeholder, textarea::placeholder { color: #ffffff22; }
-        input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.3); }
+        input::placeholder, textarea::placeholder { color: #aaa; }
+        input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0); }
       `}</style>
 
-      <div style={{ maxWidth: 620, margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 13, color: '#4F87A0', letterSpacing: '0.2em', marginBottom: 8, textTransform: 'uppercase' }}>
-            Elias Range Stays
-          </div>
-          <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 30, color: '#DDD5C8', marginBottom: 10 }}>
-            Request Workforce Housing
-          </div>
-          <div style={{ fontSize: 12, color: '#ffffff44', lineHeight: 1.7, maxWidth: 420, margin: '0 auto' }}>
-            Professional housing for healthcare & construction teams across BC. We'll have a custom quote back to you within 24 hours.
-          </div>
-          {/* Trust badges */}
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 20, flexWrap: 'wrap' }}>
-            {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
-              <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 16, color: '#4F87A0', fontFamily: 'Playfair Display, serif' }}>{n}</div>
-                <div style={{ fontSize: 9, color: '#ffffff33', letterSpacing: '0.1em', marginTop: 2 }}>{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Hero */}
+      <div style={{ background: '#1B4353', borderRadius: '12px 12px 0 0', padding: '32px 40px' }}>
+        <img src="/logo-v1.png" alt="Elias Range Stays" style={{ height: 52, marginBottom: 16 }} />
+        <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 28, fontWeight: 700, color: 'white', margin: 0 }}>
+          Request Workforce Housing
+        </h1>
+        <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 15, color: 'rgba(255,255,255,0.7)', marginTop: 8 }}>
+          Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
+        </p>
 
+        {/* Trust badges */}
+        <div style={{ display: 'flex', gap: 24, marginTop: 20, flexWrap: 'wrap' }}>
+          {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
+            <div key={l} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 18, color: '#A8D1E7', fontFamily: "'League Spartan', sans-serif", fontWeight: 700 }}>{n}</div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em', marginTop: 2, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Form card */}
+      <div style={{ background: 'white', borderRadius: '0 0 12px 12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '32px 40px' }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Company */}
           <div style={cardStyle}>
-            {sectionLabel('COMPANY INFORMATION')}
+            {sectionLabel('Company Information')}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={labelStyle}>COMPANY NAME *</label>
+                <label style={labelStyle}>Company Name *</label>
                 <input style={inputStyle} value={form.client_name} onChange={e => set('client_name', e.target.value)} placeholder="Green Infrastructure Partners Inc." required />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <label style={labelStyle}>CONTACT NAME *</label>
+                  <label style={labelStyle}>Contact Name *</label>
                   <input style={inputStyle} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="John Roxas" required />
                 </div>
                 <div>
-                  <label style={labelStyle}>PHONE</label>
+                  <label style={labelStyle}>Phone</label>
                   <input style={inputStyle} value={form.contact_phone} onChange={e => set('contact_phone', e.target.value)} placeholder="604-555-0100" type="tel" />
                 </div>
               </div>
               <div>
-                <label style={labelStyle}>EMAIL *</label>
+                <label style={labelStyle}>Email *</label>
                 <input style={inputStyle} value={form.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="j.roxas@company.com" type="email" required />
               </div>
             </div>
@@ -201,11 +232,15 @@ export default function RequestPage() {
 
           {/* Work Site */}
           <div style={cardStyle}>
-            {sectionLabel('WORK SITE LOCATION', '#4F87A0')}
-            <div style={{ fontSize: 11, color: '#ffffff33', marginBottom: 14, lineHeight: 1.6 }}>
+            {sectionLabel('Work Site Location')}
+            <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 14, lineHeight: 1.6, fontFamily: "'Source Serif 4', serif" }}>
               Where will your team be working? We use this to match you with housing close to your site.
             </div>
-            <Suspense fallback={<div style={{ height: 260, background: '#0C0E14', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff33', fontSize: 11 }}>Loading map...</div>}>
+            <Suspense fallback={
+              <div style={{ height: 260, background: '#F7F7F5', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 12 }}>
+                Loading map...
+              </div>
+            }>
               <WorksiteMap
                 onLocationSelect={(address, lat, lng) => {
                   set('work_site_address', address)
@@ -219,24 +254,24 @@ export default function RequestPage() {
 
           {/* Housing Details */}
           <div style={cardStyle}>
-            {sectionLabel('HOUSING DETAILS')}
+            {sectionLabel('Housing Details')}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={labelStyle}>PREFERRED AREA / REGION *</label>
+                <label style={labelStyle}>Preferred Area / Region *</label>
                 <input style={inputStyle} value={form.location} onChange={e => set('location', e.target.value)} placeholder="e.g. Squamish, BC — near hospital" required />
               </div>
               <div>
-                <label style={labelStyle}>NUMBER OF UNITS / ROOMS NEEDED *</label>
+                <label style={labelStyle}>Number of Units / Rooms Needed *</label>
                 <input style={inputStyle} value={form.units} onChange={e => set('units', e.target.value)} type="number" min="1" required />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <label style={labelStyle}>START DATE *</label>
-                  <input style={inputStyle} value={form.start_date} onChange={e => set('start_date', e.target.value)} type="date" required />
+                  <label style={labelStyle}>Start Date *</label>
+                  <input style={{ ...inputStyle, colorScheme: 'light' }} value={form.start_date} onChange={e => set('start_date', e.target.value)} type="date" required />
                 </div>
                 <div>
-                  <label style={labelStyle}>END DATE *</label>
-                  <input style={inputStyle} value={form.end_date} onChange={e => set('end_date', e.target.value)} type="date" required />
+                  <label style={labelStyle}>End Date *</label>
+                  <input style={{ ...inputStyle, colorScheme: 'light' }} value={form.end_date} onChange={e => set('end_date', e.target.value)} type="date" required />
                 </div>
               </div>
             </div>
@@ -246,29 +281,44 @@ export default function RequestPage() {
           <div style={cardStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showBenchmark ? 16 : 0 }}>
               <div>
-                {sectionLabel('CURRENT HOUSING SOLUTION', '#4CAF93')}
-                {!showBenchmark && <div style={{ fontSize: 11, color: '#ffffff33', marginTop: -10 }}>Optional — help us show you the savings</div>}
+                {sectionLabel('Current Housing Solution')}
+                {!showBenchmark && (
+                  <div style={{ fontSize: 12, color: '#6B7280', marginTop: -10, fontFamily: "'Source Serif 4', serif" }}>
+                    Optional — help us show you the savings
+                  </div>
+                )}
               </div>
               <button
                 type="button"
                 onClick={() => setShowBenchmark(b => !b)}
-                style={{ background: showBenchmark ? '#4CAF9322' : '#13161D', border: `1px solid ${showBenchmark ? '#4CAF9355' : '#ffffff15'}`, color: showBenchmark ? '#4CAF93' : '#ffffff55', borderRadius: 6, padding: '6px 12px', cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, letterSpacing: '0.08em' }}
+                style={{
+                  background: showBenchmark ? '#EBF4F8' : '#F7F7F5',
+                  border: `1px solid ${showBenchmark ? '#4F87A0' : '#D5D5D5'}`,
+                  color: showBenchmark ? '#1B4353' : '#6B7280',
+                  borderRadius: 6,
+                  padding: '6px 14px',
+                  cursor: 'pointer',
+                  fontFamily: 'sans-serif',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
+                }}
               >
                 {showBenchmark ? '− Hide' : '+ Add'}
               </button>
             </div>
             {showBenchmark && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ fontSize: 11, color: '#ffffff44', lineHeight: 1.7, marginBottom: 4 }}>
+                <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.7, marginBottom: 4, fontFamily: "'Source Serif 4', serif" }}>
                   If you're currently using hotels or another housing provider, share what you're paying — we'll show you a side-by-side comparison on your quote.
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
-                    <label style={labelStyle}>CURRENT RATE ($/NIGHT PER ROOM)</label>
+                    <label style={labelStyle}>Current Rate ($/Night Per Room)</label>
                     <input style={inputStyle} value={form.current_housing_rate} onChange={e => set('current_housing_rate', e.target.value)} placeholder="e.g. 195" type="number" />
                   </div>
                   <div>
-                    <label style={labelStyle}>CURRENT PROVIDER / LOCATION</label>
+                    <label style={labelStyle}>Current Provider / Location</label>
                     <input style={inputStyle} value={form.current_housing_location} onChange={e => set('current_housing_location', e.target.value)} placeholder="e.g. Hampton Inn, Burnaby" />
                   </div>
                 </div>
@@ -278,7 +328,7 @@ export default function RequestPage() {
 
           {/* Notes */}
           <div style={cardStyle}>
-            {sectionLabel('ADDITIONAL NOTES')}
+            {sectionLabel('Additional Notes')}
             <textarea
               style={{ ...inputStyle, resize: 'vertical', minHeight: 80 }}
               value={form.notes}
@@ -288,31 +338,39 @@ export default function RequestPage() {
           </div>
 
           {error && (
-            <div style={{ background: '#3a1a1a', border: '1px solid #e74c3c44', color: '#e74c3c', borderRadius: 7, padding: '10px 14px', fontSize: 12 }}>
+            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
               {error}
             </div>
           )}
 
-          <button type="submit" disabled={loading} style={{
-            background: loading ? '#1a3a4a' : '#1B4353',
-            color: loading ? '#4F87A055' : '#4F87A0',
-            border: '1px solid #4F87A033',
-            borderRadius: 8,
-            padding: '15px 20px', fontSize: 12, fontFamily: 'IBM Plex Mono',
-            fontWeight: 500, letterSpacing: '0.08em',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s',
-          }}>
-            {loading ? 'SUBMITTING...' : '→ SUBMIT REQUEST — GET YOUR QUOTE WITHIN 24 HRS'}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              background: loading ? '#4F87A0' : '#1B4353',
+              color: 'white',
+              fontFamily: "'League Spartan', sans-serif",
+              fontWeight: 600,
+              fontSize: 14,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              padding: '14px 32px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              width: '100%',
+              height: 52,
+              transition: 'background 0.2s',
+            }}
+          >
+            {loading ? 'Submitting...' : 'Request a Quote →'}
           </button>
 
-          <div style={{ textAlign: 'center', fontSize: 10, color: '#ffffff1a', marginTop: -8 }}>
+          <div style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', marginTop: -8, fontFamily: 'sans-serif' }}>
             By submitting you agree to be contacted by Elias Range Stays regarding your housing request.
           </div>
         </form>
-
-        <div style={{ height: 60 }} />
       </div>
-    </div>
+    </ClientLayout>
   )
 }

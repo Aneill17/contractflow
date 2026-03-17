@@ -40,14 +40,14 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
   const printQuote = () => window.print()
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#F7F4EF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: '#999' }}>Loading quote...</div>
+    <div style={{ minHeight: '100vh', background: '#F7F7F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ fontFamily: 'sans-serif', fontSize: 13, color: '#9CA3AF' }}>Loading quote...</div>
     </div>
   )
 
   if (!contract) return (
-    <div style={{ minHeight: '100vh', background: '#F7F4EF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: '#999' }}>Quote not found.</div>
+    <div style={{ minHeight: '100vh', background: '#F7F7F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ fontFamily: 'sans-serif', fontSize: 13, color: '#9CA3AF' }}>Quote not found.</div>
     </div>
   )
 
@@ -65,8 +65,8 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
   const fmt = (d: string) => d ? new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : ''
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F7F4EF', fontFamily: 'Georgia, serif' }}>
-      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+    <div style={{ minHeight: '100vh', background: '#F7F7F5', fontFamily: "'Source Serif 4', Georgia, serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
       <style>{`
         @media print {
           .no-print { display: none !important; }
@@ -76,25 +76,36 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
         * { box-sizing: border-box; }
       `}</style>
 
-      {/* Top action bar - no print */}
-      <div className="no-print" style={{ background: '#1a1a1a', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: '#C9A84C', letterSpacing: '0.1em' }}>
-          {contract.reference} — Corporate Housing Quote
-        </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={copyLink} style={{ background: 'transparent', border: '1px solid #ffffff22', color: '#ffffff88', padding: '7px 16px', borderRadius: 6, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
+      {/* Top nav */}
+      <div className="no-print" style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        background: '#1B4353',
+        padding: '0 24px',
+        height: 64,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 36 }} />
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', marginRight: 8 }}>
+            {contract.reference}
+          </div>
+          <button onClick={copyLink} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', padding: '7px 16px', borderRadius: 6, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
             {copied ? '✓ Copied!' : '⎘ Copy Link'}
           </button>
-          <button onClick={printQuote} style={{ background: 'transparent', border: '1px solid #C9A84C44', color: '#C9A84C', padding: '7px 16px', borderRadius: 6, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
+          <button onClick={printQuote} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', padding: '7px 16px', borderRadius: 6, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
             ↓ Download PDF
           </button>
           {isQuoteSent && !isApproved && (
-            <button onClick={approveQuote} disabled={approving} style={{ background: '#C9A84C', border: 'none', color: '#1a1a1a', padding: '7px 20px', borderRadius: 6, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, fontWeight: 600 }}>
+            <button onClick={approveQuote} disabled={approving} style={{ background: '#2D5A3D', border: 'none', color: 'white', padding: '7px 20px', borderRadius: 6, cursor: 'pointer', fontFamily: "'League Spartan', sans-serif", fontSize: 12, fontWeight: 600 }}>
               {approving ? 'Approving...' : '✓ Approve Quote'}
             </button>
           )}
           {isApproved && (
-            <div style={{ background: '#4CAF9322', border: '1px solid #4CAF9355', color: '#4CAF93', padding: '7px 16px', borderRadius: 6, fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
+            <div style={{ background: 'rgba(45,90,61,0.3)', border: '1px solid rgba(45,90,61,0.6)', color: '#6FCF97', padding: '7px 16px', borderRadius: 6, fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }}>
               ✓ Quote Approved
             </div>
           )}
@@ -105,20 +116,21 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
       <div className="quote-page" style={{ maxWidth: 780, margin: '40px auto', background: 'white', borderRadius: 16, boxShadow: '0 4px 60px rgba(0,0,0,0.10)', overflow: 'hidden' }}>
 
         {/* Header */}
-        <div style={{ background: '#1a1a1a', padding: '40px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ background: '#1B4353', padding: '40px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, color: 'white', fontWeight: 400, marginBottom: 6 }}>
+            <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 36, marginBottom: 16, display: 'block' }} />
+            <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 32, color: 'white', fontWeight: 700, margin: 0 }}>
               Housing Quote
-            </div>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: '#C9A84C', letterSpacing: '0.12em' }}>
+            </h1>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: '#A8D1E7', letterSpacing: '0.12em', marginTop: 8 }}>
               {contract.reference}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#ffffff44', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 4 }}>Prepared for</div>
-            <div style={{ color: 'white', fontSize: 16, fontWeight: 500 }}>{contract.client_name}</div>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: '#ffffff55', marginTop: 2 }}>{contract.contact_name}</div>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: '#C9A84C88', marginTop: 2 }}>{fmt(new Date().toISOString().split('T')[0])}</div>
+            <div style={{ fontFamily: 'sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 4 }}>Prepared for</div>
+            <div style={{ fontFamily: "'League Spartan', sans-serif", color: 'white', fontSize: 16, fontWeight: 600 }}>{contract.client_name}</div>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{contract.contact_name}</div>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: 'rgba(168,209,231,0.7)', marginTop: 2 }}>{fmt(new Date().toISOString().split('T')[0])}</div>
           </div>
         </div>
 
@@ -126,7 +138,7 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
 
           {/* Booking details */}
           <div style={{ marginBottom: 32 }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 16 }}>Booking Details</div>
+            <div style={{ fontFamily: 'sans-serif', fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 16 }}>Booking Details</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px 24px' }}>
               {[
                 ['Location', contract.location],
@@ -139,8 +151,8 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
                 ['Payment Schedule', contract.payment_schedule || 'Monthly'],
               ].map(([l, v]) => (
                 <div key={l}>
-                  <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#bbb', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{l}</div>
-                  <div style={{ fontSize: 13, color: '#1a1a1a' }}>{v}</div>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{l}</div>
+                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: 13, color: '#1A1A1A' }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -148,108 +160,70 @@ export default function ClientQuotePage({ params }: { params: { token: string } 
 
           {/* Pricing table */}
           <div style={{ marginBottom: 32 }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 16 }}>Pricing Breakdown</div>
+            <div style={{ fontFamily: 'sans-serif', fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 16 }}>Pricing Breakdown</div>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: '#f9f7f4' }}>
-                  <th style={{ padding: '10px 16px', textAlign: 'left', fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 400 }}>Description</th>
-                  <th style={{ padding: '10px 16px', textAlign: 'right', fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 400 }}>Amount</th>
+                <tr style={{ background: '#F7F7F5' }}>
+                  <th style={{ padding: '10px 16px', textAlign: 'left', fontFamily: 'sans-serif', fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 400 }}>Description</th>
+                  <th style={{ padding: '10px 16px', textAlign: 'right', fontFamily: 'sans-serif', fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 400 }}>Amount</th>
                 </tr>
               </thead>
               <tbody>
-                <tr style={{ borderBottom: '1px solid #f0ebe4' }}>
-                  <td style={{ padding: '14px 16px', fontSize: 14 }}>
+                <tr style={{ borderBottom: '1px solid #F0EDE8' }}>
+                  <td style={{ padding: '14px 16px', fontFamily: "'Source Serif 4', serif", fontSize: 14, color: '#1A1A1A' }}>
                     Corporate Housing — {contract.units} unit{contract.units > 1 ? 's' : ''} × ${contract.price_per_unit.toLocaleString()}/mo × {months} months
                   </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace' }}>${baseTotal.toLocaleString()}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace', color: '#1A1A1A' }}>${baseTotal.toLocaleString()}</td>
                 </tr>
                 {lineItems.filter((li: any) => li.description && li.amount).map((li: any, i: number) => (
-                  <tr key={i} style={{ borderBottom: '1px solid #f0ebe4' }}>
-                    <td style={{ padding: '14px 16px', fontSize: 14 }}>{li.description}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace' }}>${li.amount.toLocaleString()}</td>
+                  <tr key={i} style={{ borderBottom: '1px solid #F0EDE8' }}>
+                    <td style={{ padding: '14px 16px', fontFamily: "'Source Serif 4', serif", fontSize: 14, color: '#1A1A1A' }}>{li.description}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace', color: '#1A1A1A' }}>${li.amount.toLocaleString()}</td>
                   </tr>
                 ))}
                 {contract.damage_deposit > 0 && (
-                  <tr style={{ borderBottom: '1px solid #f0ebe4' }}>
-                    <td style={{ padding: '14px 16px', fontSize: 14 }}>Damage Deposit (refundable)</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace' }}>${contract.damage_deposit.toLocaleString()}</td>
+                  <tr style={{ borderBottom: '1px solid #F0EDE8' }}>
+                    <td style={{ padding: '14px 16px', fontFamily: "'Source Serif 4', serif", fontSize: 14, color: '#1A1A1A' }}>Damage Deposit (refundable)</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontFamily: 'IBM Plex Mono, monospace', color: '#1A1A1A' }}>${contract.damage_deposit.toLocaleString()}</td>
                   </tr>
                 )}
-                <tr style={{ background: '#f9f7f4' }}>
-                  <td style={{ padding: '16px', fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 600 }}>Total</td>
-                  <td style={{ padding: '16px', textAlign: 'right', fontFamily: "'Playfair Display', serif", fontSize: 24, color: '#C9A84C', fontWeight: 600 }}>${grandTotal.toLocaleString()}</td>
+                <tr style={{ background: '#F7F7F5' }}>
+                  <td style={{ padding: '16px', fontFamily: "'League Spartan', sans-serif", fontSize: 16, fontWeight: 600, color: '#1A1A1A' }}>Total</td>
+                  <td style={{ padding: '16px', textAlign: 'right', fontFamily: "'League Spartan', sans-serif", fontSize: 24, color: '#1B4353', fontWeight: 700 }}>${grandTotal.toLocaleString()}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {/* Inclusions / Exclusions */}
-          {(contract.inclusions || contract.exclusions) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
-              {contract.inclusions && (
-                <div>
-                  <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 12 }}>What's Included</div>
-                  <div style={{ background: '#f0faf5', borderRadius: 8, padding: '16px 18px' }}>
-                    {contract.inclusions.split('\n').filter(Boolean).map((line: string, i: number) => (
-                      <div key={i} style={{ fontSize: 13, color: '#2d6a4f', marginBottom: 6, display: 'flex', gap: 8 }}>
-                        <span>✓</span><span>{line}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {contract.exclusions && (
-                <div>
-                  <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 12 }}>Not Included</div>
-                  <div style={{ background: '#fdf6f0', borderRadius: 8, padding: '16px 18px' }}>
-                    {contract.exclusions.split('\n').filter(Boolean).map((line: string, i: number) => (
-                      <div key={i} style={{ fontSize: 13, color: '#7a4a2a', marginBottom: 6, display: 'flex', gap: 8 }}>
-                        <span>—</span><span>{line}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Special notes */}
-          {contract.quote_notes && (
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 12 }}>Notes & Special Terms</div>
-              <div style={{ background: '#f9f7f4', borderRadius: 8, padding: '16px 18px', fontSize: 13, color: '#555', lineHeight: 1.8 }}>
-                {contract.quote_notes}
-              </div>
-            </div>
-          )}
-
           {/* Approve CTA */}
           {isQuoteSent && !isApproved && (
-            <div className="no-print" style={{ background: '#fff8e8', border: '2px solid #C9A84C', borderRadius: 12, padding: '24px 28px', textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, marginBottom: 8 }}>Ready to proceed?</div>
-              <div style={{ fontSize: 13, color: '#777', marginBottom: 18 }}>Click below to approve this quote. Our team will then prepare your formal agreement for signing.</div>
-              <button onClick={approveQuote} disabled={approving} style={{ background: '#C9A84C', border: 'none', color: 'white', padding: '14px 36px', borderRadius: 8, cursor: 'pointer', fontFamily: 'IBM Plex Mono, monospace', fontSize: 13, fontWeight: 600, letterSpacing: '0.05em' }}>
+            <div className="no-print" style={{ background: '#EBF4F8', border: '2px solid #4F87A0', borderRadius: 12, padding: '28px 32px', textAlign: 'center', marginBottom: 24 }}>
+              <h3 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 20, color: '#1B4353', marginBottom: 8, fontWeight: 700 }}>Ready to proceed?</h3>
+              <p style={{ fontFamily: "'Source Serif 4', serif", fontSize: 14, color: '#6B7280', marginBottom: 20, lineHeight: 1.7 }}>
+                Click below to approve this quote. Our team will then prepare your formal agreement for signing.
+              </p>
+              <button onClick={approveQuote} disabled={approving} style={{ background: '#1B4353', border: 'none', color: 'white', padding: '14px 36px', borderRadius: 8, cursor: approving ? 'not-allowed' : 'pointer', fontFamily: "'League Spartan', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 {approving ? 'Approving...' : '✓ Approve This Quote'}
               </button>
             </div>
           )}
 
           {isApproved && (
-            <div style={{ background: '#f0faf5', border: '2px solid #4CAF93', borderRadius: 12, padding: '20px 28px', textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ color: '#2d6a4f', fontFamily: 'IBM Plex Mono, monospace', fontSize: 13 }}>✓ Quote approved — our team will be in touch shortly with your agreement.</div>
+            <div style={{ background: '#F0FAF5', border: '2px solid #2D5A3D', borderRadius: 12, padding: '20px 28px', textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ color: '#2D5A3D', fontFamily: "'League Spartan', sans-serif", fontSize: 14, fontWeight: 600 }}>
+                ✓ Quote approved — our team will be in touch shortly with your agreement.
+              </div>
             </div>
           )}
 
-          {/* Footer */}
-          <div style={{ borderTop: '1px solid #f0ebe4', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#bbb' }}>
+          <div style={{ borderTop: '1px solid #F0EDE8', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#9CA3AF' }}>
               This quote is valid for 30 days from the date issued.
             </div>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#C9A84C' }}>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#4F87A0' }}>
               {contract.reference}
             </div>
           </div>
-
         </div>
       </div>
 

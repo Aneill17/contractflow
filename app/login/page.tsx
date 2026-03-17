@@ -52,8 +52,6 @@ function LoginForm() {
       fontFamily: "'IBM Plex Mono', monospace",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600&display=swap');
-        .pf { font-family: 'Playfair Display', serif; }
         input { outline: none; width: 100%; }
         input::placeholder { color: #ffffff22; }
       `}</style>
@@ -63,15 +61,27 @@ function LoginForm() {
         background: '#13161D',
         border: '1px solid #ffffff0D',
         borderRadius: 14,
-        padding: '40px 36px',
+        overflow: 'hidden',
       }}>
-        {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div className="pf" style={{ fontSize: 26, color: '#DDD5C8' }}>
+        {/* ERS Logo Header */}
+        <div style={{
+          background: '#1B4353',
+          padding: '28px 36px 24px',
+          textAlign: 'center',
+          borderBottom: '1px solid #ffffff0D',
+        }}>
+          <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 34, display: 'inline-block' }} />
+        </div>
+
+        {/* Form area */}
+        <div style={{ padding: '32px 36px 40px' }}>
+        {/* Title */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 22, fontWeight: 700, color: '#DDD5C8', letterSpacing: '-0.01em' }}>
             Contract<span style={{ color: '#C9A84C' }}>Flow</span>
           </div>
-          <div style={{ fontSize: 9, color: '#ffffff22', letterSpacing: '0.2em', marginTop: 4 }}>
-            ELIAS RANGE STAYS
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff22', letterSpacing: '0.2em', marginTop: 4 }}>
+            TEAM ACCESS
           </div>
         </div>
 
@@ -149,6 +159,7 @@ function LoginForm() {
             {loading ? 'SIGNING IN...' : 'SIGN IN'}
           </button>
         </form>
+        </div>
       </div>
     </div>
   )

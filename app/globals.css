@@ -12,8 +12,25 @@ html, body {
 ::-webkit-scrollbar-track { background: #0C0E14; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-.pf  { font-family: 'Playfair Display', Georgia, serif; }
+/* Legacy font utility */
+.pf  { font-family: 'League Spartan', Georgia, sans-serif; }
 .mono { font-family: 'IBM Plex Mono', monospace; }
+
+/* Brand font utilities */
+.font-heading { font-family: 'League Spartan', sans-serif; }
+.font-body    { font-family: 'Source Serif 4', serif; }
+.font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+/* Brand color variables */
+:root {
+  --teal:      #1B4353;
+  --steel:     #4F87A0;
+  --green:     #2D5A3D;
+  --black:     #1A1A1A;
+  --ice:       #A8D1E7;
+  --off-white: #F7F7F5;
+  --gold:      #C9A84C;
+}
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.6);
