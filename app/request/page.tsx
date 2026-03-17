@@ -239,11 +239,11 @@ function RequestForm() {
               pointerEvents: 'none',
             }} />
             <div style={{ position: 'relative' }}>
-              {/* ERS Logo — white version via CSS filter */}
+              {/* ERS Logo — trimmed PNG, white via CSS filter. 301×152 content at 72px = 143px wide, crisp */}
               <img
-                src="/logo-v2.png"
+                src="/logo-v2-trim.png"
                 alt="Elias Range Stays"
-                style={{ height: 52, width: 'auto', display: 'block', marginBottom: 28, filter: 'brightness(0) invert(1)', opacity: 0.92 }}
+                style={{ height: 72, width: 'auto', display: 'block', marginBottom: 28, filter: 'brightness(0) invert(1)', opacity: 0.92 }}
               />
               <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 14 }}>
                 Workforce Housing · British Columbia

@@ -7,9 +7,6 @@ interface ClientLayoutProps {
   embed?: boolean
 }
 
-// One panoramic BC river/mountain landscape — split across both panels
-const PANORAMIC_PHOTO = 'https://images.unsplash.com/photo-1447752875215-b2761acf3dfd?auto=format&q=80'
-
 export default function ClientLayout({ children, embed = false }: ClientLayoutProps) {
 
   // ── EMBED MODE ─────────────────────────────────────────────────────────────
@@ -48,11 +45,14 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           flex-direction: column;
         }
 
-        /* ── NAV ── */
+        /* ── NAV ──
+           White bg so trimmed logo (transparent bg) renders perfectly.
+           Logo is now the cropped version: 301×152px actual content.
+           At height 120px → renders at 120px tall × 237px wide. Fully legible. */
         .cl-nav {
           background: #FFFFFF;
           border-bottom: 3px solid #1B4353;
-          height: 120px;
+          height: 136px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -63,9 +63,9 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           box-shadow: 0 2px 24px rgba(0,0,0,0.09);
         }
 
-        /* Logo fills nav — large and readable */
+        /* Trimmed logo — no wasted whitespace, content fills the height */
         .cl-nav-logo {
-          height: 96px;
+          height: 110px;
           width: auto;
           display: block;
         }
@@ -79,10 +79,10 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
 
         .cl-nav-tagline {
           font-family: 'League Spartan', sans-serif;
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 600;
           color: #1B4353;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.02em;
         }
 
         .cl-nav-link {
@@ -94,38 +94,43 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         }
         .cl-nav-link:hover { color: #1B4353; }
 
-        /* ── BODY — three-column: panel | content | panel ── */
+        /* ── BODY — flex row: panel | center | panel ── */
         .cl-body {
           flex: 1;
           display: flex;
-          /* panels stretch to full height of body automatically */
+          min-height: calc(100vh - 136px);
         }
 
-        /* Side panels — same photo, different position = panoramic split */
+        /* ── SIDE PANELS ──
+           Same landscape photo, different crop position = panoramic split effect.
+           Left panel: left side of the photo (forest, dock, near shore)
+           Right panel: right side (mountain peaks, sky)
+           Photo is local — no CDN dependency. */
         .cl-panel {
           width: 200px;
           flex-shrink: 0;
-          background-image: url("${PANORAMIC_PHOTO}");
+          background-image: url('/landscape-banner.jpg');
           background-repeat: no-repeat;
           background-size: cover;
           position: relative;
         }
 
-        .cl-panel-left  { background-position: 15% center; }
-        .cl-panel-right { background-position: 85% center; }
+        .cl-panel-left  { background-position: 8% center; }
+        .cl-panel-right { background-position: 92% center; }
 
-        /* Brand colour overlay on photos */
+        /* Dark teal overlay — ties photos to ERS brand */
         .cl-panel::after {
           content: '';
           position: absolute;
           inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(11,32,48,0.60) 0%,
-            rgba(27,67,83,0.38) 35%,
-            rgba(27,67,83,0.38) 65%,
-            rgba(11,32,48,0.65) 100%
+            rgba(11,32,48,0.55) 0%,
+            rgba(27,67,83,0.30) 30%,
+            rgba(27,67,83,0.30) 70%,
+            rgba(11,32,48,0.60) 100%
           );
+          pointer-events: none;
         }
 
         /* ── CENTER COLUMN ── */
@@ -148,40 +153,40 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         .cl-footer {
           background: linear-gradient(135deg, #0C2030 0%, #1B4353 100%);
           text-align: center;
-          padding: 48px 24px 36px;
+          padding: 52px 24px 40px;
         }
 
-        /* White logo via CSS filter on dark footer */
+        /* Trimmed logo inverted white — 301×152 content at 90px height = crisp */
         .cl-footer-logo {
-          height: 64px;
+          height: 90px;
           width: auto;
           display: inline-block;
           filter: brightness(0) invert(1);
-          opacity: 0.90;
-          margin-bottom: 16px;
+          opacity: 0.88;
+          margin-bottom: 18px;
         }
 
         .cl-footer-tagline {
           font-family: 'League Spartan', sans-serif;
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 600;
           color: rgba(168,209,231,0.85);
-          letter-spacing: 0.04em;
-          margin-bottom: 12px;
+          letter-spacing: 0.03em;
+          margin-bottom: 14px;
         }
 
         .cl-footer-meta {
-          font-size: 11px;
+          font-size: 12px;
           color: rgba(255,255,255,0.30);
           font-family: sans-serif;
         }
         .cl-footer-meta a { color: rgba(168,209,231,0.75); text-decoration: none; }
 
-        /* ── MOBILE — hide panels below 960px ── */
+        /* ── MOBILE ── */
         @media (max-width: 960px) {
           .cl-panel { display: none; }
-          .cl-nav { padding: 0 24px; height: 90px; }
-          .cl-nav-logo { height: 72px; }
+          .cl-nav { padding: 0 24px; height: 100px; }
+          .cl-nav-logo { height: 80px; }
           .cl-content { padding: 32px 16px 60px; }
         }
       `}</style>
@@ -190,7 +195,8 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
 
         {/* NAV */}
         <nav className="cl-nav">
-          <img src="/logo-v2.png" alt="Elias Range Stays" className="cl-nav-logo" />
+          {/* logo-v2-trim.png: 301×152 actual content — no whitespace padding */}
+          <img src="/logo-v2-trim.png" alt="Elias Range Stays" className="cl-nav-logo" />
           <div className="cl-nav-right">
             <span className="cl-nav-tagline">Healthy Living, Stronger Communities</span>
             <a href="https://eliasrangestays.ca" className="cl-nav-link">eliasrangestays.ca</a>
@@ -200,15 +206,16 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         {/* BODY */}
         <div className="cl-body">
 
-          {/* Left panel — left side of panoramic */}
+          {/* Left panel — left portion of Moraine Lake panoramic */}
           <div className="cl-panel cl-panel-left" />
 
           {/* Center */}
           <div className="cl-center">
             <div className="cl-content">{children}</div>
 
+            {/* Footer */}
             <footer className="cl-footer">
-              <img src="/logo-v2.png" alt="Elias Range Stays" className="cl-footer-logo" />
+              <img src="/logo-v2-trim.png" alt="Elias Range Stays" className="cl-footer-logo" />
               <div className="cl-footer-tagline">Healthy Living, Stronger Communities</div>
               <div className="cl-footer-meta">
                 <a href="mailto:austin@eliasrangestays.ca">austin@eliasrangestays.ca</a>
@@ -217,7 +224,7 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
             </footer>
           </div>
 
-          {/* Right panel — right side of panoramic */}
+          {/* Right panel — right portion of Moraine Lake panoramic */}
           <div className="cl-panel cl-panel-right" />
 
         </div>
