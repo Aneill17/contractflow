@@ -63,14 +63,19 @@ function LoginForm() {
         borderRadius: 14,
         overflow: 'hidden',
       }}>
-        {/* ERS Logo Header */}
+        {/* ERS Brand Header */}
         <div style={{
           background: '#1B4353',
-          padding: '28px 36px 24px',
+          padding: '24px 36px 20px',
           textAlign: 'center',
           borderBottom: '1px solid #ffffff0D',
         }}>
-          <img src="/logo-v2.png" alt="Elias Range Stays" style={{ height: 34, display: 'inline-block' }} />
+          <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.22em', textTransform: 'uppercase' }}>
+            Elias Range Stays
+          </div>
+          <div style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, letterSpacing: '0.02em' }}>
+            Healthy Living, Stronger Communities
+          </div>
         </div>
 
         {/* Form area */}

@@ -181,28 +181,34 @@ export default function RequestPage() {
       `}</style>
 
       {/* Hero */}
-      <div style={{ background: '#1B4353', borderRadius: '12px 12px 0 0', padding: '32px 40px' }}>
-        <img src="/logo-v1.png" alt="Elias Range Stays" style={{ height: 52, marginBottom: 16 }} />
-        <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 28, fontWeight: 700, color: 'white', margin: 0 }}>
-          Request Workforce Housing
-        </h1>
-        <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 15, color: 'rgba(255,255,255,0.7)', marginTop: 8 }}>
-          Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
-        </p>
+      <div style={{ marginBottom: 8 }}>
+        {/* Teal accent bar */}
+        <div style={{ height: 4, background: '#1B4353', borderRadius: '4px 4px 0 0' }} />
+        <div style={{ background: 'white', borderRadius: '0 0 0 0', padding: '36px 40px 28px', borderLeft: '1px solid #E5E5E3', borderRight: '1px solid #E5E5E3' }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#4F87A0', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Workforce Housing Request
+          </div>
+          <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 32, fontWeight: 700, color: '#1A1A1A', margin: '0 0 10px', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+            Request a Quote
+          </h1>
+          <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 15, color: '#4F87A0', margin: 0, lineHeight: 1.6 }}>
+            Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
+          </p>
 
-        {/* Trust badges */}
-        <div style={{ display: 'flex', gap: 24, marginTop: 20, flexWrap: 'wrap' }}>
-          {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
-            <div key={l} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 18, color: '#A8D1E7', fontFamily: "'League Spartan', sans-serif", fontWeight: 700 }}>{n}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em', marginTop: 2, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
-            </div>
-          ))}
+          {/* Trust stats */}
+          <div style={{ display: 'flex', gap: 0, marginTop: 24, borderTop: '1px solid #E5E5E3', paddingTop: 20, flexWrap: 'wrap' }}>
+            {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l], i) => (
+              <div key={l} style={{ flex: 1, minWidth: 100, paddingRight: 16, borderRight: i < 3 ? '1px solid #E5E5E3' : 'none', paddingLeft: i > 0 ? 16 : 0 }}>
+                <div style={{ fontSize: 22, color: '#1B4353', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', letterSpacing: '0.08em', marginTop: 4, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Form card */}
-      <div style={{ background: 'white', borderRadius: '0 0 12px 12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '32px 40px' }}>
+      <div style={{ background: 'white', borderRadius: '0 0 12px 12px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', padding: '32px 40px', borderLeft: '1px solid #E5E5E3', borderRight: '1px solid #E5E5E3', borderBottom: '1px solid #E5E5E3', borderRadius: 12 }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Company */}
