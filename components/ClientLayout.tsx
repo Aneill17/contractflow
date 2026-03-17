@@ -7,16 +7,13 @@ interface ClientLayoutProps {
   embed?: boolean
 }
 
-// Real BC mountain river photography via Unsplash CDN
-// Dark teal gradient overlay ties them to ERS brand palette
-const LEFT_PHOTO  = 'https://images.unsplash.com/photo-1469521167379-92d7c4e0d9e2?w=360&h=900&fit=crop&crop=center&auto=format&q=80'
-const RIGHT_PHOTO = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=360&h=900&fit=crop&crop=center&auto=format&q=80'
+// One panoramic BC river/mountain landscape — split across both panels
+// Left panel shows left portion, right panel shows right portion = full picture effect
+const PANORAMIC_PHOTO = 'https://images.unsplash.com/photo-1447752875215-b2761acf3dfd?auto=format&q=80'
 
 export default function ClientLayout({ children, embed = false }: ClientLayoutProps) {
 
   // ── EMBED MODE ─────────────────────────────────────────────────────────────
-  // Matches eliasrangestays.ca "Request a Quote" section:
-  // dark navy background, dark inputs, teal CTA — no nav/footer/side panels
   if (embed) {
     return (
       <>
@@ -34,7 +31,6 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
             margin: 0 auto;
             padding: 0 24px;
           }
-          /* Override form inputs for dark mode embed */
           .em-root input,
           .em-root textarea,
           .em-root select {
@@ -47,22 +43,12 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           .em-root textarea::placeholder { color: rgba(255,255,255,0.3) !important; }
           .em-root input:focus,
           .em-root textarea:focus { border-color: #00BFA6 !important; outline: none !important; }
-          .em-root label { color: rgba(168,209,231,0.75) !important; }
-          /* Section card override */
-          .em-root [data-card] {
-            background: rgba(255,255,255,0.04) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            border-radius: 10px !important;
-          }
-          .em-root [data-section-label] { color: rgba(168,209,231,0.9) !important; }
           @media (max-width: 768px) {
             .em-content { padding: 0 16px; }
           }
         `}</style>
         <div className="em-root">
-          <div className="em-content">
-            {children}
-          </div>
+          <div className="em-content">{children}</div>
         </div>
       </>
     )
@@ -82,11 +68,11 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           flex-direction: column;
         }
 
-        /* NAV — white so logo renders correctly */
+        /* NAV — white so logo colours render correctly */
         .cl-nav {
           background: #FFFFFF;
-          border-bottom: 1px solid #E0E0DE;
-          height: 80px;
+          border-bottom: 2px solid #1B4353;
+          height: 100px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -94,31 +80,33 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           position: sticky;
           top: 0;
           z-index: 200;
-          box-shadow: 0 1px 16px rgba(0,0,0,0.07);
+          box-shadow: 0 2px 20px rgba(0,0,0,0.08);
         }
 
+        /* Logo fills the nav height — very prominent */
         .cl-nav-logo {
-          /* 64px height — logo text legible, icon clear */
-          height: 64px;
+          height: 82px;
           width: auto;
           display: block;
         }
 
         .cl-nav-right {
           text-align: right;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
+        /* Tagline matches body font — League Spartan, consistent with everything else */
         .cl-nav-tagline {
-          display: block;
-          font-family: 'Source Serif 4', serif;
-          font-style: italic;
+          font-family: 'League Spartan', sans-serif;
           font-size: 13px;
-          color: #4F87A0;
-          margin-bottom: 2px;
+          font-weight: 600;
+          color: #1B4353;
+          letter-spacing: 0.04em;
         }
 
         .cl-nav-link {
-          display: block;
           font-family: 'IBM Plex Mono', monospace;
           font-size: 10px;
           color: #B5B5B5;
@@ -133,48 +121,37 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           display: flex;
         }
 
-        /* Side photo panels */
+        /* Side panels — left half and right half of the SAME panoramic photo */
         .cl-panel {
           width: 180px;
           flex-shrink: 0;
           position: sticky;
-          top: 80px;
-          height: calc(100vh - 80px);
+          top: 100px;
+          height: calc(100vh - 100px);
           overflow: hidden;
+          background-image: url("${PANORAMIC_PHOTO}");
           background-size: cover;
-          background-position: center;
           background-repeat: no-repeat;
         }
 
-        /* Dark teal overlay on photo panels */
+        /* Left panel shows left side of the photo */
+        .cl-panel-left  { background-position: 0% center; }
+
+        /* Right panel shows right side of the photo */
+        .cl-panel-right { background-position: 100% center; }
+
+        /* Teal brand overlay on both panels */
         .cl-panel::after {
           content: '';
           position: absolute;
           inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(11, 32, 48, 0.72) 0%,
-            rgba(27, 67, 83, 0.55) 40%,
-            rgba(27, 67, 83, 0.60) 70%,
-            rgba(11, 32, 48, 0.78) 100%
+            rgba(11, 32, 48, 0.65) 0%,
+            rgba(27, 67, 83, 0.45) 45%,
+            rgba(27, 67, 83, 0.50) 75%,
+            rgba(11, 32, 48, 0.70) 100%
           );
-        }
-
-        /* Vertical brand label on panel */
-        .cl-panel-label {
-          position: absolute;
-          bottom: 32px;
-          left: 50%;
-          transform: translateX(-50%) rotate(-90deg);
-          transform-origin: center;
-          white-space: nowrap;
-          font-family: 'League Spartan', sans-serif;
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.28em;
-          color: rgba(255,255,255,0.30);
-          text-transform: uppercase;
-          z-index: 1;
           pointer-events: none;
         }
 
@@ -198,24 +175,26 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         .cl-footer {
           background: linear-gradient(135deg, #0C2030 0%, #1B4353 100%);
           text-align: center;
-          padding: 44px 24px;
+          padding: 44px 24px 36px;
         }
 
-        .cl-footer-logo {
-          font-family: 'League Spartan', sans-serif;
-          font-size: 22px;
-          font-weight: 700;
-          color: #FFFFFF;
-          letter-spacing: 0.01em;
-          margin-bottom: 7px;
+        /* Footer logo — CSS filter makes the PNG all-white on dark bg */
+        .cl-footer-logo-img {
+          height: 52px;
+          width: auto;
+          display: inline-block;
+          filter: brightness(0) invert(1);
+          opacity: 0.90;
+          margin-bottom: 14px;
         }
 
         .cl-footer-tagline {
-          font-family: 'Source Serif 4', serif;
-          font-style: italic;
+          font-family: 'League Spartan', sans-serif;
           font-size: 13px;
+          font-weight: 600;
           color: rgba(168,209,231,0.85);
-          margin-bottom: 14px;
+          letter-spacing: 0.04em;
+          margin-bottom: 12px;
         }
 
         .cl-footer-meta {
@@ -226,20 +205,18 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
 
         .cl-footer-meta a { color: rgba(168,209,231,0.7); text-decoration: none; }
 
-        /* Mobile */
         @media (max-width: 900px) {
           .cl-panel { display: none; }
-          .cl-nav { padding: 0 20px; height: 70px; }
-          .cl-nav-logo { height: 52px; }
+          .cl-nav { padding: 0 20px; height: 80px; }
+          .cl-nav-logo { height: 64px; }
           .cl-content { padding: 28px 16px 60px; }
         }
       `}</style>
 
       <div className="cl-root">
 
-        {/* NAV */}
+        {/* NAV — large logo, consistent typography */}
         <nav className="cl-nav">
-          {/* Logo on white background renders perfectly — icon + wordmark fully legible */}
           <img src="/logo-v2.png" alt="Elias Range Stays" className="cl-nav-logo" />
           <div className="cl-nav-right">
             <span className="cl-nav-tagline">Healthy Living, Stronger Communities</span>
@@ -250,13 +227,8 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         {/* BODY */}
         <div className="cl-body">
 
-          {/* Left — BC mountain river photo */}
-          <div
-            className="cl-panel"
-            style={{ backgroundImage: `url("${LEFT_PHOTO}")` }}
-          >
-            <span className="cl-panel-label">Elias Range Stays</span>
-          </div>
+          {/* Left panel — left half of panoramic */}
+          <div className="cl-panel cl-panel-left" />
 
           {/* Center */}
           <div className="cl-center">
@@ -264,8 +236,9 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
               {children}
             </div>
 
+            {/* Footer with white logo */}
             <footer className="cl-footer">
-              <div className="cl-footer-logo">Elias Range Stays</div>
+              <img src="/logo-v2.png" alt="Elias Range Stays" className="cl-footer-logo-img" />
               <div className="cl-footer-tagline">Healthy Living, Stronger Communities</div>
               <div className="cl-footer-meta">
                 <a href="mailto:austin@eliasrangestays.ca">austin@eliasrangestays.ca</a>
@@ -274,13 +247,8 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
             </footer>
           </div>
 
-          {/* Right — BC mountain peaks photo */}
-          <div
-            className="cl-panel"
-            style={{ backgroundImage: `url("${RIGHT_PHOTO}")` }}
-          >
-            <span className="cl-panel-label">Healthy Living</span>
-          </div>
+          {/* Right panel — right half of panoramic */}
+          <div className="cl-panel cl-panel-right" />
 
         </div>
       </div>

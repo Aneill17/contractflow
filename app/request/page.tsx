@@ -226,31 +226,34 @@ function RequestForm() {
           </div>
         </div>
       ) : (
-        /* Standalone hero: deep teal full-bleed with ERS brand feel */
+        /* Standalone hero: deep teal, ERS logo prominent at top */
         <div style={{ borderRadius: 12, overflow: 'hidden', marginBottom: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
-          {/* Main hero — deep teal with topographic texture feel */}
           <div style={{
             background: 'linear-gradient(135deg, #0C2030 0%, #1B4353 50%, #163847 100%)',
-            padding: '52px 48px 44px',
+            padding: '44px 48px 44px',
             position: 'relative',
           }}>
-            {/* Subtle topo line overlay */}
             <div style={{
               position: 'absolute', inset: 0, opacity: 0.04,
               backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(168,209,231,1) 29px)',
               pointerEvents: 'none',
             }} />
             <div style={{ position: 'relative' }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 16 }}>
+              {/* ERS Logo — white version via CSS filter */}
+              <img
+                src="/logo-v2.png"
+                alt="Elias Range Stays"
+                style={{ height: 52, width: 'auto', display: 'block', marginBottom: 28, filter: 'brightness(0) invert(1)', opacity: 0.92 }}
+              />
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 14 }}>
                 Workforce Housing · British Columbia
               </div>
               <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 48, fontWeight: 700, color: '#FFFFFF', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.0 }}>
                 Request a Quote
               </h1>
-              <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 17, color: 'rgba(168,209,231,0.85)', margin: '0 0 36px', lineHeight: 1.65 }}>
-                Tell us about your team&apos;s needs —<br/>we&apos;ll respond within 24 hours.
+              <p style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 16, fontWeight: 400, color: 'rgba(168,209,231,0.85)', margin: '0 0 36px', lineHeight: 1.65 }}>
+                Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
               </p>
-              {/* Stats */}
               <div style={{ display: 'flex', gap: 36, flexWrap: 'wrap' }}>
                 {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
                   <div key={l}>
@@ -261,7 +264,6 @@ function RequestForm() {
               </div>
             </div>
           </div>
-          {/* Forest green accent strip */}
           <div style={{ height: 4, background: 'linear-gradient(90deg, #2D5A3D, #4F87A0, #2D5A3D)' }} />
         </div>
       )}
@@ -282,7 +284,7 @@ function RequestForm() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={labelStyle}>Company Name *</label>
-                <input style={inputStyle} value={form.client_name} onChange={e => set('client_name', e.target.value)} placeholder="Green Infrastructure Partners Inc." required />
+                <input style={inputStyle} value={form.client_name} onChange={e => set('client_name', e.target.value)} placeholder="e.g. BC Health Authority" required />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
