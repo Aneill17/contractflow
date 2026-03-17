@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import ClientLayout from '@/components/ClientLayout'
 
 const WorksiteMap = dynamic(() => import('@/components/WorksiteMap'), { ssr: false })
 
-export default function RequestPage() {
+function RequestForm() {
+  const searchParams = useSearchParams()
+  const embed = searchParams.get('embed') === '1'
   const [step, setStep] = useState<'form' | 'submitted'>('form')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -115,7 +118,7 @@ export default function RequestPage() {
 
   if (step === 'submitted') {
     return (
-      <ClientLayout>
+      <ClientLayout embed={embed}>
         <style>{`input::placeholder, textarea::placeholder { color: #aaa; }`}</style>
         <div style={{ textAlign: 'center', padding: '60px 40px' }}>
           <div style={{
@@ -174,41 +177,62 @@ export default function RequestPage() {
   }
 
   return (
-    <ClientLayout>
+    <ClientLayout embed={embed}>
       <style>{`
         input::placeholder, textarea::placeholder { color: #aaa; }
         input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0); }
       `}</style>
 
-      {/* Hero */}
-      <div style={{ marginBottom: 8 }}>
-        {/* Teal accent bar */}
-        <div style={{ height: 4, background: '#1B4353', borderRadius: '4px 4px 0 0' }} />
-        <div style={{ background: 'white', borderRadius: '0 0 0 0', padding: '36px 40px 28px', borderLeft: '1px solid #E5E5E3', borderRight: '1px solid #E5E5E3' }}>
-          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#4F87A0', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
-            Workforce Housing Request
+      {/* Hero — full-bleed teal in embed mode, card-style standalone */}
+      {embed ? (
+        /* Embed hero: matches website section style — dark teal, big heading */
+        <div style={{ background: '#1B4353', padding: '52px 40px 44px', marginBottom: 32, borderRadius: 4 }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.7)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
+            Workforce Housing
           </div>
-          <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 32, fontWeight: 700, color: '#1A1A1A', margin: '0 0 10px', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+          <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 44, fontWeight: 700, color: '#FFFFFF', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
             Request a Quote
           </h1>
-          <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 15, color: '#4F87A0', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 16, color: 'rgba(168,209,231,0.85)', margin: '0 0 32px', lineHeight: 1.6 }}>
             Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
           </p>
-
-          {/* Trust stats */}
-          <div style={{ display: 'flex', gap: 0, marginTop: 24, borderTop: '1px solid #E5E5E3', paddingTop: 20, flexWrap: 'wrap' }}>
-            {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l], i) => (
-              <div key={l} style={{ flex: 1, minWidth: 100, paddingRight: 16, borderRight: i < 3 ? '1px solid #E5E5E3' : 'none', paddingLeft: i > 0 ? 16 : 0 }}>
-                <div style={{ fontSize: 22, color: '#1B4353', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: 10, color: '#9CA3AF', letterSpacing: '0.08em', marginTop: 4, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+            {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
+              <div key={l}>
+                <div style={{ fontSize: 28, color: '#FFFFFF', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.1em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      ) : (
+        /* Standalone hero: white card with teal accent */
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ height: 5, background: '#1B4353', borderRadius: '6px 6px 0 0' }} />
+          <div style={{ background: 'white', padding: '44px 48px 36px', border: '1px solid #E5E5E3', borderTop: 'none' }}>
+            <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#4F87A0', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
+              Workforce Housing Request
+            </div>
+            <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 44, fontWeight: 700, color: '#1A1A1A', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+              Request a Quote
+            </h1>
+            <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 16, color: '#4F87A0', margin: 0, lineHeight: 1.6 }}>
+              Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
+            </p>
+            <div style={{ display: 'flex', gap: 0, marginTop: 28, borderTop: '1px solid #E5E5E3', paddingTop: 24, flexWrap: 'wrap' }}>
+              {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l], i) => (
+                <div key={l} style={{ flex: 1, minWidth: 100, paddingRight: 20, borderRight: i < 3 ? '1px solid #E5E5E3' : 'none', paddingLeft: i > 0 ? 20 : 0 }}>
+                  <div style={{ fontSize: 28, color: '#1B4353', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
+                  <div style={{ fontSize: 10, color: '#9CA3AF', letterSpacing: '0.1em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Form card */}
-      <div style={{ background: 'white', borderRadius: '0 0 12px 12px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', padding: '32px 40px', borderLeft: '1px solid #E5E5E3', borderRight: '1px solid #E5E5E3', borderBottom: '1px solid #E5E5E3', borderRadius: 12 }}>
+      {/* Form */}
+      <div style={{ background: 'white', borderRadius: embed ? 4 : '0 0 12px 12px', boxShadow: embed ? 'none' : '0 4px 20px rgba(0,0,0,0.05)', padding: '36px 40px', border: embed ? '1px solid #E5E5E3' : '1px solid #E5E5E3', borderTop: embed ? '1px solid #E5E5E3' : 'none' }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Company */}
@@ -378,5 +402,17 @@ export default function RequestPage() {
         </form>
       </div>
     </ClientLayout>
+  )
+}
+
+export default function RequestPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', background: '#F7F7F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: '#999' }}>Loading...</div>
+      </div>
+    }>
+      <RequestForm />
+    </Suspense>
   )
 }

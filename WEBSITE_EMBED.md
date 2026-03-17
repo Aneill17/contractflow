@@ -6,15 +6,17 @@ How to embed the ERS Housing Request form into eliasrangestays.ca.
 
 ## Option A: Iframe Embed ⭐ Recommended
 
-Paste this into the **"Request a Quote"** section of the Workforce Housing page on your website builder (Wix, Squarespace, Webflow, or custom HTML):
+Paste this into the **"Request a Quote"** section of the Workforce Housing page on your website builder (Wix, Squarespace, Webflow, or custom HTML).
+
+The `?embed=1` parameter strips the nav and footer so the form sits seamlessly inside your website's existing section — no double headers, no duplicate branding:
 
 ```html
 <iframe
-  src="https://contractflow-omega.vercel.app/request"
+  src="https://contractflow-omega.vercel.app/request?embed=1"
   width="100%"
-  height="960"
+  height="1000"
   frameborder="0"
-  style="border-radius: 12px; max-width: 1000px; display: block; margin: 0 auto; box-shadow: 0 4px 32px rgba(0,0,0,0.10);"
+  style="display: block; width: 100%; border: none;"
   title="Request Workforce Housing — Elias Range Stays"
 ></iframe>
 ```
