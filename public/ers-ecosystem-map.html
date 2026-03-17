@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elias Range Stays — Company Ecosystem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #080B10;
+  --teal: #1B4353;
+  --teal-bright: #2A6680;
+  --steel: #4F87A0;
+  --green: #2D5A3D;
+  --green-bright: #3D7A52;
+  --gold: #C9A84C;
+  --gold-bright: #E0BC6A;
+  --ice: #A8D1E7;
+  --black: #1A1A1A;
+  --off: #F7F7F5;
+  --muted: #8892A4;
+  --purple: #6B4FA0;
+  --purple-bright: #8B6FC0;
+  --rose: #A04F6B;
+}
+html, body { width:100%; height:100%; background:var(--bg); color:#E8E4DC; font-family:'IBM Plex Mono',monospace; overflow:hidden; user-select:none; }
+
+/* HEADER */
+#hdr {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 28px;
+  background:linear-gradient(180deg,rgba(8,11,16,.98) 0%,rgba(8,11,16,.7) 100%);
+  border-bottom:1px solid rgba(27,67,83,.5);
+  pointer-events:none;
+}
+#hdr .brand { display:flex; flex-direction:column; }
+#hdr .brand h1 { font-family:'League Spartan',sans-serif; font-size:20px; font-weight:800; color:#fff; letter-spacing:.04em; }
+#hdr .brand .tag { font-family:'Source Serif 4',serif; font-style:italic; font-size:12px; color:var(--steel); margin-top:2px; }
+#hdr .meta { font-size:9px; color:rgba(255,255,255,.25); letter-spacing:.18em; text-align:right; text-transform:uppercase; }
+
+/* CANVAS */
+#wrap { position:fixed; inset:0; overflow:hidden; cursor:grab; touch-action:none; }
+#wrap.drag { cursor:grabbing; }
+#cvs { position:absolute; width:3200px; height:3200px; transform-origin:0 0; }
+svg#lines { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+
+/* NODES */
+.node { position:absolute; cursor:pointer; transition:transform .18s,filter .18s; }
+.node:hover { transform:scale(1.07); filter:brightness(1.15); z-index:20; }
+
+/* Centre */
+#n-ers {
+  width:220px; height:220px; border-radius:50%;
+  background:radial-gradient(circle at 40% 38%,#1a2a35 0%,#080B10 100%);
+  border:2px solid var(--teal-bright);
+  box-shadow:0 0 60px rgba(27,67,83,.5),0 0 120px rgba(27,67,83,.18);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  animation:pulse-c 3.5s ease-in-out infinite; z-index:5;
+}
+@keyframes pulse-c {
+  0%,100%{box-shadow:0 0 60px rgba(27,67,83,.5),0 0 120px rgba(27,67,83,.18);}
+  50%{box-shadow:0 0 80px rgba(79,135,160,.6),0 0 150px rgba(27,67,83,.28);}
+}
+#n-ers .c-name { font-family:'League Spartan',sans-serif; font-size:17px; font-weight:800; color:#fff; letter-spacing:.03em; line-height:1.1; }
+#n-ers .c-tag { font-family:'Source Serif 4',serif; font-style:italic; font-size:10px; color:var(--ice); margin-top:5px; opacity:.85; }
+#n-ers .c-sub { font-size:8px; color:rgba(255,255,255,.3); letter-spacing:.15em; text-transform:uppercase; margin-top:4px; }
+
+/* Branch nodes */
+.bnode {
+  border-radius:12px; padding:14px 14px 12px; width:170px;
+  border:1px solid; display:flex; flex-direction:column; gap:5px;
+  backdrop-filter:blur(4px);
+}
+.bnode .bn-icon { font-size:22px; line-height:1; margin-bottom:2px; }
+.bnode .bn-name { font-family:'League Spartan',sans-serif; font-size:12px; font-weight:700; letter-spacing:.03em; line-height:1.25; }
+.bnode .bn-sub { font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; opacity:.65; }
+.bnode .bn-items { margin-top:4px; display:flex; flex-direction:column; gap:3px; }
+.bnode .bn-item { font-size:9px; color:rgba(255,255,255,.55); padding-left:10px; position:relative; line-height:1.4; }
+.bnode .bn-item::before { content:'·'; position:absolute; left:0; }
+
+/* Colour themes per branch */
+.th-teal  { background:rgba(27,67,83,.28); border-color:rgba(79,135,160,.5)!important; box-shadow:0 0 20px rgba(27,67,83,.35); }
+.th-teal .bn-name { color:var(--ice); }
+.th-gold  { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.45)!important; box-shadow:0 0 20px rgba(201,168,76,.2); }
+.th-gold .bn-name { color:var(--gold-bright); }
+.th-green { background:rgba(45,90,61,.28); border-color:rgba(61,122,82,.5)!important; box-shadow:0 0 20px rgba(45,90,61,.35); }
+.th-green .bn-name { color:#6DC88A; }
+.th-steel { background:rgba(79,135,160,.18); border-color:rgba(168,209,231,.4)!important; box-shadow:0 0 20px rgba(79,135,160,.25); }
+.th-steel .bn-name { color:var(--ice); }
+.th-ice   { background:rgba(168,209,231,.1); border-color:rgba(168,209,231,.35)!important; box-shadow:0 0 20px rgba(168,209,231,.15); }
+.th-ice .bn-name { color:var(--ice); }
+.th-purple{ background:rgba(107,79,160,.2); border-color:rgba(139,111,192,.45)!important; box-shadow:0 0 20px rgba(107,79,160,.3); }
+.th-purple .bn-name { color:var(--purple-bright); }
+.th-rose  { background:rgba(160,79,107,.18); border-color:rgba(200,100,135,.4)!important; box-shadow:0 0 20px rgba(160,79,107,.25); }
+.th-rose .bn-name { color:#E890AF; }
+
+/* POPUP */
+#popup {
+  position:fixed; z-index:300; width:300px;
+  background:rgba(8,11,16,.97); border:1px solid rgba(79,135,160,.4);
+  border-radius:14px; padding:18px 20px; display:none;
+  box-shadow:0 24px 64px rgba(0,0,0,.75),0 0 40px rgba(27,67,83,.2);
+  backdrop-filter:blur(20px);
+}
+#popup.on { display:block; }
+#popup .pp-close { position:absolute; top:10px; right:12px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; }
+#popup .pp-close:hover { color:#fff; }
+#popup .pp-icon { font-size:32px; margin-bottom:8px; }
+#popup .pp-name { font-family:'League Spartan',sans-serif; font-size:18px; font-weight:700; color:#fff; }
+#popup .pp-sub { font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:3px; margin-bottom:12px; }
+#popup hr { border:none; border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
+#popup .pp-label { font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--steel); margin-bottom:7px; }
+#popup ul { list-style:none; display:flex; flex-direction:column; gap:5px; }
+#popup ul li { font-size:11px; color:rgba(255,255,255,.7); padding-left:14px; position:relative; line-height:1.5; }
+#popup ul li::before { content:'▸'; position:absolute; left:0; color:var(--steel); font-size:9px; top:3px; }
+
+/* CONTROLS */
+#ctrl {
+  position:fixed; bottom:20px; right:24px; z-index:100;
+  display:flex; flex-direction:column; gap:6px;
+}
+.cbtn {
+  width:36px; height:36px; border-radius:8px; border:1px solid rgba(79,135,160,.35);
+  background:rgba(8,11,16,.85); color:#fff; cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px); transition:background .15s;
+}
+.cbtn:hover { background:rgba(27,67,83,.5); }
+
+/* HINT */
+#hint { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); font-size:9px; color:rgba(255,255,255,.18); letter-spacing:.18em; text-transform:uppercase; pointer-events:none; z-index:99; }
+
+/* TOPO BG */
+#topo { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.025; }
+</style>
+</head>
+<body>
+
+<svg id="topo" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="tp" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+    <ellipse cx="40" cy="40" rx="35" ry="22" fill="none" stroke="#4F87A0" stroke-width=".7"/>
+    <ellipse cx="40" cy="40" rx="24" ry="14" fill="none" stroke="#4F87A0" stroke-width=".5"/>
+    <ellipse cx="40" cy="40" rx="13" ry="7" fill="none" stroke="#4F87A0" stroke-width=".4"/>
+  </pattern></defs>
+  <rect width="100%" height="100%" fill="url(#tp)"/>
+</svg>
+
+<div id="hdr">
+  <div class="brand">
+    <h1>Elias Range Stays</h1>
+    <div class="tag">Company Ecosystem — Platform Clarity Map</div>
+  </div>
+  <div class="meta">British Columbia, Canada<br>Healthcare &amp; Workforce Housing</div>
+</div>
+
+<div id="wrap">
+  <div id="cvs">
+    <svg id="lines" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+</div>
+
+<div id="popup">
+  <button class="pp-close" onclick="closePopup()">✕</button>
+  <div class="pp-icon" id="pp-icon"></div>
+  <div class="pp-name" id="pp-name"></div>
+  <div class="pp-sub" id="pp-sub"></div>
+  <hr>
+  <div class="pp-label">Details</div>
+  <ul id="pp-list"></ul>
+</div>
+
+<div id="ctrl">
+  <button class="cbtn" onclick="zoom(1.2)" title="Zoom in">+</button>
+  <button class="cbtn" onclick="zoom(0.8)" title="Zoom out">−</button>
+  <button class="cbtn" onclick="resetView()" title="Reset" style="font-size:12px;">⌂</button>
+</div>
+<div id="hint">Scroll to zoom · Drag to pan · Click any node for details</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const CX = 1600, CY = 1600; // centre of canvas
+
+const branches = [
+  {
+    id:'services', icon:'🏠', label:'Core Services', theme:'th-teal',
+    angle:-90, r:520,
+    detail:['Turnkey workforce housing for healthcare & construction workers','$105/night — 40% below hotel average','34+ units managed, 6 hospitals served','24/7 support, single invoice model','Independent Staff Housing — ERS-owned inventory','Infrastructure Development — building at scale across health authorities'],
+    nodes:[
+      { icon:'🏥', name:'Workforce Housing', sub:'Healthcare & Construction', items:['$105/night · 34+ units','6 hospitals served','24/7 support · single invoice'] },
+      { icon:'🏛️', name:'Healthcare Housing Hubs', sub:'Full-Service Community Hubs', items:['Practitioner office spaces','Adjacent healthcare services','Green infrastructure'] },
+      { icon:'🏡', name:'Independent Staff Housing', sub:'ERS-Owned Inventory', items:['Long-term controlled stock','Stable cost base','Retained equity'] },
+      { icon:'🏗️', name:'Infrastructure Development', sub:'Build At Scale', items:['Multi-health-authority contracts','Cross-regional delivery','Turnkey development'] },
+    ]
+  },
+  {
+    id:'investment', icon:'💰', label:'Investment & Development', theme:'th-gold',
+    angle:-20, r:560,
+    detail:['Healthcare Investment Fund — small multifamily housing','Equity Development Platform — contracts at scale','Consulting Package — full advisory for healthcare housing','Draw / Dry Close Program — financial facilitation'],
+    nodes:[
+      { icon:'📈', name:'Healthcare Investment Fund', sub:'Small Multifamily Housing', items:['Infrastructure investments','Multi-family healthcare assets','Investor returns'] },
+      { icon:'🏢', name:'Equity Development', sub:'Build-to-Own Platform', items:['Contracts with health authorities','Cross-region delivery','Long-term equity'] },
+      { icon:'🤝', name:'Consulting Package', sub:'Advisory Services', items:['Housing challenge strategy','Implementation support','All ERS services'] },
+      { icon:'📋', name:'Draw / Dry Close Program', sub:'Financial Services', items:['Financing facilitation','Client draw support','Deal structuring'] },
+    ]
+  },
+  {
+    id:'green', icon:'🌿', label:'Green Infrastructure', theme:'th-green',
+    angle:50, r:520,
+    detail:['Integrated into Healthcare Housing Hubs','Greenhouses — on-site food production','Green rooftop patios fully wrapped in community space','Transportation services for healthcare professionals','Elias Adventures — outdoor & adventure experiences for residents','Community programming and local engagement'],
+    nodes:[
+      { icon:'🌱', name:'Greenhouses', sub:'On-Site Food Production', items:['Integrated into hubs','Fresh produce for residents','Wellness & sustainability'] },
+      { icon:'🌄', name:'Rooftop Patios', sub:'Green Community Spaces', items:['Fully wrapped greenery','Gathering & wellness areas','Premium resident amenity'] },
+      { icon:'🚐', name:'Transportation Services', sub:'Getting People There', items:['Healthcare professional transit','Site-to-housing logistics','Reliable daily service'] },
+      { icon:'🏔️', name:'Elias Adventures', sub:'Outdoor Experiences', items:['Adventure programming','Nature immersion','Community building'] },
+    ]
+  },
+  {
+    id:'community', icon:'🤝', label:'Communities', theme:'th-steel',
+    angle:130, r:520,
+    detail:['Mastermind — adjacent partners, health professionals, leaders solving big healthcare problems in Canada','Healthcare Professional Community — professionals staying with ERS or in ERS communities','Community Programming — local events, engagement, wellness activities'],
+    nodes:[
+      { icon:'🧠', name:'Mastermind', sub:'Leaders & Adjacent Partners', items:['Healthcare innovators','Infrastructure partners','Solving Canada\'s housing crisis'] },
+      { icon:'👩‍⚕️', name:'Healthcare Community', sub:'Professionals & Residents', items:['Current & future residents','Communities ERS operates in','Connection & belonging'] },
+      { icon:'🎉', name:'Community Programming', sub:'Events & Engagement', items:['Local community events','Wellness programming','Regional partnerships'] },
+    ]
+  },
+  {
+    id:'content', icon:'📢', label:'Content & Marketing', theme:'th-ice',
+    angle:200, r:520,
+    detail:['Blog — community updates, news, events, what ERS is working on','Newsletter — partners, organizations, healthcare leaders, infrastructure adjacent services','Webinar Series — thought leadership, industry expert interviews, market positioning','Downloadable Resources — e-book, partnership docs, Work With Us (high-value, low-commitment lead magnets)'],
+    nodes:[
+      { icon:'✍️', name:'Blog Platform', sub:'News & Community Updates', items:['Community stories','Project updates','Industry insights'] },
+      { icon:'📬', name:'Newsletter', sub:'For Partners & Leaders', items:['Healthcare org leaders','Infrastructure adjacent','Deeper engagement'] },
+      { icon:'🎙️', name:'Webinar Series', sub:'Thought Leadership', items:['Industry expert interviews','Market leadership positioning','Healthcare housing insights'] },
+      { icon:'📥', name:'Downloadable Resources', sub:'High Value · Low Commitment', items:['Healthcare Housing e-book','Partnership documents','Work With Us guide'] },
+    ]
+  },
+  {
+    id:'digital', icon:'💻', label:'Digital Platform', theme:'th-purple',
+    angle:265, r:520,
+    detail:['eliasrangestays.ca — main website on React/Vite/Vercel','ContractFlow — end-to-end housing contract management app','LinkedIn — Austin (personal) + ERS (business page)','Facebook — ERS business page','TikTok — ERS brand channel','Leasing Platform — practitioner space & office leases in HHHubs'],
+    nodes:[
+      { icon:'🌐', name:'eliasrangestays.ca', sub:'Main Website', items:['React + Vite + Vercel','ContractFlow form embedded','GitHub managed'] },
+      { icon:'📊', name:'ContractFlow', sub:'Contract Management App', items:['Quote → Contract → E-Sign','Internal ops dashboard','AI contract generation'] },
+      { icon:'📱', name:'Social Channels', sub:'LinkedIn · Facebook · TikTok', items:['Austin personal LinkedIn','ERS business pages','Brand building'] },
+      { icon:'🏢', name:'Leasing Platform', sub:'HHub Office & Practitioner Spaces', items:['Practitioner suites','Adjacent service offices','Revenue diversification'] },
+    ]
+  },
+  {
+    id:'bots', icon:'🤖', label:'AI Bot Team', theme:'th-rose',
+    angle:330, r:520,
+    detail:['Maestro — Orchestrator (live)','Forge — Development Builder (live)','Canvas — Brand Builder (live)','Scout — Business Developer (next)','Herald — Marketing (planned)','Porter — Property Manager (planned)','Vault — Investor Wizard (planned)','Bridge — Community Builder (planned)'],
+    nodes:[
+      { icon:'🎼', name:'Maestro', sub:'Orchestrator · Live', items:['Main AI interface','Coordinates all bots','Memory & continuity'] },
+      { icon:'🔧', name:'Forge', sub:'Dev Builder · Live', items:['Builds apps & features','ContractFlow development','API integrations'] },
+      { icon:'🎨', name:'Canvas', sub:'Brand Builder · Live', items:['Brand enforcement','UI/UX review','Visual identity'] },
+      { icon:'🧭', name:'Scout + Team', sub:'Biz Dev & Beyond · Planned', items:['Scout · Herald · Porter','Vault · Bridge · Pulse','Anchor · Atlas · Summit'] },
+    ]
+  },
+];
+
+// ─── LAYOUT ──────────────────────────────────────────────────────────────────
+
+const toRad = deg => deg * Math.PI / 180;
+
+function branchPos(angle, r) {
+  return { x: CX + r * Math.cos(toRad(angle)), y: CY + r * Math.sin(toRad(angle)) };
+}
+
+function nodePositions(branchAngle, branchR, count) {
+  const bx = CX + branchR * Math.cos(toRad(branchAngle));
+  const by = CY + branchR * Math.sin(toRad(branchAngle));
+  const spread = 95;
+  const perp = branchAngle + 90;
+  const total = (count - 1) * spread;
+  const positions = [];
+  for (let i = 0; i < count; i++) {
+    const offset = -total / 2 + i * spread;
+    const nx = bx + 220 * Math.cos(toRad(branchAngle)) + offset * Math.cos(toRad(perp));
+    const ny = by + 220 * Math.sin(toRad(branchAngle)) + offset * Math.sin(toRad(perp));
+    positions.push({ x: nx, y: ny });
+  }
+  return { bx, by, positions };
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+const cvs = document.getElementById('cvs');
+const svg = document.getElementById('lines');
+
+function lineColor(theme) {
+  if (theme.includes('gold'))   return 'rgba(201,168,76,.35)';
+  if (theme.includes('green'))  return 'rgba(61,122,82,.4)';
+  if (theme.includes('steel'))  return 'rgba(79,135,160,.35)';
+  if (theme.includes('ice'))    return 'rgba(168,209,231,.3)';
+  if (theme.includes('purple')) return 'rgba(139,111,192,.35)';
+  if (theme.includes('rose'))   return 'rgba(200,100,135,.35)';
+  return 'rgba(79,135,160,.35)';
+}
+
+// Centre node
+const cEl = document.createElement('div');
+cEl.id = 'n-ers';
+cEl.className = 'node';
+cEl.style.left = (CX - 110) + 'px';
+cEl.style.top  = (CY - 110) + 'px';
+cEl.innerHTML = `
+  <div style="font-size:32px;margin-bottom:6px;">🏔️</div>
+  <div class="c-name">Elias Range<br>Stays</div>
+  <div class="c-tag">Healthy Living, Stronger Communities</div>
+  <div class="c-sub">British Columbia · Canada</div>
+`;
+cEl.onclick = () => showPopup('🏔️','Elias Range Stays','Healthcare & Workforce Housing Platform',[
+  '34+ units managed across BC','6 hospitals served','$105/night — 40% below hotel rates','24/7 support, single invoice model','4 years incorporated, 2 years high growth','7-branch platform ecosystem'
+]);
+cvs.appendChild(cEl);
+
+branches.forEach(branch => {
+  const { bx, by, positions } = nodePositions(branch.angle, branch.r, branch.nodes.length);
+  const lc = lineColor(branch.theme);
+
+  // Line: centre → branch hub
+  const l1 = document.createElementNS('http://www.w3.org/2000/svg','line');
+  l1.setAttribute('x1', CX); l1.setAttribute('y1', CY);
+  l1.setAttribute('x2', bx); l1.setAttribute('y2', by);
+  l1.setAttribute('stroke', lc); l1.setAttribute('stroke-width','1.5');
+  svg.appendChild(l1);
+
+  // Branch label circle
+  const labelEl = document.createElement('div');
+  labelEl.className = 'node';
+  labelEl.style.cssText = `left:${bx-50}px;top:${by-22}px;width:100px;text-align:center;`;
+  labelEl.innerHTML = `<div style="font-size:18px;">${branch.icon}</div><div style="font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase;line-height:1.3;margin-top:3px;">${branch.label}</div>`;
+  labelEl.onclick = () => showPopup(branch.icon, branch.label, 'Branch Overview', branch.detail);
+  cvs.appendChild(labelEl);
+
+  // Lines + nodes
+  positions.forEach((pos, i) => {
+    const nd = branch.nodes[i];
+    const nl = document.createElementNS('http://www.w3.org/2000/svg','line');
+    nl.setAttribute('x1', bx); nl.setAttribute('y1', by);
+    nl.setAttribute('x2', pos.x); nl.setAttribute('y2', pos.y);
+    nl.setAttribute('stroke', lc); nl.setAttribute('stroke-width','1');
+    nl.setAttribute('stroke-dasharray','4 3');
+    svg.appendChild(nl);
+
+    const el = document.createElement('div');
+    el.className = `node bnode ${branch.theme}`;
+    el.style.left = (pos.x - 85) + 'px';
+    el.style.top  = (pos.y - 60) + 'px';
+    el.innerHTML = `
+      <div class="bn-icon">${nd.icon}</div>
+      <div class="bn-name">${nd.name}</div>
+      <div class="bn-sub">${nd.sub}</div>
+      <div class="bn-items">${nd.items.map(it=>`<div class="bn-item">${it}</div>`).join('')}</div>
+    `;
+    el.onclick = e => { e.stopPropagation(); showPopup(nd.icon, nd.name, nd.sub, nd.items.concat(branch.detail)); };
+    cvs.appendChild(el);
+  });
+});
+
+// ─── POPUP ───────────────────────────────────────────────────────────────────
+
+function showPopup(icon, name, sub, items) {
+  document.getElementById('pp-icon').textContent = icon;
+  document.getElementById('pp-name').textContent = name;
+  document.getElementById('pp-sub').textContent = sub;
+  const ul = document.getElementById('pp-list');
+  ul.innerHTML = items.map(i=>`<li>${i}</li>`).join('');
+  const popup = document.getElementById('popup');
+  popup.className = 'on';
+  popup.style.left = '28px';
+  popup.style.top  = '80px';
+}
+function closePopup() { document.getElementById('popup').className = ''; }
+document.getElementById('wrap').addEventListener('click', closePopup);
+
+// ─── PAN / ZOOM ───────────────────────────────────────────────────────────────
+
+let tx = 0, ty = 0, sc = 0.38;
+let drag = false, ox = 0, oy = 0, stx = 0, sty = 0;
+
+function applyTransform() {
+  document.getElementById('cvs').style.transform = `translate(${tx}px,${ty}px) scale(${sc})`;
+}
+
+function resetView() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  sc = Math.min(vw, vh) / 1800;
+  tx = vw/2 - CX*sc;
+  ty = vh/2 - CY*sc;
+  applyTransform();
+}
+
+function zoom(f) {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const cx = vw/2, cy = vh/2;
+  tx = cx - (cx - tx)*f;
+  ty = cy - (cy - ty)*f;
+  sc *= f;
+  applyTransform();
+}
+
+const wrap = document.getElementById('wrap');
+wrap.addEventListener('mousedown', e => {
+  if (e.target.closest('.node,.cbtn,#popup')) return;
+  drag = true; wrap.classList.add('drag');
+  ox = e.clientX; oy = e.clientY; stx = tx; sty = ty;
+});
+window.addEventListener('mousemove', e => {
+  if (!drag) return;
+  tx = stx + (e.clientX - ox);
+  ty = sty + (e.clientY - oy);
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { drag = false; wrap.classList.remove('drag'); });
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const f = e.deltaY < 0 ? 1.12 : 0.89;
+  const cx = e.clientX, cy = e.clientY;
+  tx = cx - (cx - tx)*f;
+  ty = cy - (cy - ty)*f;
+  sc *= f;
+  applyTransform();
+}, { passive:false });
+
+// Touch support
+let t1x,t1y,t1tx,t1ty;
+wrap.addEventListener('touchstart', e => {
+  if (e.touches.length===1) {
+    drag=true; ox=e.touches[0].clientX; oy=e.touches[0].clientY; stx=tx; sty=ty;
+  }
+}, {passive:true});
+wrap.addEventListener('touchmove', e => {
+  if (drag && e.touches.length===1) {
+    tx = stx+(e.touches[0].clientX-ox);
+    ty = sty+(e.touches[0].clientY-oy);
+    applyTransform();
+  }
+}, {passive:true});
+wrap.addEventListener('touchend', ()=>{ drag=false; });
+
+resetView();
+</script>
+</body>
+</html>
