@@ -289,7 +289,7 @@ function RequestForm() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Contact Name *</label>
-                  <input style={inputStyle} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="John Roxas" required />
+                  <input style={inputStyle} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="e.g. Sarah Mitchell" required />
                 </div>
                 <div>
                   <label style={labelStyle}>Phone</label>
@@ -298,7 +298,7 @@ function RequestForm() {
               </div>
               <div>
                 <label style={labelStyle}>Email *</label>
-                <input style={inputStyle} value={form.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="j.roxas@company.com" type="email" required />
+                <input style={inputStyle} value={form.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="e.g. sarah@bcha.bc.ca" type="email" required />
               </div>
             </div>
           </div>
