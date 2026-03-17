@@ -62,6 +62,8 @@ interface ParsedListing {
   description: string
   score: number
   score_reasons: string[]
+  feed_item_id?: string
+  feed_decision?: string
 }
 
 function extractPrice(text: string): number | null {
@@ -392,6 +394,88 @@ export async function POST(req: NextRequest) {
       if (!seen.has(listing.url)) {
         seen.add(listing.url)
         allListings.push(listing)
+      }
+    }
+  }
+
+  // ── Fetch deny patterns and apply learned penalties ───────────────────────
+  const { data: denyPatterns } = await supabase
+    .from('sourcing_deny_patterns')
+    .select('*')
+
+  if (denyPatterns && denyPatterns.length > 0) {
+    for (const listing of allListings) {
+      for (const pattern of denyPatterns) {
+        if (pattern.pattern_type === 'keyword' && pattern.pattern_value) {
+          if ((listing.title || '').toLowerCase().includes(pattern.pattern_value.toLowerCase())) {
+            listing.score = Math.max(0, listing.score - Math.round(pattern.weight * 10))
+            if (!listing.score_reasons.includes('learned-penalty')) {
+              listing.score_reasons.push('learned-penalty')
+            }
+          }
+        } else if (pattern.pattern_type === 'price_range' && pattern.pattern_value) {
+          const threshold = parseFloat(pattern.pattern_value.replace('>', ''))
+          if (!isNaN(threshold) && listing.price && listing.price > threshold) {
+            listing.score = Math.max(0, listing.score - Math.round(pattern.weight * 5))
+          }
+        } else if (pattern.pattern_type === 'unit_type' && pattern.pattern_value) {
+          if ((listing.title || '').toLowerCase().includes(pattern.pattern_value.toLowerCase())) {
+            listing.score = Math.max(0, listing.score - Math.round(pattern.weight * 8))
+          }
+        }
+      }
+    }
+  }
+
+  // ── Upsert listings into sourcing_feed_items ──────────────────────────────
+  const feedItemMap = new Map<string, string>() // listing.id → DB uuid
+
+  for (const listing of allListings) {
+    const external_id = listing.url
+      ? Buffer.from(listing.url).toString('base64').slice(0, 32)
+      : null
+
+    if (!external_id) continue
+
+    // Check if already exists
+    const { data: existing } = await supabase
+      .from('sourcing_feed_items')
+      .select('id, decision')
+      .eq('external_id', external_id)
+      .single()
+
+    if (existing) {
+      feedItemMap.set(listing.id, existing.id)
+      listing.feed_item_id = existing.id
+      if (existing.decision !== 'pending') {
+        listing.feed_decision = existing.decision
+      }
+    } else {
+      // Insert new feed item
+      const { data: inserted } = await supabase
+        .from('sourcing_feed_items')
+        .insert([{
+          external_id,
+          source: listing.source,
+          title: listing.title,
+          url: listing.url,
+          price: listing.price,
+          bedrooms: listing.bedrooms,
+          thumbnail: listing.thumbnail,
+          description: listing.description,
+          posted_date: listing.posted_date,
+          score: listing.score,
+          score_reasons: listing.score_reasons,
+          decision: 'pending',
+          contract_id: contract_id || null,
+          search_id: savedSearch?.id || null,
+        }])
+        .select('id')
+        .single()
+
+      if (inserted) {
+        feedItemMap.set(listing.id, inserted.id)
+        listing.feed_item_id = inserted.id
       }
     }
   }

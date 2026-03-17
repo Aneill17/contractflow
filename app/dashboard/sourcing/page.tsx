@@ -33,6 +33,10 @@ interface Lead {
   viewing_date?: string
   monthly_cost_ers?: number
   nightly_rate_client?: number
+  feed_item_id?: string
+  queued_for_messaging?: boolean
+  messaging_approved_by?: string
+  messaging_approved_at?: string
 }
 
 interface Contract {
@@ -56,6 +60,8 @@ interface SearchResult {
   score: number
   score_reasons: string[]
   description?: string
+  feed_item_id?: string
+  feed_decision?: string
 }
 
 interface SearchResponse {
@@ -67,6 +73,7 @@ interface SearchResponse {
   sources_searched: string[]
   sources_errored?: string[]
   regions_tried?: string[]
+  search_id?: string
 }
 
 interface SearchConfig {
@@ -162,13 +169,9 @@ function coverageKm2(radius: number): string {
   return Math.round(Math.PI * radius * radius).toLocaleString()
 }
 
-function slugify(s: string): string {
-  return s.toLowerCase().replace(/\s+/g, '-')
-}
-
 // ─── Lead Card ────────────────────────────────────────────────────────────────
 
-function LeadCard({ lead, onClick }: { lead: Lead; onClick: () => void }) {
+function LeadCard({ lead, onClick, contractName }: { lead: Lead; onClick: () => void; contractName?: string }) {
   const src = lead.source || 'other'
   return (
     <div
@@ -185,6 +188,11 @@ function LeadCard({ lead, onClick }: { lead: Lead; onClick: () => void }) {
       onMouseEnter={e => (e.currentTarget.style.borderColor = '#C9A84C44')}
       onMouseLeave={e => (e.currentTarget.style.borderColor = '#ffffff0D')}
     >
+      {contractName && (
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#C9A84C', marginBottom: 4, opacity: 0.7 }}>
+          {contractName}
+        </div>
+      )}
       <div style={{ fontSize: 12, color: '#DDD5C8', marginBottom: 6, fontWeight: 500, lineHeight: 1.3 }}>
         {lead.title}
       </div>
@@ -224,6 +232,55 @@ function LeadCard({ lead, onClick }: { lead: Lead; onClick: () => void }) {
           {daysSince(lead.created_at)}d ago
         </span>
       </div>
+    </div>
+  )
+}
+
+// ─── Queued for Messaging Card ─────────────────────────────────────────────────
+
+function QueuedLeadCard({
+  lead,
+  onSendMessage,
+  contractName,
+}: {
+  lead: Lead
+  onSendMessage: (lead: Lead) => void
+  contractName?: string
+}) {
+  return (
+    <div
+      style={{
+        background: '#0C0E14',
+        border: '1px solid #C9A84C33',
+        borderRadius: 8,
+        padding: '12px 14px',
+        marginBottom: 8,
+      }}
+    >
+      {contractName && (
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#C9A84C', marginBottom: 4 }}>
+          {contractName}
+        </div>
+      )}
+      <div style={{ fontSize: 12, color: '#DDD5C8', marginBottom: 6, fontWeight: 500, lineHeight: 1.3 }}>
+        {lead.title}
+      </div>
+      {lead.monthly_rent && (
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#C9A84C', marginBottom: 8 }}>
+          ${lead.monthly_rent.toLocaleString()}/mo
+          {lead.bedrooms ? ` · ${lead.bedrooms}bd` : ''}
+        </div>
+      )}
+      <button
+        onClick={() => onSendMessage(lead)}
+        style={{
+          width: '100%', padding: '7px 10px', borderRadius: 6,
+          fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer',
+          border: '1px solid #C9A84C66', background: '#C9A84C18', color: '#C9A84C',
+        }}
+      >
+        Send Message →
+      </button>
     </div>
   )
 }
@@ -393,18 +450,253 @@ function QuickAddForm({ onAdd }: { onAdd: (lead: Partial<Lead>) => Promise<void>
   )
 }
 
-// ─── Smart Sourcing Engine ────────────────────────────────────────────────────
+// ─── Feed Card ────────────────────────────────────────────────────────────────
 
-function SmartSourcingEngine({ onAddToPipeline, contracts }: {
+type FeedCardDecision = 'pending' | 'accepted' | 'denied'
+type DenyReason = 'too_expensive' | 'wrong_area' | 'poor_quality' | 'wrong_type' | 'other'
+
+function FeedCard({
+  result,
+  contracts,
+  onDecision,
+}: {
+  result: SearchResult
+  contracts: Contract[]
+  onDecision: (id: string, decision: FeedCardDecision, opts?: { deny_reason?: DenyReason; contract_id?: string }) => Promise<void>
+}) {
+  const [localDecision, setLocalDecision] = useState<FeedCardDecision>(
+    (result.feed_decision as FeedCardDecision) || 'pending'
+  )
+  const [showAcceptDropdown, setShowAcceptDropdown] = useState(false)
+  const [showDenyDropdown, setShowDenyDropdown] = useState(false)
+  const [selectedContract, setSelectedContract] = useState<string>('')
+  const [selectedDenyReason, setSelectedDenyReason] = useState<DenyReason | ''>('')
+  const [loading, setLoading] = useState(false)
+
+  const isDenied = localDecision === 'denied'
+  const isAccepted = localDecision === 'accepted'
+
+  const handleAccept = async () => {
+    if (!result.feed_item_id) return
+    setLoading(true)
+    await onDecision(result.feed_item_id, 'accepted', { contract_id: selectedContract || undefined })
+    setLocalDecision('accepted')
+    setShowAcceptDropdown(false)
+    setLoading(false)
+  }
+
+  const handleDeny = async () => {
+    if (!result.feed_item_id || !selectedDenyReason) return
+    setLoading(true)
+    await onDecision(result.feed_item_id, 'denied', { deny_reason: selectedDenyReason })
+    setLocalDecision('denied')
+    setShowDenyDropdown(false)
+    setLoading(false)
+  }
+
+  return (
+    <div
+      style={{
+        background: '#0C0E14',
+        border: `1px solid ${isAccepted ? '#2D5A3D' : isDenied ? '#3a1a1a' : '#ffffff0D'}`,
+        borderRadius: 10,
+        padding: '14px 16px',
+        position: 'relative',
+        opacity: isDenied ? 0.35 : 1,
+        transition: 'opacity 0.3s, border-color 0.2s',
+      }}
+    >
+      {/* Score badge */}
+      <div style={{
+        position: 'absolute', top: 12, right: 12,
+        background: `${scoreColor(result.score)}22`, border: `1px solid ${scoreColor(result.score)}55`,
+        borderRadius: 20, padding: '3px 10px',
+        fontFamily: 'IBM Plex Mono', fontSize: 10, fontWeight: 700, color: scoreColor(result.score),
+      }}>
+        {result.score}
+      </div>
+
+      <div style={{ paddingRight: 60, display: 'flex', gap: 12 }}>
+        {result.thumbnail && (
+          <img
+            src={result.thumbnail}
+            alt=""
+            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }}
+            onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+        )}
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontSize: 13, color: '#DDD5C8', fontWeight: 500, lineHeight: 1.4, marginBottom: 5,
+            textDecoration: isDenied ? 'line-through' : 'none',
+          }}>
+            {result.title}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            {result.price && (
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C9A84C', fontWeight: 700 }}>
+                ${result.price.toLocaleString()}/mo
+              </span>
+            )}
+            {result.bedrooms !== null && result.bedrooms !== undefined && (
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff55' }}>
+                {result.bedrooms === 0 ? 'Studio' : `${result.bedrooms}BR`}
+              </span>
+            )}
+            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, padding: '2px 7px', borderRadius: 10, background: '#8B5CF622', border: '1px solid #8B5CF644', color: '#8B5CF6' }}>
+              {result.source}
+            </span>
+          </div>
+          {result.score_reasons.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {result.score_reasons.map(reason => (
+                <span key={reason} style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, padding: '2px 7px', borderRadius: 10, background: '#ffffff08', border: '1px solid #ffffff11', color: reason === 'learned-penalty' ? '#E84855' : '#ffffff55' }}>
+                  {reason}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Action row */}
+      {!isAccepted && !isDenied && (
+        <div style={{ marginTop: 12, borderTop: '1px solid #ffffff0D', paddingTop: 12 }}>
+          {!showAcceptDropdown && !showDenyDropdown && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <a
+                href={result.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{ padding: '7px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, textDecoration: 'none', border: '1px solid #ffffff22', color: '#ffffff55', background: '#ffffff08' }}
+              >
+                View ↗
+              </a>
+              <button
+                onClick={() => setShowAcceptDropdown(true)}
+                disabled={!result.feed_item_id}
+                style={{ flex: 1, padding: '7px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #2D5A3D', background: '#2D5A3D22', color: '#4CAF93' }}
+              >
+                ✓ Accept
+              </button>
+              <button
+                onClick={() => setShowDenyDropdown(true)}
+                disabled={!result.feed_item_id}
+                style={{ flex: 1, padding: '7px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #e74c3c44', background: '#e74c3c11', color: '#e74c3c' }}
+              >
+                ✗ Deny
+              </button>
+            </div>
+          )}
+
+          {showAcceptDropdown && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff55' }}>Link to contract?</div>
+              <select
+                value={selectedContract}
+                onChange={e => setSelectedContract(e.target.value)}
+                style={{ background: '#13161D', border: '1px solid #2D5A3D', borderRadius: 6, padding: '7px 10px', color: '#DDD5C8', fontFamily: 'IBM Plex Mono', fontSize: 11, outline: 'none', cursor: 'pointer' }}
+              >
+                <option value="">— No contract —</option>
+                {contracts.map(c => <option key={c.id} value={c.id}>{c.reference} — {c.client_name}</option>)}
+              </select>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={handleAccept}
+                  disabled={loading}
+                  style={{ flex: 1, padding: '8px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #2D5A3D', background: '#2D5A3D', color: '#4CAF93', fontWeight: 700 }}
+                >
+                  {loading ? '…' : 'Confirm Accept →'}
+                </button>
+                <button
+                  onClick={() => setShowAcceptDropdown(false)}
+                  style={{ padding: '8px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #ffffff22', background: 'transparent', color: '#ffffff44' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showDenyDropdown && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff55' }}>Why deny?</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {([
+                  { value: 'too_expensive', label: 'Too expensive' },
+                  { value: 'wrong_area', label: 'Wrong area' },
+                  { value: 'poor_quality', label: 'Poor quality' },
+                  { value: 'wrong_type', label: 'Wrong type' },
+                  { value: 'other', label: 'Other' },
+                ] as { value: DenyReason; label: string }[]).map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setSelectedDenyReason(opt.value)}
+                    style={{
+                      padding: '5px 10px', borderRadius: 20, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid',
+                      background: selectedDenyReason === opt.value ? '#e74c3c22' : 'transparent',
+                      borderColor: selectedDenyReason === opt.value ? '#e74c3c' : '#ffffff22',
+                      color: selectedDenyReason === opt.value ? '#e74c3c' : '#ffffff44',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={handleDeny}
+                  disabled={loading || !selectedDenyReason}
+                  style={{ flex: 1, padding: '8px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: selectedDenyReason ? 'pointer' : 'not-allowed', border: '1px solid #e74c3c', background: '#e74c3c22', color: '#e74c3c', fontWeight: 700, opacity: selectedDenyReason ? 1 : 0.5 }}
+                >
+                  {loading ? '…' : 'Confirm Deny →'}
+                </button>
+                <button
+                  onClick={() => { setShowDenyDropdown(false); setSelectedDenyReason('') }}
+                  style={{ padding: '8px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #ffffff22', background: 'transparent', color: '#ffffff44' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isAccepted && (
+        <div style={{ marginTop: 10, fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#4CAF93', display: 'flex', alignItems: 'center', gap: 6 }}>
+          ✓ Accepted → In Pipeline
+        </div>
+      )}
+
+      {isDenied && (
+        <div style={{ marginTop: 10, fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#e74c3c' }}>
+          ✗ Denied — algorithm updated
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Smart Sourcing Engine (with Feed Panel) ──────────────────────────────────
+
+function SmartSourcingEngine({
+  onAddToPipeline,
+  contracts,
+  onFeedDecision,
+  deniedCount,
+}: {
   onAddToPipeline: (lead: Partial<Lead>) => Promise<void>
   contracts: Contract[]
+  onFeedDecision: (id: string, decision: FeedCardDecision, opts?: { deny_reason?: DenyReason; contract_id?: string }) => Promise<void>
+  deniedCount: number
 }) {
   const [config, setConfig] = useState<SearchConfig>(DEFAULT_SEARCH)
   const [collapsed, setCollapsed] = useState(false)
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<SearchResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
+  const [showDenied, setShowDenied] = useState(false)
 
   const set = <K extends keyof SearchConfig>(k: K, v: SearchConfig[K]) =>
     setConfig(c => ({ ...c, [k]: v }))
@@ -474,26 +766,18 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
     }
   }
 
-  const handleAddToPipeline = async (result: SearchResult) => {
-    await onAddToPipeline({
-      title: result.title,
-      monthly_rent: result.price || undefined,
-      bedrooms: result.bedrooms || undefined,
-      listing_url: result.url,
-      source: 'craigslist',
-      furnished: config.furnished === 'yes',
-      status: 'new' as LeadStatus,
-    })
-    setAddedIds(prev => { const next = new Set(Array.from(prev)); next.add(result.id); return next })
-  }
-
   const revenue = 105 * 30
   const margin = Math.round(((revenue - config.max_monthly_rent) / revenue) * 100)
-
   const summaryText = `${config.bedrooms_min === config.bedrooms_max ? config.bedrooms_min : `${config.bedrooms_min}–${config.bedrooms_max}`}BR · ${config.radius_km}km · $${config.max_monthly_rent.toLocaleString()}/mo`
 
   const labelStyle: React.CSSProperties = { fontFamily: 'IBM Plex Mono', fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ffffff44', display: 'block', marginBottom: 6 }
   const sectionStyle: React.CSSProperties = { background: '#0C0E14', border: '1px solid #ffffff0D', borderRadius: 8, padding: '16px 18px', marginBottom: 12 }
+
+  const visibleResults = showDenied
+    ? (results?.results || [])
+    : (results?.results || []).filter(r => r.feed_decision !== 'denied')
+
+  const deniedInResults = (results?.results || []).filter(r => r.feed_decision === 'denied').length
 
   return (
     <div style={{ background: '#13161D', border: '1px solid #1B4353', borderRadius: 12, overflow: 'hidden' }}>
@@ -507,17 +791,24 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
             Live Craigslist · Kijiji · Facebook Marketplace
           </div>
         </div>
-        {collapsed && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#4F87A0' }}>{summaryText}</span>
-            <button
-              onClick={() => setCollapsed(false)}
-              style={{ background: '#1B435322', border: '1px solid #1B435355', borderRadius: 6, padding: '5px 12px', fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#4F87A0', cursor: 'pointer' }}
-            >
-              Edit ✎
-            </button>
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {deniedCount > 0 && (
+            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#e74c3c88' }}>
+              Algorithm learned from {deniedCount} denial{deniedCount !== 1 ? 's' : ''}
+            </span>
+          )}
+          {collapsed && (
+            <>
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#4F87A0' }}>{summaryText}</span>
+              <button
+                onClick={() => setCollapsed(false)}
+                style={{ background: '#1B435322', border: '1px solid #1B435355', borderRadius: 6, padding: '5px 12px', fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#4F87A0', cursor: 'pointer' }}
+              >
+                Edit ✎
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Filter Panel */}
@@ -560,10 +851,7 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
               </div>
               <div style={{ flex: 1 }}>
                 <input
-                  type="range"
-                  min={5}
-                  max={100}
-                  step={config.radius_km <= 20 ? 1 : 5}
+                  type="range" min={5} max={100} step={config.radius_km <= 20 ? 1 : 5}
                   value={config.radius_km}
                   onChange={e => set('radius_km', parseInt(e.target.value))}
                   style={{ width: '100%', accentColor: '#1B4353' }}
@@ -582,7 +870,6 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
           <div style={sectionStyle}>
             <label style={labelStyle}>Step 4 — Unit Requirements</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
-              {/* Bedrooms min */}
               <div>
                 <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff44', marginBottom: 6 }}>Bedrooms Min</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -591,7 +878,6 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
                   <button onClick={() => set('bedrooms_min', Math.min(config.bedrooms_max, config.bedrooms_min + 1))} style={{ background: '#ffffff0D', border: 'none', borderRadius: 4, width: 28, height: 28, color: '#DDD5C8', cursor: 'pointer', fontSize: 16 }}>+</button>
                 </div>
               </div>
-              {/* Bedrooms max */}
               <div>
                 <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff44', marginBottom: 6 }}>Bedrooms Max</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -600,7 +886,6 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
                   <button onClick={() => set('bedrooms_max', Math.min(8, config.bedrooms_max + 1))} style={{ background: '#ffffff0D', border: 'none', borderRadius: 4, width: 28, height: 28, color: '#DDD5C8', cursor: 'pointer', fontSize: 16 }}>+</button>
                 </div>
               </div>
-              {/* Bathrooms min */}
               <div>
                 <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff44', marginBottom: 6 }}>Bathrooms Min</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -610,45 +895,23 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
                 </div>
               </div>
             </div>
-            {/* Furnished toggle */}
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff44', marginBottom: 8 }}>Furnished</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 {(['yes', 'no', 'either'] as const).map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => set('furnished', opt)}
-                    style={{
-                      padding: '5px 14px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10,
-                      cursor: 'pointer', border: '1px solid',
-                      background: config.furnished === opt ? '#1B435333' : 'transparent',
-                      borderColor: config.furnished === opt ? '#4F87A0' : '#ffffff22',
-                      color: config.furnished === opt ? '#4F87A0' : '#ffffff55',
-                    }}
-                  >
+                  <button key={opt} onClick={() => set('furnished', opt)} style={{ padding: '5px 14px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid', background: config.furnished === opt ? '#1B435333' : 'transparent', borderColor: config.furnished === opt ? '#4F87A0' : '#ffffff22', color: config.furnished === opt ? '#4F87A0' : '#ffffff55' }}>
                     {opt.charAt(0).toUpperCase() + opt.slice(1)}
                   </button>
                 ))}
               </div>
             </div>
-            {/* Unit types */}
             <div>
               <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff44', marginBottom: 8 }}>Unit Types</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {UNIT_TYPES.map(type => {
                   const active = config.unit_types.includes(type)
                   return (
-                    <button
-                      key={type}
-                      onClick={() => toggleUnitType(type)}
-                      style={{
-                        padding: '4px 12px', borderRadius: 20, fontFamily: 'IBM Plex Mono', fontSize: 10,
-                        cursor: 'pointer', border: '1px solid',
-                        background: active ? '#1B435333' : 'transparent',
-                        borderColor: active ? '#4F87A0' : '#ffffff22',
-                        color: active ? '#4F87A0' : '#ffffff44',
-                      }}
-                    >
+                    <button key={type} onClick={() => toggleUnitType(type)} style={{ padding: '4px 12px', borderRadius: 20, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid', background: active ? '#1B435333' : 'transparent', borderColor: active ? '#4F87A0' : '#ffffff22', color: active ? '#4F87A0' : '#ffffff44' }}>
                       {active ? '✓ ' : ''}{type}
                     </button>
                   )
@@ -665,12 +928,7 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
                 ${config.max_monthly_rent.toLocaleString()}
               </div>
               <div style={{ flex: 1 }}>
-                <input
-                  type="range" min={1000} max={5000} step={100}
-                  value={config.max_monthly_rent}
-                  onChange={e => set('max_monthly_rent', parseInt(e.target.value))}
-                  style={{ width: '100%', accentColor: '#C9A84C' }}
-                />
+                <input type="range" min={1000} max={5000} step={100} value={config.max_monthly_rent} onChange={e => set('max_monthly_rent', parseInt(e.target.value))} style={{ width: '100%', accentColor: '#C9A84C' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff33', marginTop: 4 }}>
                   <span>$1,000</span><span>$5,000</span>
                 </div>
@@ -684,35 +942,23 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
           {/* Step 6 — Quality Filters */}
           <div style={sectionStyle}>
             <label style={labelStyle}>Step 6 — Quality Filters</label>
-            {[
+            {([
               { key: 'require_parking' as const, label: 'Must have parking' },
               { key: 'require_modern' as const, label: 'Modern/updated only' },
               { key: 'min_photos' as const, label: 'Minimum 4 photos' },
               { key: 'exclude_bad' as const, label: 'Exclude: student, shared, room rentals, land, for sale' },
-            ].map(({ key, label }) => (
+            ]).map(({ key, label }) => (
               <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={config[key] as boolean}
-                  onChange={e => set(key, e.target.checked)}
-                  style={{ accentColor: '#1B4353', width: 14, height: 14 }}
-                />
+                <input type="checkbox" checked={config[key] as boolean} onChange={e => set(key, e.target.checked)} style={{ accentColor: '#1B4353', width: 14, height: 14 }} />
                 <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#DDD5C8' }}>{label}</span>
               </label>
             ))}
           </div>
 
-          {/* Run Search */}
           <button
             onClick={handleSearch}
             disabled={searching}
-            style={{
-              width: '100%', background: searching ? '#1B435388' : '#1B4353',
-              color: '#DDD5C8', border: 'none', borderRadius: 8,
-              padding: '14px 24px', fontFamily: "'League Spartan', sans-serif",
-              fontSize: 16, fontWeight: 700, letterSpacing: '0.05em',
-              cursor: searching ? 'wait' : 'pointer', transition: 'background 0.2s',
-            }}
+            style={{ width: '100%', background: searching ? '#1B435388' : '#1B4353', color: '#DDD5C8', border: 'none', borderRadius: 8, padding: '14px 24px', fontFamily: "'League Spartan', sans-serif", fontSize: 16, fontWeight: 700, letterSpacing: '0.05em', cursor: searching ? 'wait' : 'pointer', transition: 'background 0.2s' }}
           >
             {searching ? '⟳ Searching listings…' : 'Find Units →'}
           </button>
@@ -726,156 +972,50 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
         </div>
       )}
 
-      {/* Results */}
+      {/* Smart Feed Results */}
       {results && (
         <div style={{ padding: '0 24px 24px' }}>
-          {/* Summary bar */}
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#4F87A0', marginBottom: 16, padding: '8px 12px', background: '#1B435322', borderRadius: 6 }}>
-            Found {results.total_fetched} listings · Filtered to top {results.total_after_filter} · Sources: {results.sources_searched.map(s => s.replace('craigslist_', '')).join(', ')}
-            {results.sources_errored && results.sources_errored.length > 0 && (
-              <span style={{ color: '#E84855', marginLeft: 8 }}>· {results.sources_errored.join(', ')}: fetch failed</span>
+          {/* Feed header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, padding: '8px 12px', background: '#1B435322', borderRadius: 6 }}>
+            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#4F87A0' }}>
+              Showing {visibleResults.length} results
+              {deniedInResults > 0 && !showDenied && ` · ${deniedInResults} previously denied excluded`}
+              {' '}· Sorted by match score
+            </span>
+            {deniedInResults > 0 && (
+              <button
+                onClick={() => setShowDenied(v => !v)}
+                style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, background: 'transparent', border: '1px solid #ffffff22', borderRadius: 4, padding: '3px 10px', color: '#ffffff44', cursor: 'pointer' }}
+              >
+                {showDenied ? 'Hide denied' : `Show denied (${deniedInResults})`}
+              </button>
             )}
           </div>
 
-          {/* Result cards */}
-          {results.results.length === 0 && (
+          {visibleResults.length === 0 && (
             <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#ffffff44', textAlign: 'center', padding: '32px 0' }}>
               No listings matched your filters. Try adjusting the budget or removing some quality filters.
             </div>
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {results.results.map(result => (
-              <div
-                key={result.id}
-                style={{ background: '#0C0E14', border: '1px solid #ffffff0D', borderRadius: 8, padding: '14px 16px', position: 'relative' }}
-              >
-                {/* Score badge */}
-                <div style={{
-                  position: 'absolute', top: 12, right: 12,
-                  background: `${scoreColor(result.score)}22`, border: `1px solid ${scoreColor(result.score)}55`,
-                  borderRadius: 20, padding: '3px 10px',
-                  fontFamily: 'IBM Plex Mono', fontSize: 10, fontWeight: 700, color: scoreColor(result.score),
-                }}>
-                  {result.score}
-                </div>
-
-                <div style={{ paddingRight: 60 }}>
-                  {result.thumbnail && (
-                    <img
-                      src={result.thumbnail}
-                      alt=""
-                      style={{ float: 'right', width: 80, height: 60, objectFit: 'cover', borderRadius: 4, marginLeft: 12, marginBottom: 8 }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                    />
-                  )}
-                  <div style={{ fontSize: 13, color: '#DDD5C8', fontWeight: 500, lineHeight: 1.4, marginBottom: 6 }}>
-                    {result.title}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                    {result.price && (
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C9A84C', fontWeight: 700 }}>
-                        ${result.price.toLocaleString()}/mo
-                      </span>
-                    )}
-                    {result.bedrooms !== null && result.bedrooms !== undefined && (
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff55' }}>
-                        {result.bedrooms === 0 ? 'Studio' : `${result.bedrooms} bed`}
-                      </span>
-                    )}
-                    {result.posted_date && (
-                      <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff33' }}>
-                        {new Date(result.posted_date).toLocaleDateString()}
-                      </span>
-                    )}
-                    <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, padding: '2px 7px', borderRadius: 10, background: '#8B5CF622', border: '1px solid #8B5CF644', color: '#8B5CF6' }}>
-                      {result.source}
-                    </span>
-                  </div>
-
-                  {/* Score reasons */}
-                  {result.score_reasons.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-                      {result.score_reasons.map(reason => (
-                        <span
-                          key={reason}
-                          style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, padding: '2px 8px', borderRadius: 10, background: '#ffffff08', border: '1px solid #ffffff11', color: '#ffffff55' }}
-                        >
-                          {reason}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Action buttons */}
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <button
-                    onClick={() => handleAddToPipeline(result)}
-                    disabled={addedIds.has(result.id)}
-                    style={{
-                      flex: 1, padding: '7px 12px', borderRadius: 6,
-                      fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: addedIds.has(result.id) ? 'default' : 'pointer',
-                      border: '1px solid',
-                      background: addedIds.has(result.id) ? '#4CAF9322' : '#C9A84C22',
-                      borderColor: addedIds.has(result.id) ? '#4CAF9355' : '#C9A84C55',
-                      color: addedIds.has(result.id) ? '#4CAF93' : '#C9A84C',
-                    }}
-                  >
-                    {addedIds.has(result.id) ? '✓ Added' : 'Add to Pipeline →'}
-                  </button>
-                  <a
-                    href={result.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      padding: '7px 12px', borderRadius: 6,
-                      fontFamily: 'IBM Plex Mono', fontSize: 10, textDecoration: 'none',
-                      border: '1px solid #ffffff22', color: '#ffffff55', background: '#ffffff08',
-                    }}
-                  >
-                    Open ↗
-                  </a>
-                  <button
-                    onClick={() => {
-                      const msg = `Hi, I'm reaching out on behalf of Elias Range Stays — a BC-based workforce housing company that provides furnished accommodations for healthcare and construction teams.\n\nWe are currently looking for a ${result.title} for a team contract in your area. We offer:\n• Stable, long-term lease agreements (3–12+ months)\n• On-time monthly payments — guaranteed\n• Professional tenants (healthcare workers & engineers)\n• No wear beyond normal use — we manage the property carefully\n\nWould you be open to discussing a lease arrangement? We can move quickly if the unit is a good fit.\n\nThanks,\nAustin Neill\nElias Range Stays\naustin@eliasrangestays.ca\n(250) 719-8085\neliasrangestays.ca`
-                      navigator.clipboard.writeText(msg).then(() => {
-                        alert('✓ Outreach message copied! Paste it into Facebook Messenger or Kijiji.')
-                      })
-                    }}
-                    style={{
-                      padding: '7px 10px', borderRadius: 6, cursor: 'pointer',
-                      fontFamily: 'IBM Plex Mono', fontSize: 10,
-                      border: '1px solid #4F87A044', color: '#4F87A0', background: '#4F87A011',
-                    }}
-                    title="Copy a professional outreach message to paste into Facebook/Kijiji"
-                  >
-                    📋 Copy Message
-                  </button>
-                </div>
-              </div>
+            {visibleResults.map(result => (
+              <FeedCard
+                key={result.feed_item_id || result.id}
+                result={result}
+                contracts={contracts}
+                onDecision={onFeedDecision}
+              />
             ))}
           </div>
 
           {/* Kijiji links */}
           {results.kijiji_links.length > 0 && (
             <div style={{ marginTop: 24 }}>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', color: '#E8411A', textTransform: 'uppercase', marginBottom: 10 }}>
-                Kijiji Quick Search
-              </div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', color: '#E8411A', textTransform: 'uppercase', marginBottom: 10 }}>Kijiji Quick Search</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {results.kijiji_links.map((link, i) => (
-                  <a
-                    key={i}
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      padding: '8px 16px', borderRadius: 8, fontFamily: 'IBM Plex Mono', fontSize: 11,
-                      textDecoration: 'none', border: '1px solid #E8411A55',
-                      background: '#E8411A11', color: '#E8411A',
-                    }}
-                  >
+                  <a key={i} href={link.url} target="_blank" rel="noreferrer" style={{ padding: '8px 16px', borderRadius: 8, fontFamily: 'IBM Plex Mono', fontSize: 11, textDecoration: 'none', border: '1px solid #E8411A55', background: '#E8411A11', color: '#E8411A' }}>
                     🏠 {link.label} →
                   </a>
                 ))}
@@ -886,28 +1026,125 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
           {/* Facebook links */}
           {results.facebook_links.length > 0 && (
             <div style={{ marginTop: 16 }}>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', color: '#4267B2', textTransform: 'uppercase', marginBottom: 10 }}>
-                Facebook Marketplace
-              </div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', color: '#4267B2', textTransform: 'uppercase', marginBottom: 10 }}>Facebook Marketplace</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {results.facebook_links.map((link, i) => (
-                  <a
-                    key={i}
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      padding: '8px 16px', borderRadius: 8, fontFamily: 'IBM Plex Mono', fontSize: 11,
-                      textDecoration: 'none', border: '1px solid #4267B255',
-                      background: '#4267B211', color: '#4267B2',
-                    }}
-                  >
+                  <a key={i} href={link.url} target="_blank" rel="noreferrer" style={{ padding: '8px 16px', borderRadius: 8, fontFamily: 'IBM Plex Mono', fontSize: 11, textDecoration: 'none', border: '1px solid #4267B255', background: '#4267B211', color: '#4267B2' }}>
                     📘 {link.label} →
                   </a>
                 ))}
               </div>
             </div>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Manager Review Panel ─────────────────────────────────────────────────────
+
+function ManagerReviewPanel({
+  leads,
+  contracts,
+  onApproveForOutreach,
+  onRemove,
+}: {
+  leads: Lead[]
+  contracts: Contract[]
+  onApproveForOutreach: (leadId: string) => Promise<void>
+  onRemove: (leadId: string) => Promise<void>
+}) {
+  // Get accepted leads (status = 'new', not yet queued)
+  const acceptedLeads = leads.filter(l => l.feed_item_id && l.status === 'new' && !l.queued_for_messaging)
+
+  // Group by contract
+  const byContract = new Map<string, Lead[]>()
+  const noContract: Lead[] = []
+  for (const lead of acceptedLeads) {
+    if (lead.contract_id) {
+      const existing = byContract.get(lead.contract_id) || []
+      byContract.set(lead.contract_id, [...existing, lead])
+    } else {
+      noContract.push(lead)
+    }
+  }
+
+  const [loading, setLoading] = useState<string | null>(null)
+
+  if (acceptedLeads.length === 0) return null
+
+  const handleApprove = async (leadId: string) => {
+    setLoading(leadId)
+    await onApproveForOutreach(leadId)
+    setLoading(null)
+  }
+
+  const handleRemove = async (leadId: string) => {
+    setLoading(leadId)
+    await onRemove(leadId)
+    setLoading(null)
+  }
+
+  const contractLabel = (contractId: string) => {
+    const c = contracts.find(c => c.id === contractId)
+    return c ? `${c.reference} — ${c.client_name}` : contractId
+  }
+
+  const renderLead = (lead: Lead) => (
+    <div key={lead.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#0C0E14', borderRadius: 7, marginBottom: 6 }}>
+      <div style={{ flex: 1 }}>
+        <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#DDD5C8' }}>
+          {lead.bedrooms ? `${lead.bedrooms}BR` : ''} {lead.furnished ? 'Furnished' : 'Unfurnished'}
+          {lead.monthly_rent ? ` · $${lead.monthly_rent.toLocaleString()}/mo` : ''}
+        </span>
+        {lead.title && (
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff44', marginTop: 2 }}>{lead.title.slice(0, 60)}</div>
+        )}
+      </div>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <button
+          onClick={() => handleApprove(lead.id)}
+          disabled={loading === lead.id}
+          style={{ padding: '6px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #2D5A3D', background: '#2D5A3D22', color: '#4CAF93' }}
+        >
+          {loading === lead.id ? '…' : 'Approve for Outreach'}
+        </button>
+        <button
+          onClick={() => handleRemove(lead.id)}
+          disabled={loading === lead.id}
+          style={{ padding: '6px 10px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #E8485533', background: 'transparent', color: '#E8485577' }}
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ marginTop: 32, background: '#13161D', border: '1px solid #C9A84C33', borderRadius: 12, padding: '20px 24px' }}>
+      <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 18, color: '#DDD5C8', fontWeight: 700, marginBottom: 6 }}>
+        👔 Manager Review
+      </div>
+      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#C9A84C', marginBottom: 20 }}>
+        {acceptedLeads.length} accepted lead{acceptedLeads.length !== 1 ? 's' : ''} awaiting outreach approval
+      </div>
+
+      {Array.from(byContract.entries()).map(([contractId, contractLeads]) => (
+        <div key={contractId} style={{ marginBottom: 20 }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: 10, borderBottom: '1px solid #C9A84C22', paddingBottom: 6 }}>
+            CONTRACT: {contractLabel(contractId)}
+          </div>
+          {contractLeads.map(renderLead)}
+        </div>
+      ))}
+
+      {noContract.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#ffffff44', marginBottom: 10, borderBottom: '1px solid #ffffff11', paddingBottom: 6 }}>
+            NO CONTRACT ASSIGNED
+          </div>
+          {noContract.map(renderLead)}
         </div>
       )}
     </div>
@@ -923,6 +1160,8 @@ export default function SourcingPage() {
   const [loading, setLoading] = useState(true)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null)
+  const [contractFilter, setContractFilter] = useState<string>('')
+  const [deniedCount, setDeniedCount] = useState(0)
 
   const showToast = (msg: string, type = 'success') => {
     setToast({ msg, type })
@@ -953,12 +1192,23 @@ export default function SourcingPage() {
     } catch { }
   }, [])
 
+  const fetchDeniedCount = useCallback(async () => {
+    try {
+      const headers = await getAuthHeaders()
+      const res = await fetch('/api/sourcing/feed', { headers })
+      if (!res.ok) return
+      const data = await res.json()
+      setDeniedCount(data.denied_count || 0)
+    } catch { }
+  }, [])
+
   useEffect(() => {
     if (!roleLoading) {
       fetchLeads()
       fetchContracts()
+      fetchDeniedCount()
     }
-  }, [roleLoading, fetchLeads, fetchContracts])
+  }, [roleLoading, fetchLeads, fetchContracts, fetchDeniedCount])
 
   const saveLead = async (id: string, patch: Partial<Lead>) => {
     const headers = await getAuthHeaders()
@@ -994,6 +1244,79 @@ export default function SourcingPage() {
     showToast('Lead added to pipeline')
   }
 
+  const handleFeedDecision = async (
+    feedItemId: string,
+    decision: FeedCardDecision,
+    opts?: { deny_reason?: DenyReason; contract_id?: string }
+  ) => {
+    try {
+      const headers = await getAuthHeaders()
+      const res = await fetch(`/api/sourcing/feed/${feedItemId}`, {
+        method: 'PATCH',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision, ...opts }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        showToast(err.error || 'Decision failed', 'error')
+        return
+      }
+      if (decision === 'accepted') {
+        showToast('✓ Accepted — lead added to pipeline')
+        await fetchLeads()
+      } else {
+        showToast('✗ Denied — algorithm updated')
+        setDeniedCount(c => c + 1)
+      }
+    } catch {
+      showToast('Decision failed', 'error')
+    }
+  }
+
+  const handleApproveForOutreach = async (leadId: string) => {
+    try {
+      const headers = await getAuthHeaders()
+      const res = await fetch('/api/sourcing/queue', {
+        method: 'PATCH',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: leadId, action: 'queue' }),
+      })
+      if (!res.ok) { showToast('Approval failed', 'error'); return }
+      await fetchLeads()
+      showToast('Lead queued for messaging')
+    } catch {
+      showToast('Approval failed', 'error')
+    }
+  }
+
+  const handleRemoveLead = async (leadId: string) => {
+    await deleteLead(leadId)
+  }
+
+  const handleSendMessage = (lead: Lead) => {
+    const msg = `Hi, I'm reaching out on behalf of Elias Range Stays — a BC-based workforce housing company that provides furnished accommodations for healthcare and construction teams.\n\nWe are currently looking for a ${lead.title} for a team contract in your area. We offer:\n• Stable, long-term lease agreements (3–12+ months)\n• On-time monthly payments — guaranteed\n• Professional tenants (healthcare workers & engineers)\n• No wear beyond normal use — we manage the property carefully\n\nWould you be open to discussing a lease arrangement? We can move quickly if the unit is a good fit.\n\nThanks,\nAustin Neill\nElias Range Stays\naustin@eliasrangestays.ca\n(250) 719-8085\neliasrangestays.ca`
+    navigator.clipboard.writeText(msg).then(() => {
+      showToast('✓ Outreach message copied')
+      if (lead.listing_url) window.open(lead.listing_url, '_blank')
+      // Update status to contacted
+      saveLead(lead.id, { status: 'contacted' })
+    })
+  }
+
+  const getContractName = (contractId?: string) => {
+    if (!contractId) return undefined
+    const c = contracts.find(c => c.id === contractId)
+    return c ? `${c.reference} — ${c.client_name}` : undefined
+  }
+
+  // Filtered leads for kanban
+  const filteredLeads = contractFilter
+    ? leads.filter(l => l.contract_id === contractFilter)
+    : leads
+
+  // Queued for messaging leads
+  const queuedLeads = leads.filter(l => l.queued_for_messaging && l.status === 'new')
+
   if (roleLoading || loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0C0E14', fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#ffffff33' }}>
@@ -1016,6 +1339,7 @@ export default function SourcingPage() {
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .kanban-col { min-width: 200px; flex: 1; background: #13161D; border: 1px solid #ffffff0D; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; }
         .kanban-col-header { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .queued-col { min-width: 200px; flex: 1; background: #13161D; border: 1px solid #C9A84C33; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; }
       `}</style>
 
       {toast && (
@@ -1042,11 +1366,7 @@ export default function SourcingPage() {
           { href: '/dashboard/ap-ar', icon: '💰', label: 'AP / AR' },
           { href: '/dashboard/sourcing', icon: '🔍', label: 'Sourcing', active: true },
         ].map(n => (
-          <div
-            key={n.href}
-            className={`nav-item ${n.active ? 'active' : ''}`}
-            onClick={() => { window.location.href = n.href }}
-          >
+          <div key={n.href} className={`nav-item ${n.active ? 'active' : ''}`} onClick={() => { window.location.href = n.href }}>
             <span style={{ fontSize: 14 }}>{n.icon}</span>{n.label}
           </div>
         ))}
@@ -1070,26 +1390,58 @@ export default function SourcingPage() {
           </div>
         </div>
 
-        {/* ── SMART SOURCING ENGINE ────────────────────────────────────────── */}
-        <SmartSourcingEngine onAddToPipeline={addLead} contracts={contracts} />
+        {/* ── SMART SOURCING ENGINE (with Smart Feed) ──────────────────── */}
+        <SmartSourcingEngine
+          onAddToPipeline={addLead}
+          contracts={contracts}
+          onFeedDecision={handleFeedDecision}
+          deniedCount={deniedCount}
+        />
 
-        {/* ── PIPELINE BOARD ──────────────────────────────────────────────── */}
+        {/* ── PIPELINE BOARD ────────────────────────────────────────────── */}
         <div style={{ marginTop: 32 }}>
-          <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 18, color: '#DDD5C8', fontWeight: 700, marginBottom: 16 }}>
-            Pipeline Board
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 18, color: '#DDD5C8', fontWeight: 700 }}>
+              Pipeline Board
+            </div>
+            {/* Contract Filter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff44' }}>Filter:</span>
+              <select
+                value={contractFilter}
+                onChange={e => setContractFilter(e.target.value)}
+                style={{ background: '#13161D', border: '1px solid #ffffff0D', borderRadius: 6, padding: '6px 10px', color: '#DDD5C8', fontFamily: 'IBM Plex Mono', fontSize: 11, outline: 'none', cursor: 'pointer' }}
+              >
+                <option value="">All contracts</option>
+                {contracts.map(c => (
+                  <option key={c.id} value={c.id}>{c.reference} — {c.client_name}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 12 }}>
+            {/* Regular pipeline stages */}
             {PIPELINE_STAGES.map(stage => {
-              const stageLeads = leads.filter(l => l.status === stage.key)
+              const stageLeads = filteredLeads.filter(l => l.status === stage.key && !l.queued_for_messaging)
               return (
                 <div key={stage.key} className="kanban-col">
                   <div className="kanban-col-header">
                     <span style={{ color: stage.color }}>{stage.label}</span>
                     <span style={{ color: '#ffffff33', fontSize: 10 }}>{stageLeads.length}</span>
                   </div>
+                  {contractFilter && (
+                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#C9A84C', marginBottom: 6, opacity: 0.7 }}>
+                      {getContractName(contractFilter)?.split(' — ')[0]}
+                    </div>
+                  )}
                   <div style={{ flex: 1, overflowY: 'auto', maxHeight: 500 }}>
                     {stageLeads.map(lead => (
-                      <LeadCard key={lead.id} lead={lead} onClick={() => setSelectedLead(lead)} />
+                      <LeadCard
+                        key={lead.id}
+                        lead={lead}
+                        onClick={() => setSelectedLead(lead)}
+                        contractName={!contractFilter ? getContractName(lead.contract_id) : undefined}
+                      />
                     ))}
                     {stageLeads.length === 0 && (
                       <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff22', textAlign: 'center', paddingTop: 20 }}>empty</div>
@@ -1098,10 +1450,51 @@ export default function SourcingPage() {
                 </div>
               )
             })}
+
+            {/* Queued for Messaging column */}
+            <div className="queued-col">
+              <div className="kanban-col-header">
+                <span style={{ color: '#C9A84C' }}>Queued for Messaging</span>
+                <span style={{ color: '#C9A84C44', fontSize: 10 }}>{queuedLeads.length}</span>
+              </div>
+              {contractFilter && (
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#C9A84C', marginBottom: 6, opacity: 0.7 }}>
+                  {getContractName(contractFilter)?.split(' — ')[0]}
+                </div>
+              )}
+              <div style={{ flex: 1, overflowY: 'auto', maxHeight: 500 }}>
+                {(contractFilter
+                  ? queuedLeads.filter(l => l.contract_id === contractFilter)
+                  : queuedLeads
+                ).map(lead => (
+                  <QueuedLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    onSendMessage={handleSendMessage}
+                    contractName={!contractFilter ? getContractName(lead.contract_id) : undefined}
+                  />
+                ))}
+                {queuedLeads.length === 0 && (
+                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#C9A84C22', textAlign: 'center', paddingTop: 20 }}>
+                    Approved leads appear here
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── QUICK ADD FORM ───────────────────────────────────────────────── */}
+        {/* ── MANAGER REVIEW PANEL (owner-only) ───────────────────────── */}
+        {role === 'owner' && (
+          <ManagerReviewPanel
+            leads={leads}
+            contracts={contracts}
+            onApproveForOutreach={handleApproveForOutreach}
+            onRemove={handleRemoveLead}
+          />
+        )}
+
+        {/* ── QUICK ADD FORM ──────────────────────────────────────────── */}
         <QuickAddForm onAdd={addLead} />
       </div>
 
