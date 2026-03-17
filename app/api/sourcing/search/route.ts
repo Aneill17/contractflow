@@ -267,9 +267,15 @@ function buildKijijiLinks(params: {
 
   for (const region of params.regions) {
     if (!region.kijiji_slug) continue
-    const bedroomPath = params.bedroomsMin === 1 ? '' : `${params.bedroomsMin}-bedroom/`
-    const url = `https://www.kijiji.ca/b-apartments-condos/${region.label.toLowerCase().replace(/ /g, '-')}/${bedroomPath}${region.kijiji_slug}?${priceParam}${furnParam}`
     const furnLabel = params.furnished ? ' Furnished' : ''
+
+    // Kijiji correct URL format:
+    // /b-apartments-condos/[city-slug]/[location-id]?price=0__[cents]&numberbedrooms=[n]
+    // e.g. https://www.kijiji.ca/b-apartments-condos/vancouver/k0c37l1700281?price=0__280000&numberbedrooms=2
+    const bedroomParam = params.bedroomsMin > 0 ? `&numberbedrooms=${params.bedroomsMin}` : ''
+    const citySlug = region.label.toLowerCase().replace(/ /g, '-').replace(/[^a-z-]/g, '')
+    const url = `https://www.kijiji.ca/b-apartments-condos/${citySlug}/${region.kijiji_slug}?${priceParam}${furnParam}${bedroomParam}&ad=offering&sortByName=dateDesc`
+
     links.push({
       label: `${bedLabel}${furnLabel} — ${region.label} (Kijiji)`,
       url,
@@ -282,12 +288,24 @@ function buildKijijiLinks(params: {
 
 function buildFacebookLinks(params: {
   maxMonthlyRent: number
+  bedroomsMin: number
+  bedroomsMax: number
+  furnished: boolean
   regions: CraigslistRegion[]
 }): { label: string; url: string }[] {
-  return params.regions.map(region => ({
-    label: `${region.label} Rentals — Facebook Marketplace`,
-    url: `https://www.facebook.com/marketplace/${region.fb_city}/rentals/?minPrice=500&maxPrice=${params.maxMonthlyRent}&exact=false`,
-  }))
+  // Facebook Marketplace rental search — works when user is logged into FB
+  // /marketplace/[city]/rentals with price filter
+  return params.regions.map(region => {
+    const bedLabel = params.bedroomsMin === params.bedroomsMax
+      ? `${params.bedroomsMin}BR`
+      : `${params.bedroomsMin}–${params.bedroomsMax}BR`
+    const furnLabel = params.furnished ? ' Furnished' : ''
+    return {
+      label: `${bedLabel}${furnLabel} — ${region.label} (Facebook)`,
+      // FB Marketplace rentals with max price filter
+      url: `https://www.facebook.com/marketplace/${region.fb_city}/propertyrentals/?maxPrice=${params.maxMonthlyRent}&exact=false&sortBy=creation_time_descend`,
+    }
+  })
 }
 
 // ─── POST handler ─────────────────────────────────────────────────────────────
@@ -400,6 +418,9 @@ export async function POST(req: NextRequest) {
 
   const facebook_links = buildFacebookLinks({
     maxMonthlyRent: max_monthly_rent,
+    bedroomsMin: bedrooms_min,
+    bedroomsMax: bedrooms_max,
+    furnished,
     regions,
   })
 

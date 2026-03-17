@@ -836,6 +836,22 @@ function SmartSourcingEngine({ onAddToPipeline, contracts }: {
                   >
                     Open ↗
                   </a>
+                  <button
+                    onClick={() => {
+                      const msg = `Hi, I'm reaching out on behalf of Elias Range Stays — a BC-based workforce housing company that provides furnished accommodations for healthcare and construction teams.\n\nWe are currently looking for a ${result.title} for a team contract in your area. We offer:\n• Stable, long-term lease agreements (3–12+ months)\n• On-time monthly payments — guaranteed\n• Professional tenants (healthcare workers & engineers)\n• No wear beyond normal use — we manage the property carefully\n\nWould you be open to discussing a lease arrangement? We can move quickly if the unit is a good fit.\n\nThanks,\nAustin Neill\nElias Range Stays\naustin@eliasrangestays.ca\n(250) 719-8085\neliasrangestays.ca`
+                      navigator.clipboard.writeText(msg).then(() => {
+                        alert('✓ Outreach message copied! Paste it into Facebook Messenger or Kijiji.')
+                      })
+                    }}
+                    style={{
+                      padding: '7px 10px', borderRadius: 6, cursor: 'pointer',
+                      fontFamily: 'IBM Plex Mono', fontSize: 10,
+                      border: '1px solid #4F87A044', color: '#4F87A0', background: '#4F87A011',
+                    }}
+                    title="Copy a professional outreach message to paste into Facebook/Kijiji"
+                  >
+                    📋 Copy Message
+                  </button>
                 </div>
               </div>
             ))}
