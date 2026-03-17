@@ -75,7 +75,18 @@ function RequestForm() {
     }
   }
 
-  const inputStyle: React.CSSProperties = {
+  const inputStyle: React.CSSProperties = embed ? {
+    // Dark mode — matches website
+    background: '#0C1D2E',
+    border: '1px solid rgba(255,255,255,0.14)',
+    borderRadius: 6,
+    padding: '12px 16px',
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: "'Source Serif 4', serif",
+    width: '100%',
+    outline: 'none',
+  } : {
     background: 'white',
     border: '1px solid #D5D5D5',
     borderRadius: 8,
@@ -89,7 +100,7 @@ function RequestForm() {
 
   const labelStyle: React.CSSProperties = {
     fontSize: 10,
-    color: '#6B7280',
+    color: embed ? 'rgba(168,209,231,0.75)' : '#6B7280',
     letterSpacing: '0.12em',
     marginBottom: 6,
     display: 'block',
@@ -97,7 +108,13 @@ function RequestForm() {
     textTransform: 'uppercase',
   }
 
-  const cardStyle: React.CSSProperties = {
+  const cardStyle: React.CSSProperties = embed ? {
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 10,
+    padding: '24px',
+    marginBottom: 4,
+  } : {
     background: 'white',
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
     borderRadius: 12,
@@ -105,15 +122,18 @@ function RequestForm() {
   }
 
   const sectionLabel = (label: string) => (
-    <div style={{
-      fontFamily: "'League Spartan', sans-serif",
-      fontWeight: 600,
-      fontSize: 13,
-      color: '#1B4353',
-      letterSpacing: '0.08em',
-      textTransform: 'uppercase',
-      marginBottom: 16,
-    }}>{label}</div>
+    <div
+      data-section-label
+      style={{
+        fontFamily: "'League Spartan', sans-serif",
+        fontWeight: 600,
+        fontSize: 13,
+        color: embed ? 'rgba(168,209,231,0.9)' : '#1B4353',
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        marginBottom: 16,
+      }}
+    >{label}</div>
   )
 
   if (step === 'submitted') {
@@ -185,22 +205,22 @@ function RequestForm() {
 
       {/* Hero — full-bleed teal in embed mode, card-style standalone */}
       {embed ? (
-        /* Embed hero: matches website section style — dark teal, big heading */
-        <div style={{ background: '#1B4353', padding: '52px 40px 44px', marginBottom: 32, borderRadius: 4 }}>
-          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.7)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
-            Workforce Housing
+        /* Embed hero: matches website dark navy — seamless with eliasrangestays.ca */
+        <div style={{ padding: '52px 0 40px' }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'rgba(168,209,231,0.6)', letterSpacing: '0.24em', textTransform: 'uppercase', marginBottom: 14 }}>
+            Workforce Housing · British Columbia
           </div>
-          <h1 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 44, fontWeight: 700, color: '#FFFFFF', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+          <h2 style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 42, fontWeight: 700, color: '#FFFFFF', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.0 }}>
             Request a Quote
-          </h1>
-          <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 16, color: 'rgba(168,209,231,0.85)', margin: '0 0 32px', lineHeight: 1.6 }}>
-            Tell us about your team&apos;s needs — we&apos;ll respond within 24 hours.
+          </h2>
+          <p style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 16, color: 'rgba(168,209,231,0.8)', margin: '0 0 36px', lineHeight: 1.65 }}>
+            Tell us about your team&apos;s needs — we respond within 24 hours.
           </p>
-          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 36, flexWrap: 'wrap', paddingBottom: 40, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             {[['34+', 'Units Managed'], ['6', 'Hospitals Served'], ['24 hr', 'Quote Turnaround'], ['24/7', 'Support']].map(([n, l]) => (
               <div key={l}>
-                <div style={{ fontSize: 28, color: '#FFFFFF', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: 10, color: 'rgba(168,209,231,0.65)', letterSpacing: '0.1em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
+                <div style={{ fontSize: 28, color: '#00BFA6', fontFamily: "'League Spartan', sans-serif", fontWeight: 700, lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', marginTop: 5, fontFamily: 'sans-serif', textTransform: 'uppercase' }}>{l}</div>
               </div>
             ))}
           </div>
@@ -247,7 +267,13 @@ function RequestForm() {
       )}
 
       {/* Form */}
-      <div style={{ background: 'white', borderRadius: embed ? 8 : 12, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '36px 40px', border: '1px solid #E8E8E6', marginTop: embed ? 0 : 0 }}>
+      <div style={{
+        background: embed ? 'transparent' : 'white',
+        borderRadius: embed ? 0 : 12,
+        boxShadow: embed ? 'none' : '0 2px 16px rgba(0,0,0,0.06)',
+        padding: embed ? '0' : '36px 40px',
+        border: embed ? 'none' : '1px solid #E8E8E6',
+      }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Company */}
@@ -392,10 +418,12 @@ function RequestForm() {
             type="submit"
             disabled={loading}
             style={{
-              background: loading ? '#4F87A0' : '#1B4353',
-              color: 'white',
+              background: loading
+                ? (embed ? '#009e8a' : '#4F87A0')
+                : (embed ? '#00BFA6' : '#1B4353'),
+              color: embed ? '#0B2540' : 'white',
               fontFamily: "'League Spartan', sans-serif",
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: 14,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
