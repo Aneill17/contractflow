@@ -7,6 +7,9 @@ interface ClientLayoutProps {
   embed?: boolean
 }
 
+// The mountain/alpine photo Austin approved — used on both side panels
+const PANEL_PHOTO = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1200&fit=crop&crop=center&auto=format&q=85'
+
 export default function ClientLayout({ children, embed = false }: ClientLayoutProps) {
 
   // ── EMBED MODE ─────────────────────────────────────────────────────────────
@@ -109,7 +112,7 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         .cl-panel {
           width: 200px;
           flex-shrink: 0;
-          background-image: url('/landscape-banner.jpg');
+          background-image: url('');
           background-repeat: no-repeat;
           background-size: cover;
           position: relative;
@@ -222,7 +225,7 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
         <div className="cl-body">
 
           {/* Left panel — left portion of Moraine Lake panoramic */}
-          <div className="cl-panel cl-panel-left" />
+          <div className="cl-panel cl-panel-left" style={{ backgroundImage: `url("${PANEL_PHOTO}")` }} />
 
           {/* Center */}
           <div className="cl-center">
@@ -245,7 +248,7 @@ export default function ClientLayout({ children, embed = false }: ClientLayoutPr
           </div>
 
           {/* Right panel — right portion of Moraine Lake panoramic */}
-          <div className="cl-panel cl-panel-right" />
+          <div className="cl-panel cl-panel-right" style={{ backgroundImage: `url("${PANEL_PHOTO}")` }} />
 
         </div>
       </div>
