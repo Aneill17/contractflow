@@ -302,10 +302,15 @@ function buildFacebookLinks(params: {
       ? `${params.bedroomsMin}BR`
       : `${params.bedroomsMin}–${params.bedroomsMax}BR`
     const furnLabel = params.furnished ? ' Furnished' : ''
+    // Facebook Marketplace property rentals with filters:
+    // - category: propertyrentals (107)
+    // - maxPrice in whole dollars
+    // - minBedrooms filter
+    // - sortBy newest
+    const minBeds = params.bedroomsMin > 0 ? `&minBedrooms=${params.bedroomsMin}` : ''
     return {
       label: `${bedLabel}${furnLabel} — ${region.label} (Facebook)`,
-      // FB Marketplace rentals with max price filter
-      url: `https://www.facebook.com/marketplace/${region.fb_city}/propertyrentals/?maxPrice=${params.maxMonthlyRent}&exact=false&sortBy=creation_time_descend`,
+      url: `https://www.facebook.com/marketplace/${region.fb_city}/propertyrentals/?maxPrice=${params.maxMonthlyRent}${minBeds}&sortBy=creation_time_descend&exact=false`,
     }
   })
 }

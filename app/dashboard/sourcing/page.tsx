@@ -55,6 +55,8 @@ interface SearchResult {
   url: string
   price: number | null
   bedrooms: number | null
+  city?: string
+  address?: string
   posted_date: string
   thumbnail: string | null
   score: number
@@ -477,18 +479,43 @@ function FeedCard({
   const isAccepted = localDecision === 'accepted'
 
   const handleAccept = async () => {
-    if (!result.feed_item_id) return
     setLoading(true)
-    await onDecision(result.feed_item_id, 'accepted', { contract_id: selectedContract || undefined })
+    if (result.feed_item_id) {
+      // Full flow — use feed item ID
+      await onDecision(result.feed_item_id, 'accepted', { contract_id: selectedContract || undefined })
+    } else {
+      // Fallback — add directly to pipeline via sourcing_leads POST
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      const { data: { session } } = await (await import('@/lib/supabase')).supabase.auth.getSession()
+      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`
+      await fetch('/api/sourcing', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: result.title,
+          listing_url: result.url,
+          source: result.source,
+          monthly_rent: result.price,
+          bedrooms: result.bedrooms,
+          city: result.city || '',
+          notes: `Score: ${result.score} — ${(result.score_reasons || []).join(', ')}`,
+          contract_id: selectedContract || null,
+          status: 'new',
+        }),
+      })
+    }
     setLocalDecision('accepted')
     setShowAcceptDropdown(false)
     setLoading(false)
   }
 
   const handleDeny = async () => {
-    if (!result.feed_item_id || !selectedDenyReason) return
+    if (!selectedDenyReason) return
     setLoading(true)
-    await onDecision(result.feed_item_id, 'denied', { deny_reason: selectedDenyReason })
+    if (result.feed_item_id) {
+      await onDecision(result.feed_item_id, 'denied', { deny_reason: selectedDenyReason })
+    }
+    // Even without feed_item_id, record the decision locally
     setLocalDecision('denied')
     setShowDenyDropdown(false)
     setLoading(false)
@@ -574,14 +601,12 @@ function FeedCard({
               </a>
               <button
                 onClick={() => setShowAcceptDropdown(true)}
-                disabled={!result.feed_item_id}
                 style={{ flex: 1, padding: '7px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #2D5A3D', background: '#2D5A3D22', color: '#4CAF93' }}
               >
                 ✓ Accept
               </button>
               <button
                 onClick={() => setShowDenyDropdown(true)}
-                disabled={!result.feed_item_id}
                 style={{ flex: 1, padding: '7px 12px', borderRadius: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, cursor: 'pointer', border: '1px solid #e74c3c44', background: '#e74c3c11', color: '#e74c3c' }}
               >
                 ✗ Deny
