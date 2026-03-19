@@ -122,6 +122,32 @@ export default function QuoteBuilder({ contract: c, onUpdate, onRefresh, showToa
             <div style={{ fontSize: 12, color: '#ffffff66' }}>{occupants.map((o: any) => o.name).join(', ')}</div>
           </div>
         )}
+        {/* Work site + benchmark (from client request) */}
+        {((c as any).work_site_address || (c as any).current_housing_rate) && (
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #ffffff08', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {(c as any).work_site_address && (
+              <div>
+                <div className="qb-lbl" style={{ color: '#4F87A0aa' }}>Work Site (client provided)</div>
+                <div style={{ fontSize: 12, color: '#4F87A0' }}>
+                  📍 {(c as any).work_site_address.split(',').slice(0, 3).join(',').trim()}
+                </div>
+              </div>
+            )}
+            {(c as any).current_housing_rate && (
+              <div>
+                <div className="qb-lbl" style={{ color: '#C9A84Caa' }}>Current Housing Cost</div>
+                <div style={{ fontSize: 12, color: '#C9A84C' }}>
+                  ${(c as any).current_housing_rate}/night
+                  {(c as any).current_housing_location && (
+                    <span style={{ color: '#ffffff44', marginLeft: 8 }}>
+                      @ {(c as any).current_housing_location}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pricing */}

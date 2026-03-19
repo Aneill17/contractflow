@@ -75,6 +75,12 @@ export interface Contract {
   docuseal_submission_id?: string
   docuseal_client_slug?: string
   docuseal_provider_slug?: string
+  // Sprint 2: worksite + benchmark fields
+  work_site_address?: string
+  work_site_lat?: number
+  work_site_lng?: number
+  current_housing_rate?: number
+  current_housing_location?: string
   created_at: string
   updated_at: string
   occupants?: Occupant[]

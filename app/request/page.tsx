@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import ClientLayout from '@/components/ClientLayout'
 
 const WorksiteMap = dynamic(() => import('@/components/WorksiteMap'), { ssr: false })
+const ProximityResults = dynamic(() => import('@/components/ProximityResults'), { ssr: false })
 
 function RequestForm() {
   const searchParams = useSearchParams()
@@ -14,6 +15,8 @@ function RequestForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showBenchmark, setShowBenchmark] = useState(false)
+  const [proximityLat, setProximityLat] = useState<number | null>(null)
+  const [proximityLng, setProximityLng] = useState<number | null>(null)
   const [form, setForm] = useState({
     client_name: '',
     contact_name: '',
@@ -322,10 +325,24 @@ function RequestForm() {
                   set('work_site_address', address)
                   set('work_site_lat', lat.toString())
                   set('work_site_lng', lng.toString())
+                  setProximityLat(lat)
+                  setProximityLng(lng)
                 }}
                 initialAddress={form.work_site_address}
+                showUnits={true}
               />
             </Suspense>
+            {/* Proximity results — show after pin drop */}
+            {proximityLat && proximityLng && (
+              <Suspense fallback={null}>
+                <ProximityResults
+                  lat={proximityLat}
+                  lng={proximityLng}
+                  worksiteLabel={form.work_site_address}
+                  embed={embed}
+                />
+              </Suspense>
+            )}
           </div>
 
           {/* Housing Details */}
