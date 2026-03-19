@@ -176,6 +176,24 @@ export default function HomePage() {
             </div>
             <div
               className="nav-item"
+              onClick={() => window.location.href = '/dashboard/team'}
+            >
+              <span style={{ fontSize: 14 }}>👥</span>Team
+            </div>
+            <div
+              className="nav-item"
+              onClick={() => window.location.href = '/dashboard/contractors'}
+            >
+              <span style={{ fontSize: 14 }}>🤝</span>Contractors
+            </div>
+            <div
+              className="nav-item"
+              onClick={() => window.location.href = '/dashboard/kpi'}
+            >
+              <span style={{ fontSize: 14 }}>📊</span>KPI
+            </div>
+            <div
+              className="nav-item"
               onClick={() => window.open('/diagnostics', '_blank')}
             >
               <span style={{ fontSize: 14 }}>⚡</span>System Health

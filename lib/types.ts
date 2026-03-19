@@ -100,3 +100,56 @@ export const formatDate = (d: string) =>
 
 export const formatDateLong = (d: string) =>
   d ? new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : ''
+
+export interface Staff {
+  id: string
+  name: string
+  role: 'ground_team' | 'manager' | 'admin'
+  email?: string
+  phone?: string
+  status: 'active' | 'inactive'
+  notes?: string
+  created_at: string
+}
+
+export interface Task {
+  id: string
+  title: string
+  description?: string
+  assigned_to?: string
+  staff?: { name: string }
+  contract_id?: string
+  unit_id?: string
+  priority: 'urgent' | 'high' | 'normal' | 'low'
+  status: 'open' | 'in_progress' | 'done' | 'cancelled'
+  due_date?: string
+  completed_at?: string
+  notes?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Contractor {
+  id: string
+  company_name: string
+  contact_name?: string
+  email?: string
+  phone?: string
+  type: 'individual' | 'company'
+  status: 'active' | 'inactive' | 'onboarding'
+  specialty?: string
+  notes?: string
+  onboarded_at?: string
+  created_at: string
+}
+
+export interface ContractorMessage {
+  id: string
+  contractor_id: string
+  direction: 'outbound' | 'inbound'
+  channel: 'email' | 'sms' | 'whatsapp' | 'manual'
+  subject?: string
+  body: string
+  sent_by?: string
+  sent_at: string
+}
