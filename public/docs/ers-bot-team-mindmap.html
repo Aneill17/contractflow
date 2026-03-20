@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elias Range Stays — AI Bot Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0C0E14;
+    --gold: #C9A84C;
+    --gold-bright: #E8C46A;
+    --gold-dim: #8B7235;
+    --teal: #1B4353;
+    --teal-bright: #2A6680;
+    --grey: #2A2D38;
+    --grey-text: #6B7280;
+    --white: #F0EDE6;
+    --cream: #D4CDB8;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Header ── */
+  #header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    text-align: center;
+    padding: 18px 20px 14px;
+    background: linear-gradient(180deg, rgba(12,14,20,0.98) 0%, rgba(12,14,20,0.7) 100%);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    pointer-events: none;
+  }
+  #header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  #header .tagline {
+    font-size: 11px;
+    color: var(--cream);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  /* ── Canvas ── */
+  #canvas-wrap {
+    position: fixed; inset: 0;
+    cursor: grab;
+    overflow: hidden;
+  }
+  #canvas-wrap.dragging { cursor: grabbing; }
+  #canvas {
+    position: absolute;
+    width: 2400px; height: 2400px;
+    left: 0; top: 0;
+    transform-origin: 0 0;
+  }
+
+  /* ── SVG lines layer ── */
+  #lines-svg {
+    position: absolute; inset: 0;
+    width: 2400px; height: 2400px;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  /* ── Nodes ── */
+  .node {
+    position: absolute;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .node:hover { transform: scale(1.06); z-index: 10; }
+
+  /* Centre node */
+  #node-maestro {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #2a2010 0%, #0C0E14 100%);
+    border: 2px solid var(--gold);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    animation: pulse-maestro 3s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(201,168,76,0.35), 0 0 80px rgba(201,168,76,0.12);
+    z-index: 5;
+  }
+  @keyframes pulse-maestro {
+    0%, 100% { box-shadow: 0 0 40px rgba(201,168,76,0.35), 0 0 80px rgba(201,168,76,0.12); }
+    50%       { box-shadow: 0 0 60px rgba(201,168,76,0.55), 0 0 120px rgba(201,168,76,0.2); }
+  }
+  #node-maestro .m-emoji  { font-size: 36px; line-height: 1; }
+  #node-maestro .m-name   { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--gold); margin-top: 6px; letter-spacing: 2px; }
+  #node-maestro .m-sub    { font-size: 9px; color: var(--cream); letter-spacing: 2px; margin-top: 3px; opacity: 0.75; text-transform: uppercase; }
+  #node-maestro .m-brand  { font-size: 8px; color: var(--gold-dim); letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
+
+  /* Bot nodes */
+  .bot-node {
+    width: 148px;
+    padding: 14px 12px 12px;
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+    border: 1px solid;
+    position: absolute;
+  }
+  .bot-node .b-emoji  { font-size: 26px; line-height: 1; margin-bottom: 6px; }
+  .bot-node .b-name   { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; line-height: 1.2; }
+  .bot-node .b-sub    { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; opacity: 0.7; }
+  .bot-node .b-badge  { display: inline-block; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; margin-top: 7px; font-weight: 600; }
+
+  /* LIVE */
+  .status-live {
+    background: rgba(201,168,76,0.08);
+    border-color: rgba(201,168,76,0.6) !important;
+    box-shadow: 0 0 18px rgba(201,168,76,0.25), inset 0 0 10px rgba(201,168,76,0.05);
+  }
+  .status-live .b-name { color: var(--gold-bright); }
+  .status-live .b-badge { background: rgba(201,168,76,0.2); color: var(--gold-bright); border: 1px solid rgba(201,168,76,0.5); }
+
+  /* NEXT */
+  .status-next {
+    background: rgba(27,67,83,0.35);
+    border-color: rgba(42,102,128,0.7) !important;
+    box-shadow: 0 0 18px rgba(42,102,128,0.3), inset 0 0 10px rgba(42,102,128,0.07);
+  }
+  .status-next .b-name { color: #4AADCC; }
+  .status-next .b-badge { background: rgba(42,102,128,0.3); color: #4AADCC; border: 1px solid rgba(42,102,128,0.6); }
+
+  /* PLANNED */
+  .status-planned {
+    background: rgba(42,45,56,0.5);
+    border-color: rgba(80,85,100,0.4) !important;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+  }
+  .status-planned .b-name { color: #A0A8B8; }
+  .status-planned .b-badge { background: rgba(80,85,100,0.25); color: #7A8090; border: 1px solid rgba(80,85,100,0.35); }
+
+  /* ── Legend ── */
+  #legend {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    z-index: 100;
+    display: flex; gap: 24px; align-items: center;
+    background: rgba(12,14,20,0.9);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 40px;
+    padding: 10px 24px;
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; }
+  .ld-live  { background: rgba(201,168,76,0.3);  border-color: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.5); }
+  .ld-next  { background: rgba(42,102,128,0.3);  border-color: #2A6680; box-shadow: 0 0 6px rgba(42,102,128,0.5); }
+  .ld-plan  { background: rgba(80,85,100,0.25);  border-color: #505564; }
+  .ld-live-text  { color: var(--gold); }
+  .ld-next-text  { color: #4AADCC; }
+  .ld-plan-text  { color: #7A8090; }
+
+  /* ── Hint ── */
+  #hint {
+    position: fixed; bottom: 64px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: #404560; letter-spacing: 2px; text-transform: uppercase;
+    pointer-events: none; z-index: 99;
+  }
+
+  /* ── Popup panel ── */
+  #popup {
+    position: fixed; z-index: 200;
+    background: rgba(12,14,20,0.97);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 16px;
+    padding: 20px 22px 18px;
+    width: 280px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(201,168,76,0.1);
+    backdrop-filter: blur(20px);
+    display: none;
+    pointer-events: all;
+    transition: opacity 0.15s ease;
+  }
+  #popup.visible { display: block; }
+  #popup .p-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  #popup .p-emoji  { font-size: 28px; }
+  #popup .p-title  { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--gold); }
+  #popup .p-sub    { font-size: 9px; color: var(--cream); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; opacity: 0.7; }
+  #popup .p-badge  { display: inline-block; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; margin-top: 8px; font-weight: 600; }
+  #popup .p-divider { border: none; border-top: 1px solid rgba(201,168,76,0.15); margin: 12px 0; }
+  #popup .p-resp-title { font-size: 9px; color: var(--gold-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  #popup ul { list-style: none; }
+  #popup ul li { font-size: 11px; color: var(--cream); padding: 4px 0; padding-left: 14px; position: relative; line-height: 1.5; }
+  #popup ul li::before { content: '▸'; position: absolute; left: 0; color: var(--gold); font-size: 9px; top: 5px; }
+  #popup .p-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
+  #popup .p-close:hover { color: var(--gold); }
+
+  /* Stars background */
+  #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="header">
+  <div class="tagline">Healthy Living, Stronger Communities</div>
+  <h1>Elias Range Stays — AI Bot Team</h1>
+</div>
+
+<div id="canvas-wrap">
+  <div id="canvas">
+    <svg id="lines-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <!-- nodes injected by JS -->
+  </div>
+</div>
+
+<div id="legend">
+  <div class="legend-item"><div class="legend-dot ld-live"></div><span class="ld-live-text">Live</span></div>
+  <div class="legend-item"><div class="legend-dot ld-next"></div><span class="ld-next-text">Next</span></div>
+  <div class="legend-item"><div class="legend-dot ld-plan"></div><span class="ld-plan-text">Planned</span></div>
+</div>
+<div id="hint">Scroll to zoom · Drag to pan · Click node for details</div>
+
+<div id="popup">
+  <button class="p-close" onclick="closePopup()">✕</button>
+  <div class="p-header">
+    <div class="p-emoji" id="pp-emoji"></div>
+    <div>
+      <div class="p-title" id="pp-name"></div>
+      <div class="p-sub" id="pp-sub"></div>
+      <div class="p-badge" id="pp-badge"></div>
+    </div>
+  </div>
+  <hr class="p-divider">
+  <div class="p-resp-title">Responsibilities</div>
+  <ul id="pp-list"></ul>
+</div>
+
+<script>
+// ── Data ──
+const CENTRE = { x: 1200, y: 1200 };
+const R = 420; // orbit radius
+
+const bots = [
+  { id:'forge',  emoji:'🔧', name:'FORGE',  sub:'Dev Builder',         status:'live',    resp:['Build apps & features','ContractFlow development','API integrations','Tech infrastructure'] },
+  { id:'canvas', emoji:'🎨', name:'CANVAS', sub:'Brand Builder',        status:'live',    resp:['ERS brand enforcement','Client-facing UI review','Visual identity','Marketing assets'] },
+  { id:'scout',  emoji:'🧭', name:'SCOUT',  sub:'Biz Dev',              status:'next',    resp:['Opportunity identification','Partnership outreach','Client pipeline','Market research'] },
+  { id:'herald', emoji:'📣', name:'HERALD', sub:'Marketing Guru',       status:'planned', resp:['Campaign management','Content creation','Client acquisition','Lead nurturing'] },
+  { id:'porter', emoji:'🏢', name:'PORTER', sub:'Property Manager',     status:'planned', resp:['Unit inventory','Maintenance tracking','Occupancy management','Vendor coordination'] },
+  { id:'vault',  emoji:'💼', name:'VAULT',  sub:'Investor Wizard',      status:'planned', resp:['Investor relations','Pitch preparation','Financial modelling','Capital strategy'] },
+  { id:'bridge', emoji:'🌍', name:'BRIDGE', sub:'Community Builder',    status:'planned', resp:['Community engagement','Healthcare partnerships','Referral networks','Stakeholder comms'] },
+  { id:'atlas',  emoji:'📊', name:'ATLAS',  sub:'Admin / EA',           status:'planned', resp:['Scheduling','Admin operations','Communications management','Document handling'] },
+  { id:'pulse',  emoji:'📱', name:'PULSE',  sub:'Social Media',         status:'planned', resp:['Social posting','Content calendar','Engagement','Brand voice online'] },
+  { id:'anchor', emoji:'🏡', name:'ANCHOR', sub:'Real Estate Investor', status:'planned', resp:['Property acquisition analysis','Market evaluation','ROI modelling','Deal sourcing'] },
+  { id:'summit', emoji:'🏗️', name:'SUMMIT', sub:'Corp Executive',       status:'planned', resp:['Institutional comms','Governance','Strategic planning','Board/investor reporting'] },
+];
+
+// Build stars
+(function(){
+  const s = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const d = document.createElement('div');
+    const sz = Math.random()*1.5+0.3;
+    d.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:rgba(240,237,230,${Math.random()*0.4+0.05});left:${Math.random()*100}%;top:${Math.random()*100}%;`;
+    s.appendChild(d);
+  }
+})();
+
+// ── Build DOM ──
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('lines-svg');
+
+// Centre node
+const maestro = document.createElement('div');
+maestro.id = 'node-maestro';
+maestro.className = 'node';
+maestro.innerHTML = `<div class="m-emoji">🎼</div><div class="m-name">MAESTRO</div><div class="m-sub">AI Command Centre</div><div class="m-brand">Elias Range Stays</div>`;
+maestro.style.left = (CENTRE.x - 100) + 'px';
+maestro.style.top  = (CENTRE.y - 100) + 'px';
+canvas.appendChild(maestro);
+
+// Bot nodes
+const NODE_W = 148, NODE_H = 130;
+
+bots.forEach((bot, i) => {
+  const angle = (i / bots.length) * 2 * Math.PI - Math.PI / 2;
+  const bx = CENTRE.x + R * Math.cos(angle);
+  const by = CENTRE.y + R * Math.sin(angle);
+
+  // SVG line
+  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1', CENTRE.x);
+  line.setAttribute('y1', CENTRE.y);
+  line.setAttribute('x2', bx);
+  line.setAttribute('y2', by);
+  const lineColor = bot.status === 'live' ? 'rgba(201,168,76,0.35)' :
+                    bot.status === 'next' ? 'rgba(42,102,128,0.45)' :
+                    'rgba(80,85,100,0.2)';
+  line.setAttribute('stroke', lineColor);
+  line.setAttribute('stroke-width', bot.status === 'live' ? '1.5' : '1');
+  line.setAttribute('stroke-dasharray', bot.status === 'planned' ? '4,6' : 'none');
+  svg.appendChild(line);
+
+  // Node
+  const nd = document.createElement('div');
+  nd.className = `node bot-node status-${bot.status}`;
+  nd.style.left = (bx - NODE_W/2) + 'px';
+  nd.style.top  = (by - NODE_H/2) + 'px';
+  nd.style.width = NODE_W + 'px';
+  nd.style.borderRadius = '14px';
+
+  const badgeLabel = bot.status === 'live' ? '● LIVE' : bot.status === 'next' ? '◈ NEXT' : '○ PLANNED';
+  nd.innerHTML = `
+    <div class="b-emoji">${bot.emoji}</div>
+    <div class="b-name">${bot.name}</div>
+    <div class="b-sub">${bot.sub}</div>
+    <div class="b-badge">${badgeLabel}</div>
+  `;
+
+  nd.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPopup(bot, e);
+  });
+
+  canvas.appendChild(nd);
+});
+
+// ── Popup ──
+const popup = document.getElementById('popup');
+let popupOpen = false;
+
+function openPopup(bot, e) {
+  document.getElementById('pp-emoji').textContent = bot.emoji;
+  document.getElementById('pp-name').textContent  = bot.name;
+  document.getElementById('pp-sub').textContent   = bot.sub;
+  const badge = document.getElementById('pp-badge');
+  badge.textContent = bot.status.toUpperCase();
+  badge.style.cssText = bot.status === 'live'
+    ? 'background:rgba(201,168,76,0.2);color:#E8C46A;border:1px solid rgba(201,168,76,0.5);display:inline-block;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:8px;font-weight:600;'
+    : bot.status === 'next'
+    ? 'background:rgba(42,102,128,0.3);color:#4AADCC;border:1px solid rgba(42,102,128,0.6);display:inline-block;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:8px;font-weight:600;'
+    : 'background:rgba(80,85,100,0.25);color:#7A8090;border:1px solid rgba(80,85,100,0.35);display:inline-block;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:8px;font-weight:600;';
+
+  const list = document.getElementById('pp-list');
+  list.innerHTML = bot.resp.map(r => `<li>${r}</li>`).join('');
+
+  // Position popup near click but within viewport
+  const px = Math.min(e.clientX + 12, window.innerWidth - 300);
+  const py = Math.min(e.clientY + 12, window.innerHeight - 250);
+  popup.style.left = px + 'px';
+  popup.style.top  = py + 'px';
+  popup.classList.add('visible');
+  popupOpen = true;
+}
+
+function closePopup() {
+  popup.classList.remove('visible');
+  popupOpen = false;
+}
+
+document.getElementById('canvas-wrap').addEventListener('click', () => { if(popupOpen) closePopup(); });
+
+// ── Zoom / Pan ──
+let scale = 0.52, tx = 0, ty = 0;
+let dragging = false, startX = 0, startY = 0, startTx = 0, startTy = 0;
+
+function applyTransform() {
+  document.getElementById('canvas').style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+}
+
+// Initial centre
+window.addEventListener('load', () => {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  tx = vw/2 - CENTRE.x * scale;
+  ty = vh/2 - CENTRE.y * scale;
+  applyTransform();
+});
+
+const wrap = document.getElementById('canvas-wrap');
+
+wrap.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  const newScale = Math.max(0.2, Math.min(2.0, scale * delta));
+  // Zoom toward mouse
+  const rect = wrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  tx = mx - (mx - tx) * (newScale / scale);
+  ty = my - (my - ty) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+wrap.addEventListener('mousedown', (e) => {
+  if(e.button !== 0) return;
+  dragging = true;
+  startX = e.clientX; startY = e.clientY;
+  startTx = tx; startTy = ty;
+  wrap.classList.add('dragging');
+});
+window.addEventListener('mousemove', (e) => {
+  if(!dragging) return;
+  tx = startTx + (e.clientX - startX);
+  ty = startTy + (e.clientY - startY);
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { dragging = false; wrap.classList.remove('dragging'); });
+
+// Touch support
+let lastTouchDist = 0;
+wrap.addEventListener('touchstart', (e) => {
+  if(e.touches.length === 1) {
+    dragging = true;
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+    startTx = tx; startTy = ty;
+  } else if(e.touches.length === 2) {
+    dragging = false;
+    lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  }
+}, { passive: true });
+wrap.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if(e.touches.length === 1 && dragging) {
+    tx = startTx + (e.touches[0].clientX - startX);
+    ty = startTy + (e.touches[0].clientY - startY);
+    applyTransform();
+  } else if(e.touches.length === 2) {
+    const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    const delta = dist / lastTouchDist;
+    scale = Math.max(0.2, Math.min(2.0, scale * delta));
+    lastTouchDist = dist;
+    applyTransform();
+  }
+}, { passive: false });
+wrap.addEventListener('touchend', () => { dragging = false; });
+
+// ── Decorative ring around centre ──
+(function(){
+  const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ring.setAttribute('cx', CENTRE.x);
+  ring.setAttribute('cy', CENTRE.y);
+  ring.setAttribute('r', R);
+  ring.setAttribute('stroke', 'rgba(201,168,76,0.06)');
+  ring.setAttribute('stroke-width', '1');
+  ring.setAttribute('fill', 'none');
+  ring.setAttribute('stroke-dasharray', '3,8');
+  svg.insertBefore(ring, svg.firstChild);
+
+  const ring2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ring2.setAttribute('cx', CENTRE.x);
+  ring2.setAttribute('cy', CENTRE.y);
+  ring2.setAttribute('r', R + 80);
+  ring2.setAttribute('stroke', 'rgba(201,168,76,0.03)');
+  ring2.setAttribute('stroke-width', '1');
+  ring2.setAttribute('fill', 'none');
+  svg.insertBefore(ring2, svg.firstChild);
+})();
+</script>
+</body>
+</html>

@@ -53,7 +53,7 @@ function renderContractMarkdown(text: string): JSX.Element {
     fontSize: 22,
     fontWeight: 400,
     color: '#1a1a1a',
-    borderBottom: '2px solid #C9A84C',
+    borderBottom: '2px solid #C4793A',
     paddingBottom: 10,
     marginBottom: 20,
     marginTop: 0,
@@ -107,7 +107,6 @@ function renderContractMarkdown(text: string): JSX.Element {
   lines.forEach((line, i) => {
     const trimmed = line.trim()
 
-    // Table rows
     if (trimmed.startsWith('|')) {
       if (!inTable) { inTable = true; tableBuffer = [] }
       tableBuffer.push(trimmed)
@@ -132,7 +131,6 @@ function renderContractMarkdown(text: string): JSX.Element {
       elements.push(<hr key={i} style={{ border: 'none', borderTop: '1px solid #e8e2d9', margin: '12px 0' }} />)
       return
     }
-    // Signature block detection
     if (/signature|signed by|__+/i.test(trimmed)) {
       elements.push(
         <div key={i} style={{ display: 'flex', alignItems: 'flex-end', gap: 8, margin: '6px 0' }}>
@@ -172,16 +170,16 @@ function RequestTab({ contract: c }: { contract: Contract }) {
           ].map(([l, v]) => (
             <div key={l} style={{ marginBottom: 14 }}>
               <div style={styles.lbl}>{l}</div>
-              <div style={{ fontSize: 14, color: '#DDD5C8' }}>{v}</div>
+              <div style={{ fontSize: 14, color: '#334155' }}>{v}</div>
             </div>
           ))}
         </div>
         {occupants.length > 0 && (
-          <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #ffffff08' }}>
+          <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e8ecf0' }}>
             <div style={styles.lbl}>Occupants</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
               {occupants.map((o: any, i: number) => (
-                <div key={i} style={{ background: '#ffffff08', border: '1px solid #ffffff12', borderRadius: 6, padding: '5px 12px', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
+                <div key={i} style={{ background: 'rgba(0,191,166,0.08)', border: '1px solid rgba(0,191,166,0.25)', borderRadius: 6, padding: '5px 12px', fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#0B2540' }}>
                   {o.name}
                 </div>
               ))}
@@ -189,9 +187,9 @@ function RequestTab({ contract: c }: { contract: Contract }) {
           </div>
         )}
         {c.notes && (
-          <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #ffffff08' }}>
+          <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e8ecf0' }}>
             <div style={styles.lbl}>Notes from Client</div>
-            <div style={{ fontSize: 13, color: '#ffffff77', lineHeight: 1.7, marginTop: 6 }}>{c.notes}</div>
+            <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.7, marginTop: 6 }}>{c.notes}</div>
           </div>
         )}
       </div>
@@ -260,8 +258,8 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   return (
     <div>
       {isQuoteSent && (
-        <div style={{ background: '#C9A84C12', border: '1px solid #C9A84C33', borderRadius: 8, padding: '12px 18px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C9A84C' }}>
+        <div style={{ background: 'rgba(196,121,58,0.08)', border: '1px solid rgba(196,121,58,0.25)', borderRadius: 8, padding: '12px 18px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C4793A' }}>
             {c.stage === 1 ? '⏳ Quote sent — awaiting client approval' : '✓ Quote approved by client'}
           </div>
           {c.stage === 1 && (
@@ -316,7 +314,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
                 onChange={e => updateLineItem(i, 'description', e.target.value)} />
               <input style={{ ...styles.inpGold, flex: 1, fontSize: 13 }} type="number" placeholder="$" value={li.amount || ''}
                 onChange={e => updateLineItem(i, 'amount', Number(e.target.value))} />
-              <button onClick={() => removeLineItem(i)} style={{ background: 'none', border: 'none', color: '#e74c3c55', cursor: 'pointer', fontSize: 16, padding: '0 6px' }}>✕</button>
+              <button onClick={() => removeLineItem(i)} style={{ background: 'none', border: 'none', color: '#e74c3c99', cursor: 'pointer', fontSize: 16, padding: '0 6px' }}>✕</button>
             </div>
           ))}
           <button style={{ ...styles.btnGhost, marginTop: 10, fontSize: 11, padding: '6px 14px' }} onClick={addLineItem}>+ Add Line Item</button>
@@ -324,21 +322,21 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
       </div>
 
       {/* Total */}
-      <div style={{ ...styles.card, padding: '18px 22px' }}>
+      <div style={{ ...styles.card, padding: '18px 22px', background: '#f8f9fb', borderLeft: '3px solid #C4793A' }}>
         <div style={styles.sectionTitle}>Quote Total</div>
         {[
           [`Base rent (${c.units} units × $${pricePerUnit.toLocaleString()} × ${months} mo)`, baseTotal],
           ...lineItems.filter(li => li.description && li.amount).map(li => [li.description, li.amount]),
           ...(damageDeposit > 0 ? [['Damage deposit (refundable)', damageDeposit]] : []),
         ].map(([label, amount], i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #ffffff07', fontSize: 13 }}>
-            <span style={{ color: '#ffffff55' }}>{label as string}</span>
-            <span>${(amount as number).toLocaleString()}</span>
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #e8ecf0', fontSize: 13 }}>
+            <span style={{ color: '#94a3b8' }}>{label as string}</span>
+            <span style={{ color: '#334155', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>${(amount as number).toLocaleString()}</span>
           </div>
         ))}
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14, borderTop: '1px solid #C9A84C22', marginTop: 4 }}>
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C9A84C88' }}>Total Quote Value</span>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, color: '#C9A84C' }}>${grandTotal.toLocaleString()}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14, borderTop: '2px solid rgba(196,121,58,0.2)', marginTop: 4 }}>
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Quote Value</span>
+          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 26, color: '#C4793A', fontWeight: 700 }}>${grandTotal.toLocaleString()}</span>
         </div>
       </div>
 
@@ -363,7 +361,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
       <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
         <button style={styles.btnGhost} onClick={saveQuote} disabled={saving}>{saving ? 'Saving...' : 'Save Draft'}</button>
-        <button style={styles.btnGold} onClick={sendQuote} disabled={sending || !pricePerUnit}>
+        <button style={styles.btnPrimary} onClick={sendQuote} disabled={sending || !pricePerUnit}>
           {sending ? 'Sending...' : isQuoteSent ? 'Resend Quote →' : 'Send Quote to Client →'}
         </button>
       </div>
@@ -399,7 +397,6 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: {
     setSyncing(false)
   }
 
-  // Auto-poll every 30s when awaiting signatures
   useEffect(() => {
     if (bothSigned) return
     const interval = setInterval(() => syncStatus(true), 30000)
@@ -423,27 +420,26 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: {
             </button>
           )}
           {bothSigned && c.stage < 5 && (
-            <button style={{ ...styles.btnGold, fontSize: 11, padding: '5px 16px' }} onClick={markComplete}>
+            <button style={{ ...styles.btnPrimary, fontSize: 11, padding: '5px 16px' }} onClick={markComplete}>
               ✓ Mark as Complete
             </button>
           )}
         </div>
       </div>
 
-      {/* Signature cards */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
         {[
           { label: 'Landlord', name: 'Austin Neill', signed: landlordSigned },
           { label: 'Tenant', name: c.contact_name, signed: tenantSigned },
         ].map(({ label, name, signed }) => (
           <div key={label} style={{
-            flex: 1, padding: '12px 16px', borderRadius: 8,
-            background: signed ? '#4CAF9310' : '#ffffff06',
-            border: `1px solid ${signed ? '#4CAF9344' : '#ffffff12'}`,
+            flex: 1, padding: '14px 16px', borderRadius: 8,
+            background: signed ? 'rgba(0,191,166,0.06)' : '#f8f9fb',
+            border: `1px solid ${signed ? 'rgba(0,191,166,0.3)' : '#e8ecf0'}`,
           }}>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
-            <div style={{ fontSize: 13, color: '#DDD5C8', marginBottom: 6 }}>{name}</div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: signed ? '#4CAF93' : '#C9A84C' }}>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
+            <div style={{ fontSize: 13, color: '#0B2540', fontWeight: 500, marginBottom: 6 }}>{name}</div>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: signed ? '#00BFA6' : '#C4793A' }}>
               {signed ? '✓ Signed' : '⏳ Awaiting signature'}
             </div>
           </div>
@@ -451,15 +447,15 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: {
       </div>
 
       {bothSigned && (
-        <div style={{ background: '#4CAF9310', border: '1px solid #4CAF9333', borderRadius: 7, padding: '10px 14px', color: '#4CAF93', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
+        <div style={{ background: 'rgba(0,191,166,0.06)', border: '1px solid rgba(0,191,166,0.25)', borderRadius: 7, padding: '10px 14px', color: '#00BFA6', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
           ✓ Fully executed — both parties have signed.
           {(c as any).contract_file_url && (
-            <a href={(c as any).contract_file_url} target="_blank" rel="noreferrer" style={{ color: '#4CAF93', marginLeft: 16 }}>↓ Download signed PDF</a>
+            <a href={(c as any).contract_file_url} target="_blank" rel="noreferrer" style={{ color: '#00BFA6', marginLeft: 16 }}>↓ Download signed PDF</a>
           )}
         </div>
       )}
       {!tenantSigned && landlordSigned && (
-        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff33', marginTop: 4 }}>
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', marginTop: 8 }}>
           Signing email sent to {c.contact_email} — auto-refreshing every 30s. Ask client to check spam.
         </div>
       )}
@@ -475,8 +471,6 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [contractText, setContractText] = useState(c.generated_contract || '')
   const [saving, setSaving] = useState(false)
   const isQuoteApproved = c.stage >= 2
-  // isSent means DocuSeal has actually been triggered — not just stage number
-  // Stage can be >= 3 from manual testing without a real submission
   const isSent = !!c.docuseal_submission_id
 
   const generateContract = async () => {
@@ -522,7 +516,6 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setSending(true)
     try {
       const authHeader = await getAuthHeader()
-      // Save latest edits first
       if (contractText !== c.generated_contract) {
         await fetch(`/api/contracts/${c.id}`, {
           method: 'PATCH',
@@ -551,8 +544,8 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
   if (c.stage < 1) {
     return (
-      <div style={{ ...styles.card, textAlign: 'center', padding: '48px 28px', opacity: 0.5 }}>
-        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#ffffff44' }}>
+      <div style={{ ...styles.card, textAlign: 'center', padding: '48px 28px' }}>
+        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#94a3b8' }}>
           Send the quote first before generating a contract.
         </div>
       </div>
@@ -561,25 +554,23 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
   return (
     <div>
-      {/* Generate button if no contract yet */}
       {!c.generated_contract && (
-        <div style={{ ...styles.cardGold, textAlign: 'center', padding: '40px 28px' }}>
+        <div style={{ ...styles.cardAccent, textAlign: 'center', padding: '40px 28px' }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>📋</div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, marginBottom: 8 }}>Ready to Generate Contract</div>
-          <div style={{ fontSize: 13, color: '#ffffff55', marginBottom: 24, lineHeight: 1.8 }}>
+          <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 700, fontSize: 20, color: '#0B2540', marginBottom: 8 }}>Ready to Generate Contract</div>
+          <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 24, lineHeight: 1.8 }}>
             Quote approved. Click below to auto-fill your lease template with all booking & quote details.
           </div>
-          <button style={styles.btnGold} onClick={generateContract} disabled={generating}>
+          <button style={styles.btnPrimary} onClick={generateContract} disabled={generating}>
             {generating ? '⚙ Generating...' : '✦ Generate Contract with AI →'}
           </button>
         </div>
       )}
 
-      {/* Contract text */}
       {contractText && (
         <div style={styles.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <div style={styles.sectionTitle} >Contract — Internal Review</div>
+            <div style={styles.sectionTitle}>Contract — Internal Review</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {!isSent && !editing && (
                 <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => setEditing(true)}>✎ Edit</button>
@@ -592,14 +583,14 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
               {editing && (
                 <>
                   <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => { setEditing(false); setContractText(c.generated_contract || '') }}>Cancel</button>
-                  <button style={{ ...styles.btnGold, fontSize: 11, padding: '6px 14px' }} onClick={saveEdits} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+                  <button style={{ ...styles.btnPrimary, fontSize: 11, padding: '6px 14px' }} onClick={saveEdits} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
                 </>
               )}
             </div>
           </div>
 
           {!isSent && (
-            <div style={{ background: '#4C7BC911', border: '1px solid #4C7BC933', borderRadius: 7, padding: '10px 14px', marginBottom: 14, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#7BA7E2' }}>
+            <div style={{ background: 'rgba(0,191,166,0.06)', border: '1px solid rgba(0,191,166,0.2)', borderRadius: 7, padding: '10px 14px', marginBottom: 14, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#00BFA6' }}>
               Review the contract carefully. Edit if needed, then click "Send for Signing" below.
             </div>
           )}
@@ -608,13 +599,12 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
             <textarea
               value={contractText}
               onChange={e => setContractText(e.target.value)}
-              style={{ background: '#0C0E14', border: '1px solid #C9A84C44', borderRadius: 8, padding: '24px 28px', fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#DDD5C8', lineHeight: 2, width: '100%', minHeight: 600, outline: 'none', resize: 'vertical' }}
+              style={{ background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 8, padding: '24px 28px', fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#334155', lineHeight: 2, width: '100%', minHeight: 600, outline: 'none', resize: 'vertical' }}
             />
           ) : (
             renderContractMarkdown(contractText)
           )}
 
-          {/* PDF Download button */}
           {!editing && contractText && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
               <ContractPDFButton
@@ -629,21 +619,19 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         </div>
       )}
 
-      {/* Send for signing */}
       {contractText && !isSent && (
         <div style={{ ...styles.card, padding: '20px 22px' }}>
           <div style={styles.sectionTitle}>Send for Signature</div>
-          <div style={{ fontSize: 13, color: '#ffffff55', marginBottom: 16, lineHeight: 1.8 }}>
-            The contract will be sent to <strong style={{ color: '#DDD5C8' }}>{c.contact_email}</strong> via DocuSeal with signature fields embedded.
+          <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16, lineHeight: 1.8 }}>
+            The contract will be sent to <strong style={{ color: '#334155' }}>{c.contact_email}</strong> via DocuSeal with signature fields embedded.
             The client signs first, then you receive a link to countersign.
           </div>
-          <button style={styles.btnGold} onClick={sendForSigning} disabled={sending || editing}>
+          <button style={styles.btnPrimary} onClick={sendForSigning} disabled={sending || editing}>
             {sending ? 'Sending to DocuSeal...' : '✓ Approve & Send Contract for Signing →'}
           </button>
         </div>
       )}
 
-      {/* Signature status panel */}
       {isSent && (
         <SignatureStatusPanel contract={c} onRefresh={onRefresh} showToast={showToast} onUpdate={onUpdate} />
       )}
@@ -657,42 +645,127 @@ function AuditTab({ contract: c }: { contract: Contract }) {
   return (
     <div style={styles.card}>
       <div style={{ ...styles.sectionTitle, marginBottom: 16 }}>Audit Trail</div>
-      {logs.length === 0 && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff22' }}>No logs yet.</div>}
+      {logs.length === 0 && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8' }}>No logs yet.</div>}
       {logs.map((a: any, i: number) => (
-        <div key={i} style={{ display: 'flex', gap: 14, padding: '10px 0', borderBottom: '1px solid #ffffff07', fontSize: 12 }}>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#ffffff33', minWidth: 150, flexShrink: 0 }}>
+        <div key={i} style={{ display: 'flex', gap: 14, padding: '10px 0', borderBottom: '1px solid #f1f4f8', fontSize: 12 }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', minWidth: 150, flexShrink: 0 }}>
             {new Date(a.created_at).toLocaleString('en-CA')}
           </div>
-          <div style={{ minWidth: 60, fontSize: 11, color: '#C9A84C88', flexShrink: 0 }}>{a.actor}</div>
-          <div style={{ color: '#DDD5C8' }}>{a.action}</div>
+          <div style={{ minWidth: 60, fontSize: 11, color: '#C4793A', flexShrink: 0 }}>{a.actor}</div>
+          <div style={{ color: '#334155' }}>{a.action}</div>
         </div>
       ))}
     </div>
   )
 }
 
-// ── Shared styles ──────────────────────────────────────────
+// ── Shared styles (ERS light theme) ──────────────────────────
 const styles: Record<string, any> = {
-  card: { background: '#13161D', border: '1px solid #ffffff0D', borderRadius: 10, padding: 22, marginBottom: 14 },
-  cardGold: { background: '#13161D', border: '1px solid #C9A84C2A', borderRadius: 10, padding: 22, marginBottom: 14 },
-  sectionTitle: { fontFamily: "'Playfair Display', serif", fontSize: 13, fontStyle: 'italic', color: '#C9A84C88', marginBottom: 14 },
-  lbl: { fontFamily: 'IBM Plex Mono', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: '#ffffff33', marginBottom: 5 },
+  card: {
+    background: '#ffffff',
+    border: '1px solid #e8ecf0',
+    borderRadius: 10,
+    padding: 22,
+    marginBottom: 14,
+    boxShadow: '0 1px 4px rgba(11,37,64,0.05)',
+  },
+  cardAccent: {
+    background: '#ffffff',
+    border: '1px solid rgba(0,191,166,0.3)',
+    borderRadius: 10,
+    padding: 22,
+    marginBottom: 14,
+    boxShadow: '0 1px 8px rgba(0,191,166,0.08)',
+  },
+  sectionTitle: {
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
+    fontWeight: 700,
+    fontSize: 12,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.08em',
+    color: '#0B2540',
+    marginBottom: 14,
+    paddingBottom: 8,
+    borderBottom: '2px solid rgba(0,191,166,0.18)',
+  },
+  lbl: {
+    fontFamily: 'IBM Plex Mono',
+    fontSize: 10,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase' as const,
+    color: '#94a3b8',
+    marginBottom: 5,
+  },
   grid2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 },
   grid3: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 },
-  inp: { background: '#0C0E14', border: '1px solid #ffffff15', borderRadius: 7, padding: '9px 13px', color: '#DDD5C8', fontSize: 13, fontFamily: 'IBM Plex Mono', outline: 'none', width: '100%' },
-  inpGold: { background: '#0C0E14', border: '1px solid #ffffff15', borderRadius: 7, padding: '9px 13px', color: '#C9A84C', fontSize: 16, fontFamily: 'IBM Plex Mono', outline: 'none', width: '100%' },
-  textarea: { background: '#0C0E14', border: '1px solid #ffffff15', borderRadius: 7, padding: '9px 13px', color: '#DDD5C8', fontSize: 12, fontFamily: 'IBM Plex Mono', outline: 'none', width: '100%', resize: 'vertical' as const, minHeight: 90, lineHeight: 1.7 },
-  btnGold: { background: '#C9A84C', border: 'none', color: '#0C0E14', padding: '10px 20px', borderRadius: 7, cursor: 'pointer', fontFamily: 'IBM Plex Mono', fontSize: 12, fontWeight: 600, letterSpacing: '0.07em' },
-  btnGhost: { background: 'transparent', color: '#C9A84C', border: '1px solid #C9A84C44', padding: '10px 20px', borderRadius: 7, cursor: 'pointer', fontFamily: 'IBM Plex Mono', fontSize: 12, letterSpacing: '0.07em' },
+  inp: {
+    background: '#f8f9fb',
+    border: '1px solid #e8ecf0',
+    borderRadius: 7,
+    padding: '9px 13px',
+    color: '#334155',
+    fontSize: 13,
+    fontFamily: 'IBM Plex Mono',
+    outline: 'none',
+    width: '100%',
+  },
+  inpGold: {
+    background: '#f8f9fb',
+    border: '1px solid #e8ecf0',
+    borderRadius: 7,
+    padding: '9px 13px',
+    color: '#C4793A',
+    fontSize: 16,
+    fontFamily: 'IBM Plex Mono',
+    outline: 'none',
+    width: '100%',
+  },
+  textarea: {
+    background: '#f8f9fb',
+    border: '1px solid #e8ecf0',
+    borderRadius: 7,
+    padding: '9px 13px',
+    color: '#334155',
+    fontSize: 12,
+    fontFamily: 'IBM Plex Mono',
+    outline: 'none',
+    width: '100%',
+    resize: 'vertical' as const,
+    minHeight: 90,
+    lineHeight: 1.7,
+  },
+  btnPrimary: {
+    background: '#00BFA6',
+    border: 'none',
+    color: '#ffffff',
+    padding: '10px 20px',
+    borderRadius: 7,
+    cursor: 'pointer',
+    fontFamily: "'Segoe UI', system-ui, sans-serif",
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '0.04em',
+  },
+  btnGhost: {
+    background: 'transparent',
+    color: '#0B2540',
+    border: '1px solid #e8ecf0',
+    padding: '10px 20px',
+    borderRadius: 7,
+    cursor: 'pointer',
+    fontFamily: 'IBM Plex Mono',
+    fontSize: 12,
+    letterSpacing: '0.04em',
+  },
 }
 
 // ── Main ContractDetail ────────────────────────────────────
 export default function ContractDetail({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const TABS = [
-    { key: 'request', label: 'Request' },
-    { key: 'quote', label: '✦ Quote' },
+    { key: 'request',  label: 'Request' },
+    { key: 'quote',    label: '✦ Quote' },
     { key: 'contract', label: '📋 Contract' },
-    { key: 'audit', label: 'Audit Trail' },
+    { key: 'audit',    label: 'Audit Trail' },
   ]
   const [tab, setTab] = useState('request')
 
@@ -700,26 +773,60 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
     ? `${window.location.origin}/client/${c.client_token}`
     : `/client/${c.client_token}`
 
+  const stageColor = STAGE_COLORS[c.stage] ?? '#94a3b8'
+
   return (
-    <div style={{ padding: '28px 36px' }}>
+    <div style={{ padding: '28px 36px', background: '#f8f9fb', minHeight: '100%' }}>
       <style>{`
-        .tab { padding: 8px 18px; fontFamily: IBM Plex Mono; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.18s; color: #ffffff33; font-family: 'IBM Plex Mono', monospace; }
-        .tab.on { color: #C9A84C; border-bottom-color: #C9A84C; }
-        .tab:hover { color: #ffffff88; }
+        .cd-tab {
+          padding: 9px 18px;
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          transition: all 0.18s;
+          color: #94a3b8;
+          white-space: nowrap;
+        }
+        .cd-tab.on { color: #0B2540; border-bottom-color: #00BFA6; }
+        .cd-tab:hover { color: #0B2540; background: rgba(0,191,166,0.04); }
+
+        .cd-stage-pip {
+          font-size: 9px;
+          padding: 4px 10px;
+          border-radius: 4px;
+          letter-spacing: 0.07em;
+          font-family: 'IBM Plex Mono', monospace;
+          white-space: nowrap;
+        }
       `}</style>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#C9A84C', marginBottom: 4 }}>{c.reference}</div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28 }}>{c.client_name}</div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#ffffff44', marginTop: 2 }}>{c.contact_name} · {c.contact_email}</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#00BFA6', marginBottom: 6, letterSpacing: '0.1em' }}>{c.reference}</div>
+          <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 700, fontSize: 26, color: '#0B2540', letterSpacing: '-0.01em' }}>{c.client_name}</div>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{c.contact_name} · {c.contact_email}</div>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <div style={{ background: `${STAGE_COLORS[c.stage]}18`, border: `1px solid ${STAGE_COLORS[c.stage]}44`, color: STAGE_COLORS[c.stage], padding: '6px 14px', borderRadius: 20, fontFamily: 'IBM Plex Mono', fontSize: 11 }}>
+          <div style={{
+            background: `${stageColor}14`,
+            border: `1px solid ${stageColor}44`,
+            color: stageColor,
+            padding: '6px 14px',
+            borderRadius: 20,
+            fontFamily: 'IBM Plex Mono',
+            fontSize: 11,
+            fontWeight: 600,
+          }}>
             {STAGE_LABELS[c.stage]}
           </div>
-          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => { navigator.clipboard.writeText(clientPortalUrl); showToast('Client link copied') }}>
+          <button
+            style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }}
+            onClick={() => { navigator.clipboard.writeText(clientPortalUrl); showToast('Client link copied') }}
+          >
             ⎘ Client Link
           </button>
           <a href={clientPortalUrl} target="_blank" rel="noreferrer">
@@ -732,32 +839,35 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 22 }}>
         {Object.entries(STAGE_LABELS).map(([i, label]) => {
           const idx = parseInt(i)
+          const sc = STAGE_COLORS[idx] ?? '#94a3b8'
+          const isCurrent = idx === c.stage
+          const isPast = idx < c.stage
           return (
-            <div key={i} style={{
-              fontSize: 9, padding: '4px 10px', borderRadius: 3, letterSpacing: '0.08em', fontFamily: 'IBM Plex Mono',
-              background: idx === c.stage ? `${STAGE_COLORS[idx]}22` : idx < c.stage ? '#4CAF9315' : '#ffffff06',
-              border: `1px solid ${idx === c.stage ? STAGE_COLORS[idx] + '66' : idx < c.stage ? '#4CAF9333' : '#ffffff0A'}`,
-              color: idx === c.stage ? STAGE_COLORS[idx] : idx < c.stage ? '#4CAF9388' : '#ffffff22',
+            <div key={i} className="cd-stage-pip" style={{
+              background: isCurrent ? `${sc}14` : isPast ? 'rgba(0,191,166,0.08)' : '#f1f4f8',
+              border: `1px solid ${isCurrent ? sc + '55' : isPast ? 'rgba(0,191,166,0.25)' : '#e8ecf0'}`,
+              color: isCurrent ? sc : isPast ? '#00BFA6' : '#94a3b8',
+              fontWeight: isCurrent ? 700 : 400,
             }}>
-              {idx < c.stage ? '✓ ' : ''}{label}
+              {isPast ? '✓ ' : ''}{label}
             </div>
           )
         })}
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #ffffff0D', marginBottom: 22 }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #e8ecf0', marginBottom: 22 }}>
         {TABS.map(t => (
-          <div key={t.key} className={`tab ${tab === t.key ? 'on' : ''}`} onClick={() => setTab(t.key)}>
+          <div key={t.key} className={`cd-tab ${tab === t.key ? 'on' : ''}`} onClick={() => setTab(t.key)}>
             {t.label}
           </div>
         ))}
       </div>
 
-      {tab === 'request' && <RequestTab contract={c} />}
-      {tab === 'quote' && <QuoteTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
+      {tab === 'request'  && <RequestTab  contract={c} />}
+      {tab === 'quote'    && <QuoteTab    contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
-      {tab === 'audit' && <AuditTab contract={c} />}
+      {tab === 'audit'    && <AuditTab    contract={c} />}
     </div>
   )
 }

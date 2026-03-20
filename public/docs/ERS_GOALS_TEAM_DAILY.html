@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERS — Goals · Team · Daily Focus</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #090d13;
+  color: #e6edf3;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  padding: 40px 40px 60px;
+}
+
+/* ── HEADER ── */
+.header { text-align:center; margin-bottom:40px; }
+.header h1 { font-size:32px; font-weight:800; color:#fff; letter-spacing:-1px; }
+.header .tagline { font-size:13px; color:#00BFA6; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+.header .updated { font-size:11px; color:#484f58; margin-top:8px; }
+
+/* ── TABS ── */
+.tabs {
+  display:flex; justify-content:center; gap:4px;
+  margin-bottom:40px;
+}
+.tab-btn {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  padding: 9px 24px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8b949e;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab-btn:hover { border-color: #00BFA6; color: #00BFA6; }
+.tab-btn.active { background: rgba(0,191,166,0.1); border-color: #00BFA6; color: #00BFA6; }
+
+/* ── SECTION ── */
+.section { display:none; }
+.section.visible { display:block; }
+
+/* ── SECTION HEADER ── */
+.section-header { margin-bottom:28px; }
+.section-header h2 { font-size:22px; font-weight:800; color:#fff; letter-spacing:-0.5px; }
+.section-header .sub { font-size:12px; color:#484f58; margin-top:5px; letter-spacing:0.5px; }
+
+/* ── BRANCH CARDS ── */
+.branch {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  margin-bottom: 14px;
+}
+.branch-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.branch-icon { font-size:16px; }
+
+/* ── NODE ITEMS ── */
+.nodes-list { display:flex; flex-direction:column; gap:6px; }
+.node {
+  display:flex; align-items:flex-start; gap:8px;
+  padding:8px 10px; border-radius:8px; font-size:12px; line-height:1.5;
+}
+.node-dot { width:7px; height:7px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+.node-text { color:#c9d1d9; flex:1; }
+.node-text strong { color:#e6edf3; }
+.node-badge {
+  font-size:10px; font-weight:600; padding:2px 8px; border-radius:6px;
+  margin-left:auto; flex-shrink:0; margin-top:1px; white-space:nowrap;
+}
+
+/* ── COLOUR THEMES ── */
+.goals-now    { border-left:3px solid #00BFA6; }
+.goals-now    .branch-title { color:#00BFA6; }
+.goals-now    .node { background:rgba(0,191,166,0.06); }
+.goals-now    .node-dot { background:#00BFA6; }
+
+.goals-90     { border-left:3px solid #C4793A; }
+.goals-90     .branch-title { color:#C4793A; }
+.goals-90     .node { background:rgba(196,121,58,0.06); }
+.goals-90     .node-dot { background:#C4793A; }
+
+.goals-year   { border-left:3px solid #bc8cff; }
+.goals-year   .branch-title { color:#bc8cff; }
+.goals-year   .node { background:rgba(188,140,255,0.06); }
+.goals-year   .node-dot { background:#bc8cff; }
+
+.goals-vision { border-left:3px solid #3fb950; }
+.goals-vision .branch-title { color:#3fb950; }
+.goals-vision .node { background:rgba(63,185,80,0.06); }
+.goals-vision .node-dot { background:#3fb950; }
+
+.team-human   { border-left:3px solid #58a6ff; }
+.team-human   .branch-title { color:#58a6ff; }
+.team-human   .node { background:rgba(88,166,255,0.06); }
+.team-human   .node-dot { background:#58a6ff; }
+
+.team-ai      { border-left:3px solid #00BFA6; }
+.team-ai      .branch-title { color:#00BFA6; }
+.team-ai      .node { background:rgba(0,191,166,0.06); }
+.team-ai      .node-dot { background:#00BFA6; }
+
+.daily-now    { border-left:3px solid #f0883e; }
+.daily-now    .branch-title { color:#f0883e; }
+.daily-now    .node { background:rgba(240,136,62,0.06); }
+.daily-now    .node-dot { background:#f0883e; }
+
+.daily-week   { border-left:3px solid #58a6ff; }
+.daily-week   .branch-title { color:#58a6ff; }
+.daily-week   .node { background:rgba(88,166,255,0.06); }
+.daily-week   .node-dot { background:#58a6ff; }
+
+.daily-pillars { border-left:3px solid #7ee787; }
+.daily-pillars .branch-title { color:#7ee787; }
+.daily-pillars .node { background:rgba(126,231,135,0.06); }
+.daily-pillars .node-dot { background:#7ee787; }
+
+.daily-ai     { border-left:3px solid #f778ba; }
+.daily-ai     .branch-title { color:#f778ba; }
+.daily-ai     .node { background:rgba(247,120,186,0.06); }
+.daily-ai     .node-dot { background:#f778ba; }
+
+/* ── BADGES ── */
+.badge-now    { background:rgba(0,191,166,0.15);   color:#00BFA6;  border:1px solid rgba(0,191,166,0.3); }
+.badge-90     { background:rgba(196,121,58,0.15);  color:#C4793A;  border:1px solid rgba(196,121,58,0.3); }
+.badge-year   { background:rgba(188,140,255,0.15); color:#bc8cff;  border:1px solid rgba(188,140,255,0.3); }
+.badge-vision { background:rgba(63,185,80,0.15);   color:#3fb950;  border:1px solid rgba(63,185,80,0.3); }
+.badge-live   { background:rgba(63,185,80,0.15);   color:#3fb950;  border:1px solid rgba(63,185,80,0.3); }
+.badge-next   { background:rgba(88,166,255,0.15);  color:#58a6ff;  border:1px solid rgba(88,166,255,0.3); }
+.badge-plan   { background:rgba(80,85,100,0.2);    color:#8b949e;  border:1px solid rgba(80,85,100,0.3); }
+.badge-hiring { background:rgba(240,136,62,0.15);  color:#f0883e;  border:1px solid rgba(240,136,62,0.3); }
+.badge-north  { background:rgba(0,191,166,0.1);    color:#00BFA6;  border:1px solid rgba(0,191,166,0.25); font-style:italic; }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+/* ── TOP 3 CARD ── */
+.top3-card {
+  background: linear-gradient(135deg, #1a2332, #0f1923);
+  border: 2px solid #00BFA6;
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 0 30px rgba(0,191,166,0.1);
+}
+.top3-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:#00BFA6; margin-bottom:16px; display:flex; align-items:center; gap:8px;
+}
+.top3-item {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:10px 0; border-bottom:1px solid #ffffff08;
+}
+.top3-item:last-child { border-bottom:none; padding-bottom:0; }
+.top3-num {
+  font-size:24px; font-weight:800; color:#00BFA6;
+  min-width:36px; line-height:1; font-family:monospace;
+}
+.top3-text strong { display:block; font-size:13px; color:#e6edf3; margin-bottom:3px; }
+.top3-text span { font-size:11px; color:#8b949e; line-height:1.5; }
+
+/* ── NORTH STAR ── */
+.north-star {
+  background: rgba(0,191,166,0.06);
+  border:1px solid rgba(0,191,166,0.2);
+  border-radius:10px;
+  padding:14px 18px;
+  margin-top:6px;
+  font-size:12px; color:#8b949e; font-style:italic; line-height:1.7; text-align:center;
+}
+.north-star strong { color:#e6edf3; }
+
+/* ── SECTION DIVIDER ── */
+.section-div { height:1px; background:#21262d; margin:28px 0; }
+
+/* ── PERSON ROLE TAG ── */
+.role-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.role-tag {
+  font-size:9px; padding:2px 7px; border-radius:6px;
+  background:rgba(88,166,255,0.1); color:#58a6ff;
+  border:1px solid rgba(88,166,255,0.2); letter-spacing:0.5px;
+}
+.role-tag.teal { background:rgba(0,191,166,0.1); color:#00BFA6; border-color:rgba(0,191,166,0.2); }
+.role-tag.amber { background:rgba(196,121,58,0.1); color:#C4793A; border-color:rgba(196,121,58,0.2); }
+.role-tag.purple { background:rgba(188,140,255,0.1); color:#bc8cff; border-color:rgba(188,140,255,0.2); }
+.role-tag.green { background:rgba(63,185,80,0.1); color:#3fb950; border-color:rgba(63,185,80,0.2); }
+.role-tag.pink { background:rgba(247,120,186,0.1); color:#f778ba; border-color:rgba(247,120,186,0.2); }
+
+/* ── FOOTER ── */
+.footer { text-align:center; color:#484f58; font-size:11px; margin-top:40px; }
+
+@media(max-width:900px) {
+  .grid-2, .grid-3 { grid-template-columns:1fr; }
+  body { padding:24px 16px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Elias Range Stays</h1>
+  <div class="tagline">Goals · Team · Daily Focus</div>
+  <div class="updated">Last updated March 20, 2026</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab-btn active" onclick="show('goals', this)">🎯 Goals</div>
+  <div class="tab-btn" onclick="show('team', this)">👥 Team</div>
+  <div class="tab-btn" onclick="show('daily', this)">📅 Daily Focus</div>
+</div>
+
+
+<!-- ══════════ GOALS ══════════ -->
+<div id="goals" class="section visible">
+
+  <div class="section-header">
+    <h2>Goals</h2>
+    <div class="sub">Right now → 90 days → 1 year → 10-year vision</div>
+  </div>
+
+  <div class="grid-2">
+
+    <div class="branch goals-now">
+      <div class="branch-title"><span class="branch-icon">🎯</span> Right Now · This Week</div>
+      <div class="nodes-list">
+        <div class="node"><div class="node-dot"></div><div class="node-text">Close Maxwell Floors — 20+ staff confirmed</div><span class="node-badge badge-now">Active</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Follow up on UHNBC (Prince George) — quote sent</div><span class="node-badge badge-now">Active</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Development permit — Dawson Creek Hub Phase 1</div><span class="node-badge badge-now">Active</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Northern Health master lease — advance to next stage</div><span class="node-badge badge-now">Active</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Lakeview Credit Union — mortgage progress on hub</div><span class="node-badge badge-now">Active</span></div>
+      </div>
+    </div>
+
+    <div class="branch goals-90">
+      <div class="branch-title"><span class="branch-icon">📅</span> 90-Day Targets · By June 2026</div>
+      <div class="nodes-list">
+        <div class="node"><div class="node-dot"></div><div class="node-text">Secure master lease with Northern Health — Dawson Creek Hub</div><span class="node-badge badge-90">Q2</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Add 2–3 new construction or healthcare clients</div><span class="node-badge badge-90">Q2</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Development permit approved — Dawson Creek Phase 1</div><span class="node-badge badge-90">Q2</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">NDIT + McKenzie Trust + Community Futures grants submitted</div><span class="node-badge badge-90">Q2</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Workforce housing social campaign fully running</div><span class="node-badge badge-90">Q2</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Fulmer & Co investment conversation to term sheet</div><span class="node-badge badge-90">Q2</span></div>
+      </div>
+    </div>
+
+    <div class="branch goals-year">
+      <div class="branch-title"><span class="branch-icon">🏗️</span> 1-Year Milestones · By March 2027</div>
+      <div class="nodes-list">
+        <div class="node"><div class="node-dot"></div><div class="node-text">Dawson Creek Hub — construction underway</div><span class="node-badge badge-year">Year 1</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">$2M+ under management across active contracts</div><span class="node-badge badge-year">Year 1</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">2nd healthcare housing hub site identified</div><span class="node-badge badge-year">Year 1</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Institutional investment vehicle launched</div><span class="node-badge badge-year">Year 1</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">ContractFlow V2 — multi-client SaaS in market</div><span class="node-badge badge-year">Year 1</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Fully operational ground team + ops manager hired</div><span class="node-badge badge-year">Year 1</span></div>
+      </div>
+    </div>
+
+    <div class="branch goals-vision">
+      <div class="branch-title"><span class="branch-icon">🌎</span> 10-Year Vision · 2035</div>
+      <div class="nodes-list">
+        <div class="node"><div class="node-dot"></div><div class="node-text">Canada's leading workforce housing operator — healthcare + trades</div><span class="node-badge badge-vision">Vision</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">10+ healthcare housing hubs across BC and nationally</div><span class="node-badge badge-vision">Vision</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">$500M+ in healthcare housing assets under management</div><span class="node-badge badge-vision">Vision</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Healthy Living Platform serving 10,000+ healthcare workers</div><span class="node-badge badge-vision">Vision</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Recognized employer-of-choice housing partner for health authorities</div><span class="node-badge badge-vision">Vision</span></div>
+        <div class="node"><div class="node-dot"></div><div class="node-text">Draw Close communities in every ERS hub — proven retention model</div><span class="node-badge badge-vision">Vision</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="north-star" style="margin-top:14px;">
+    ⚡ <strong>"What moves this from 10 years to 1?"</strong><br>
+    Every conversation, investment, and output runs through this question.
+  </div>
+
+</div>
+
+
+<!-- ══════════ TEAM ══════════ -->
+<div id="team" class="section">
+
+  <div class="section-header">
+    <h2>The ERS Team</h2>
+    <div class="sub">Human team + OpenClaw AI team — building Canada's leading workforce housing company</div>
+  </div>
+
+  <!-- AUSTIN -->
+  <div class="branch" style="border-left:3px solid #00BFA6; margin-bottom:14px; box-shadow:0 0 20px rgba(0,191,166,0.08);">
+    <div class="branch-title" style="color:#00BFA6;"><span class="branch-icon">👤</span> Austin (James) Neill — Founder & CEO</div>
+    <div class="nodes-list">
+      <div class="node"><div class="node-dot" style="background:#00BFA6;"></div><div class="node-text"><strong>Strategy · Sales · Partnerships · Vision · Capital · Operations</strong><br>Founder-operator. Built from the ground up.</div><span class="node-badge badge-now">CEO</span></div>
+    </div>
+  </div>
+
+  <!-- HUMAN TEAM -->
+  <div class="branch team-human">
+    <div class="branch-title"><span class="branch-icon">👥</span> Human Team</div>
+    <div class="nodes-list">
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>Megan Banks</strong> — Operations & HR
+          <div class="role-tags">
+            <span class="role-tag">Hiring</span>
+            <span class="role-tag">HR</span>
+            <span class="role-tag">Guest Services</span>
+            <span class="role-tag">Leasing Assist</span>
+            <span class="role-tag">Management</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">Active</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>Braden Seguin</strong> — Director & Business Advisor
+          <div class="role-tags">
+            <span class="role-tag teal">Strategic Partner</span>
+            <span class="role-tag teal">AR / AP</span>
+            <span class="role-tag teal">Kenora Leasing</span>
+            <span class="role-tag teal">Maintenance</span>
+            <span class="role-tag teal">Property Mgmt</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">Active</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>Lexi</strong> — Bookkeeping
+          <div class="role-tags">
+            <span class="role-tag purple">Bookkeeping</span>
+            <span class="role-tag purple">Accounts</span>
+            <span class="role-tag purple">Financial Records</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">Active</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>Tom Kenny</strong> — Architecture & Design
+          <div class="role-tags">
+            <span class="role-tag green">Architecture</span>
+            <span class="role-tag green">Design Lead</span>
+            <span class="role-tag green">Dawson Dev Consulting</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">Active</span>
+      </div>
+
+      <div class="node" style="border:1px dashed rgba(240,136,62,0.3); background:rgba(240,136,62,0.04);">
+        <div class="node-dot" style="background:#f0883e;"></div>
+        <div class="node-text">
+          <strong>Operations Manager</strong> — Seeking
+          <div class="role-tags">
+            <span class="role-tag amber">Ops</span>
+            <span class="role-tag amber">Ground Team Lead</span>
+          </div>
+        </div>
+        <span class="node-badge badge-hiring">Hiring</span>
+      </div>
+
+      <div class="node" style="border:1px dashed rgba(240,136,62,0.3); background:rgba(240,136,62,0.04);">
+        <div class="node-dot" style="background:#f0883e;"></div>
+        <div class="node-text">
+          <strong>Ground Team</strong> — Seeking
+          <div class="role-tags">
+            <span class="role-tag amber">Property</span>
+            <span class="role-tag amber">Maintenance</span>
+            <span class="role-tag amber">Guest Services</span>
+          </div>
+        </div>
+        <span class="node-badge badge-hiring">Hiring</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-div"></div>
+
+  <!-- AI TEAM -->
+  <div class="branch team-ai">
+    <div class="branch-title"><span class="branch-icon">🤖</span> OpenClaw AI Team — Powered by Anthropic Claude API</div>
+    <div class="nodes-list">
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>🎼 Maestro</strong> — AI Chief of Staff
+          <div class="role-tags">
+            <span class="role-tag teal">Strategy</span>
+            <span class="role-tag teal">Build</span>
+            <span class="role-tag teal">Documents</span>
+            <span class="role-tag teal">Research</span>
+            <span class="role-tag teal">Ops</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">● Live</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>🔧 Forge</strong> — Dev Builder
+          <div class="role-tags">
+            <span class="role-tag teal">ContractFlow</span>
+            <span class="role-tag teal">Apps</span>
+            <span class="role-tag teal">Integrations</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">● Live</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text">
+          <strong>🎨 Canvas</strong> — Brand Builder
+          <div class="role-tags">
+            <span class="role-tag teal">Brand</span>
+            <span class="role-tag teal">Visual Identity</span>
+            <span class="role-tag teal">UI Review</span>
+          </div>
+        </div>
+        <span class="node-badge badge-live">● Live</span>
+      </div>
+
+      <div class="node">
+        <div class="node-dot"></div>
+        <div class="node-text"><strong>🧭 Scout</strong> — Biz Dev · <strong>📣 Herald</strong> — Marketing · <strong>🏢 Porter</strong> — Property Mgmt · <strong>💼 Vault</strong> — Investor · <strong>🌍 Bridge</strong> — Community · <strong>📱 Pulse</strong> — Social · <strong>🏡 Anchor</strong> — Real Estate · <strong>📊 Atlas</strong> — Admin · <strong>🏗️ Summit</strong> — Corp Executive</div>
+        <span class="node-badge badge-plan">Planned</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════ DAILY FOCUS ══════════ -->
+<div id="daily" class="section">
+
+  <div class="section-header">
+    <h2>Daily Focus</h2>
+    <div class="sub">Top priorities, weekly rhythm, daily non-negotiables</div>
+  </div>
+
+  <!-- TOP 3 -->
+  <div class="top3-card">
+    <div class="top3-title">⚡ Top 3 Needle-Movers Right Now</div>
+    <div class="top3-item">
+      <div class="top3-num">01</div>
+      <div class="top3-text">
+        <strong>Dawson Creek Hub — Development Permit</strong>
+        <span>Move this forward every day. This is the asset that changes the scale of the company.</span>
+      </div>
+    </div>
+    <div class="top3-item">
+      <div class="top3-num">02</div>
+      <div class="top3-text">
+        <strong>UHNBC Prince George — Follow Up on Quote</strong>
+        <span>Quote is out. Push to a decision. This is the flagship hospital contract.</span>
+      </div>
+    </div>
+    <div class="top3-item">
+      <div class="top3-num">03</div>
+      <div class="top3-text">
+        <strong>Northern Health Master Lease</strong>
+        <span>Lock this in. De-risks the hub and opens every northern health authority door.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- WEEKLY RHYTHM -->
+    <div>
+      <div class="branch daily-week">
+        <div class="branch-title"><span class="branch-icon">📅</span> Weekly Rhythm</div>
+        <div class="nodes-list">
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Monday — Plan</strong><br>Review top 3 priorities · check ContractFlow · set outreach targets for the week</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Tue / Wed — Execute</strong><br>Client calls + partnership conversations · hub development actions · team check-ins</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Thursday — Build & Content</strong><br>LinkedIn + social content · investor / funder outreach · review financials with Lexi</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Friday — Review & Prep</strong><br>Weekly review — what moved, what didn't · update mind map + docs · prep for next week</div></div>
+        </div>
+      </div>
+
+      <div class="branch daily-ai">
+        <div class="branch-title"><span class="branch-icon">🎼</span> Maestro · AI Daily Tasks</div>
+        <div class="nodes-list">
+          <div class="node"><div class="node-dot"></div><div class="node-text">ContractFlow updates, new features, client portal improvements</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text">Pitch decks, solution docs, brand documents</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text">Mind maps, org charts, goal tracking — kept current</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text">Research, market intelligence, meeting prep + agendas</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text">Follow-up drafts, content outlines, document builds</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY NON-NEGOTIABLES -->
+    <div>
+      <div class="branch daily-now">
+        <div class="branch-title"><span class="branch-icon">🔥</span> Every Day — Non-Negotiables</div>
+        <div class="nodes-list">
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>One outreach</strong> — client, partner, funder, or association</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Check ContractFlow</strong> — no contract sits unactioned</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>One thing moves the hub forward</strong> — permit, architect, funder</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Something for the brand</strong> — post, comment, share, or create</div></div>
+        </div>
+      </div>
+
+      <div class="branch daily-pillars">
+        <div class="branch-title"><span class="branch-icon">💰</span> Revenue Pillars</div>
+        <div class="nodes-list">
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Active contracts</strong><br>Couch Bay, Maxwell Floors, pipeline clients — this pays the bills today</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>Healthcare housing hub</strong><br>Dawson Creek Phase 1 — the long-term value multiplier</div></div>
+          <div class="node"><div class="node-dot"></div><div class="node-text"><strong>New client pipeline</strong><br>Hospital contractors, health authorities, construction firms</div></div>
+        </div>
+      </div>
+
+      <div class="north-star">
+        ⚡ <strong>"What moves this from 10 years to 1?"</strong><br>
+        Every conversation, every dollar, every hour — does it move the timeline forward?
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 20, 2026
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

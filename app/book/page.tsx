@@ -22,6 +22,7 @@ export default function BookingPage() {
     contact_email: '',
     contact_phone: '',
     location: '',
+    num_staff: 1,
     units: 1,
     start_date: '',
     end_date: '',
@@ -40,7 +41,7 @@ export default function BookingPage() {
   const removePerson = (i: number) => setPeople(ps => ps.filter((_, idx) => idx !== i))
 
   const step1Valid = form.client_name && form.contact_name && form.contact_email
-  const step2Valid = form.location && form.start_date && form.end_date && form.units > 0
+  const step2Valid = form.location && form.start_date && form.end_date && form.units > 0 && form.num_staff > 0
   const step3Valid = people.filter(p => p.trim()).length > 0
 
   const submit = async () => {
@@ -82,6 +83,7 @@ export default function BookingPage() {
               {[
                 ['Company', form.client_name],
                 ['Location', form.location],
+                ['Staff', `${form.num_staff} staff member${form.num_staff > 1 ? 's' : ''}`],
                 ['Units', `${form.units} unit${form.units > 1 ? 's' : ''}`],
                 ['Check-in', form.start_date],
                 ['Check-out', form.end_date],
@@ -202,6 +204,17 @@ export default function BookingPage() {
             </div>
 
             <div className="bk-field">
+              <label className="bk-lbl">Number of Staff *</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <button onClick={() => set('num_staff', Math.max(1, form.num_staff - 1))} style={{ width: 36, height: 36, borderRadius: 8, border: '1px solid #e0d9d0', background: 'white', fontSize: 18, cursor: 'pointer', color: '#666' }}>−</button>
+                <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 24, color: '#C9A84C', minWidth: 40, textAlign: 'center' }}>{form.num_staff}</span>
+                <button onClick={() => set('num_staff', form.num_staff + 1)} style={{ width: 36, height: 36, borderRadius: 8, border: '1px solid #e0d9d0', background: 'white', fontSize: 18, cursor: 'pointer', color: '#666' }}>+</button>
+                <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: '#bbb' }}>staff member{form.num_staff > 1 ? 's' : ''}</span>
+              </div>
+              <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#bbb', marginTop: 6 }}>Pricing and bedroom allocation is based on number of staff</div>
+            </div>
+
+            <div className="bk-field">
               <label className="bk-lbl">Number of Units Required *</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button onClick={() => set('units', Math.max(1, form.units - 1))} style={{ width: 36, height: 36, borderRadius: 8, border: '1px solid #e0d9d0', background: 'white', fontSize: 18, cursor: 'pointer', color: '#666' }}>−</button>
@@ -269,6 +282,7 @@ export default function BookingPage() {
                 ['Company', form.client_name],
                 ['Contact', `${form.contact_name} · ${form.contact_email}`],
                 ['Location', form.location],
+                ['Staff', `${form.num_staff} staff member${form.num_staff > 1 ? 's' : ''}`],
                 ['Units', `${form.units} unit${form.units > 1 ? 's' : ''}`],
                 ['Dates', `${form.start_date} → ${form.end_date}`],
                 ['Occupants', `${people.filter(p => p.trim()).length} listed`],

@@ -62,6 +62,7 @@ if (error) {
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Contact</td><td style="text-align:right;">${contractData.contact_name}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Email</td><td style="text-align:right;">${contractData.contact_email}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Location</td><td style="text-align:right;">${contractData.location}</td></tr>
+            <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Staff</td><td style="text-align:right;">${contractData.num_staff ?? '—'}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Units</td><td style="text-align:right;">${contractData.units}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Check-in</td><td style="text-align:right;">${contractData.start_date}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Check-out</td><td style="text-align:right;">${contractData.end_date}</td></tr>
@@ -95,6 +96,7 @@ if (error) {
             <p style="font-family:monospace;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 12px;">Your Request Summary</p>
             <table style="width:100%;font-size:13px;border-collapse:collapse;">
               <tr><td style="color:#999;padding:6px 0;font-family:monospace;font-size:11px;">Location</td><td style="text-align:right;">${contractData.location}</td></tr>
+              <tr><td style="color:#999;padding:6px 0;font-family:monospace;font-size:11px;">Staff</td><td style="text-align:right;">${contractData.num_staff ?? '—'}</td></tr>
               <tr><td style="color:#999;padding:6px 0;font-family:monospace;font-size:11px;">Units</td><td style="text-align:right;">${contractData.units}</td></tr>
               <tr><td style="color:#999;padding:6px 0;font-family:monospace;font-size:11px;">Move-in</td><td style="text-align:right;">${contractData.start_date}</td></tr>
               <tr><td style="color:#999;padding:6px 0;font-family:monospace;font-size:11px;">Move-out</td><td style="text-align:right;">${contractData.end_date}</td></tr>

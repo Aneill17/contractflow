@@ -16,7 +16,7 @@ const ERS_STAGE_COLORS: Record<number, string> = {
   2: '#C4793A',   // Contract — amber
   3: '#C4793A',   // Contract Sent — amber
   4: '#00BFA6',   // Signed — teal
-  5: '#0B2540',   // Complete — navy
+  5: '#4F87A0',   // Complete — steel blue (readable on light bg)
 }
 
 export default function HomePage() {

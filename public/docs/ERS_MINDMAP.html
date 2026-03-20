@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elias Range Stays — Goals, Bots & Focus</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    padding: 40px 30px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .header .sub {
+    font-size: 13px;
+    color: #7d8590;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header .north-star {
+    margin-top: 14px;
+    display: inline-block;
+    background: linear-gradient(135deg, #2d6a4f, #1b4332);
+    border: 1px solid #40916c;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #95d5b2;
+    font-style: italic;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7d8590;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  /* GOALS GRID */
+  .goals-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 50px;
+  }
+  .goal-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 18px 16px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .goal-card:hover { border-color: #58a6ff; }
+  .goal-card .goal-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .goal-card .goal-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .goal-card .goal-timeline {
+    font-size: 11px;
+    color: #7d8590;
+    margin-bottom: 10px;
+  }
+  .goal-card .goal-detail {
+    font-size: 12px;
+    color: #8b949e;
+    line-height: 1.6;
+  }
+  .goal-card .status-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+  }
+  .status-hot { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .status-active { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+  .status-building { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
+
+  .goal-1 .goal-num { color: #f0883e; }
+  .goal-2 .goal-num { color: #58a6ff; }
+  .goal-3 .goal-num { color: #3fb950; }
+  .goal-4 .goal-num { color: #bc8cff; }
+  .goal-5 .goal-num { color: #79c0ff; }
+  .goal-1 { border-top: 3px solid #f0883e; }
+  .goal-2 { border-top: 3px solid #58a6ff; }
+  .goal-3 { border-top: 3px solid #3fb950; }
+  .goal-4 { border-top: 3px solid #bc8cff; }
+  .goal-5 { border-top: 3px solid #79c0ff; }
+
+  /* BOT ORG CHART */
+  .org-chart {
+    position: relative;
+    margin-bottom: 50px;
+  }
+
+  /* Austin at top */
+  .org-austin {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+  .austin-card {
+    background: linear-gradient(135deg, #1c2128, #161b22);
+    border: 2px solid #f0883e;
+    border-radius: 14px;
+    padding: 16px 32px;
+    text-align: center;
+    position: relative;
+  }
+  .austin-card .name { font-size: 16px; font-weight: 700; color: #fff; }
+  .austin-card .role { font-size: 11px; color: #f0883e; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+
+  /* Connector line from Austin down */
+  .connector-down {
+    display: flex;
+    justify-content: center;
+    height: 30px;
+    position: relative;
+  }
+  .connector-down::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: #30363d;
+    top: 0;
+  }
+
+  /* Horizontal line spanning bots */
+  .connector-h {
+    display: flex;
+    justify-content: center;
+    height: 2px;
+    background: #30363d;
+    margin: 0 80px;
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  /* Bot row */
+  .bots-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 0;
+    position: relative;
+  }
+
+  /* Vertical connector from top line to each bot */
+  .bot-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .bot-connector {
+    width: 2px;
+    height: 28px;
+    background: #30363d;
+  }
+
+  .bot-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 18px 16px;
+    width: 100%;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .bot-card:hover { transform: translateY(-2px); }
+
+  .bot-card .bot-emoji { font-size: 22px; margin-bottom: 8px; }
+  .bot-card .bot-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+  .bot-card .bot-alias { font-size: 11px; font-style: italic; margin-bottom: 10px; }
+  .bot-card .bot-role-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7d8590;
+    margin-bottom: 6px;
+  }
+  .bot-card .bot-role { font-size: 12px; color: #8b949e; line-height: 1.5; margin-bottom: 12px; }
+  .bot-card .focus-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .bot-card .focus-item {
+    font-size: 12px;
+    color: #e6edf3;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .focus-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .bot-card .goals-serves {
+    margin-top: 12px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .goal-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 8px;
+  }
+  .bot-card .schedule {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #7d8590;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Bot colour themes */
+  .bot-brand { border-top: 3px solid #bc8cff; }
+  .bot-brand .bot-alias { color: #bc8cff; }
+  .bot-brand .focus-label { color: #bc8cff; }
+  .bot-brand .focus-item { background: rgba(188,140,255,0.08); }
+  .bot-brand .focus-dot { background: #bc8cff; }
+
+  .bot-mktg { border-top: 3px solid #58a6ff; }
+  .bot-mktg .bot-alias { color: #58a6ff; }
+  .bot-mktg .focus-label { color: #58a6ff; }
+  .bot-mktg .focus-item { background: rgba(88,166,255,0.08); }
+  .bot-mktg .focus-dot { background: #58a6ff; }
+
+  .bot-social { border-top: 3px solid #3fb950; }
+  .bot-social .bot-alias { color: #3fb950; }
+  .bot-social .focus-label { color: #3fb950; }
+  .bot-social .focus-item { background: rgba(63,185,80,0.08); }
+  .bot-social .focus-dot { background: #3fb950; }
+
+  .bot-biz { border-top: 3px solid #f0883e; }
+  .bot-biz .bot-alias { color: #f0883e; }
+  .bot-biz .focus-label { color: #f0883e; }
+  .bot-biz .focus-item { background: rgba(240,136,62,0.08); }
+  .bot-biz .focus-dot { background: #f0883e; }
+
+  /* Goal tags by number */
+  .g1 { background: rgba(240,136,62,0.15); color: #f0883e; }
+  .g2 { background: rgba(88,166,255,0.15); color: #58a6ff; }
+  .g3 { background: rgba(63,185,80,0.15); color: #3fb950; }
+  .g4 { background: rgba(188,140,255,0.15); color: #bc8cff; }
+  .g5 { background: rgba(121,192,255,0.15); color: #79c0ff; }
+
+  /* Daily report row */
+  .report-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0;
+  }
+  .report-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .report-connector { width: 2px; height: 28px; background: #30363d; }
+  .report-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-top: 3px solid #ffa657;
+    border-radius: 12px;
+    padding: 14px 24px;
+    text-align: center;
+    min-width: 300px;
+  }
+  .report-card .emoji { font-size: 18px; }
+  .report-card .name { font-size: 14px; font-weight: 700; color: #fff; margin: 4px 0 2px; }
+  .report-card .detail { font-size: 12px; color: #8b949e; }
+  .report-card .time { font-size: 11px; color: #ffa657; margin-top: 6px; }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: #21262d;
+    margin: 40px 0;
+  }
+
+  /* Rob row */
+  .rob-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .rob-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .rob-card .label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #7d8590; margin-bottom: 6px; }
+  .rob-card .value { font-size: 13px; color: #e6edf3; line-height: 1.6; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: #484f58;
+    font-size: 11px;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Elias Range Stays</h1>
+  <div class="sub">Goals · Bot Org Chart · Daily Focus</div>
+  <div class="north-star">⚡ North Star: What moves this from 10 years to 1?</div>
+</div>
+
+<!-- GOALS -->
+<div class="section-title">Company Goals</div>
+<div class="goals-grid">
+
+  <div class="goal-card goal-1">
+    <div class="goal-num">Goal 1 · Highest Priority</div>
+    <div class="goal-title">Dawson Creek Healthcare Housing Hub</div>
+    <div class="goal-timeline">⏱ 2 years or less</div>
+    <div class="goal-detail">Build Phase 1 on land at 10620 10th St, Dawson Creek. Master lease + partnership agreement with Northern Health.</div>
+    <div class="status-badge status-hot">🔥 Active</div>
+  </div>
+
+  <div class="goal-card goal-2">
+    <div class="goal-num">Goal 2 · Strategic</div>
+    <div class="goal-title">Recognized Infrastructure Partner for BC Health Authorities</div>
+    <div class="goal-timeline">⏱ 12–24 months</div>
+    <div class="goal-detail">ERS embedded in Prince George Hospital development. In the room before the RFP. Infrastructure BC + Northern Health.</div>
+    <div class="status-badge status-active">Active</div>
+  </div>
+
+  <div class="goal-card goal-3">
+    <div class="goal-num">Goal 3 · Operations</div>
+    <div class="goal-title">75+ Units Under Management</div>
+    <div class="goal-timeline">⏱ Dec 2026</div>
+    <div class="goal-detail">From 34+ units today. New acquisitions, master leases, new health authority + construction contracts.</div>
+    <div class="status-badge status-active">Active</div>
+  </div>
+
+  <div class="goal-card goal-4">
+    <div class="goal-num">Goal 4 · Brand</div>
+    <div class="goal-title">Voice of Healthcare Worker Housing in Canada</div>
+    <div class="goal-timeline">⏱ 6–12 months</div>
+    <div class="goal-detail">Austin quoted in national media. Speaking at CMA. LinkedIn 5,000+ decision-makers. Impact Report 2026 published.</div>
+    <div class="status-badge status-active">Active</div>
+  </div>
+
+  <div class="goal-card goal-5">
+    <div class="goal-num">Goal 5 · Platform</div>
+    <div class="goal-title">Contract Flow SaaS</div>
+    <div class="goal-timeline">⏱ 12–18 months</div>
+    <div class="goal-detail">v1.0 live. $69K under management. White-label to other operators + health authorities. 5+ paying clients by 2027.</div>
+    <div class="status-badge status-building">Building</div>
+  </div>
+
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ORG CHART -->
+<div class="section-title">Bot Org Chart</div>
+<div class="org-chart">
+
+  <!-- Austin -->
+  <div class="org-austin">
+    <div class="austin-card">
+      <div class="name">Austin James Neill</div>
+      <div class="role">Founder · Decision Maker · Approver</div>
+    </div>
+  </div>
+
+  <!-- Down connector -->
+  <div class="connector-down"></div>
+
+  <!-- Bots row -->
+  <div class="bots-row">
+
+    <div class="bot-wrapper">
+      <div class="bot-connector"></div>
+      <div class="bot-card bot-brand">
+        <div class="bot-emoji">🏛️</div>
+        <div class="bot-name">The Architect</div>
+        <div class="bot-alias">Brand Builder</div>
+        <div class="bot-role-label">Role</div>
+        <div class="bot-role">Brand authority. Sets daily direction for all content and messaging. Oversees consistency across every bot output.</div>
+        <div class="focus-label">Daily Focus · 7:00 AM</div>
+        <div class="focus-item"><span class="focus-dot"></span>Brand direction note — what ERS says this week to advance Dawson Creek positioning + national authority</div>
+        <div class="goals-serves">
+          <span class="goal-tag g1">Goal 1</span>
+          <span class="goal-tag g4">Goal 4</span>
+        </div>
+        <div class="schedule">🕖 7:00 AM daily → Slack</div>
+      </div>
+    </div>
+
+    <div class="bot-wrapper">
+      <div class="bot-connector"></div>
+      <div class="bot-card bot-mktg">
+        <div class="bot-emoji">📊</div>
+        <div class="bot-name">The Strategist</div>
+        <div class="bot-alias">Marketing Guru</div>
+        <div class="bot-role-label">Role</div>
+        <div class="bot-role">Market intelligence. Monitors health authority news, construction sector, associations. Turns signals into campaigns.</div>
+        <div class="focus-label">Daily Focus · 7:30 AM</div>
+        <div class="focus-item"><span class="focus-dot"></span>One real market signal — Northern Health, Prince George Hospital, or Infrastructure BC news. One actionable hook.</div>
+        <div class="goals-serves">
+          <span class="goal-tag g2">Goal 2</span>
+          <span class="goal-tag g4">Goal 4</span>
+        </div>
+        <div class="schedule">🕖 7:30 AM daily → Slack</div>
+      </div>
+    </div>
+
+    <div class="bot-wrapper">
+      <div class="bot-connector"></div>
+      <div class="bot-card bot-social">
+        <div class="bot-emoji">📱</div>
+        <div class="bot-name">The Voice</div>
+        <div class="bot-alias">Social Media Bot</div>
+        <div class="bot-role-label">Role</div>
+        <div class="bot-role">Content production. Drafts complete posts (copy + photo brief + hashtags). Keeps Rob's queue full and ready.</div>
+        <div class="focus-label">Daily Focus · 8:00 AM</div>
+        <div class="focus-item"><span class="focus-dot"></span>One matched LinkedIn post pair (Austin PB + ERS). Tied to health authority positioning or brand authority. Queued for Rob.</div>
+        <div class="goals-serves">
+          <span class="goal-tag g2">Goal 2</span>
+          <span class="goal-tag g4">Goal 4</span>
+        </div>
+        <div class="schedule">🕗 8:00 AM daily → Rob's queue</div>
+      </div>
+    </div>
+
+    <div class="bot-wrapper">
+      <div class="bot-connector"></div>
+      <div class="bot-card bot-biz">
+        <div class="bot-emoji">🎯</div>
+        <div class="bot-name">The Closer</div>
+        <div class="bot-alias">Business Developer</div>
+        <div class="bot-role-label">Role</div>
+        <div class="bot-role">Pipeline + opportunities. Scans BCBid, MERX, grant databases. Finds the doors into Northern Health and Infrastructure BC.</div>
+        <div class="focus-label">Daily Focus · 8:30 AM</div>
+        <div class="focus-item"><span class="focus-dot"></span>One RFP, grant, or Prince George Hospital entry point. Exact next step for Austin.</div>
+        <div class="goals-serves">
+          <span class="goal-tag g1">Goal 1</span>
+          <span class="goal-tag g2">Goal 2</span>
+          <span class="goal-tag g3">Goal 3</span>
+        </div>
+        <div class="schedule">🕗 8:30 AM daily → Slack</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Daily Report -->
+  <div style="height: 28px; display: flex; justify-content: center;">
+    <div style="width: 2px; background: #30363d; height: 100%;"></div>
+  </div>
+  <div class="report-row">
+    <div class="report-wrapper">
+      <div class="report-card">
+        <div class="emoji">📋</div>
+        <div class="name">Daily Bot Report</div>
+        <div class="detail">10-line summary of all 4 bots — what was found, what's queued, top action for Austin tomorrow</div>
+        <div class="time">🕕 6:00 PM daily → Slack DM</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ROB + TEAM -->
+<div class="section-title">Human Team</div>
+<div class="rob-row">
+  <div class="rob-card">
+    <div class="label">Rob (Robert Szmigiel) · Social Media Lead</div>
+    <div class="value">Reviews POSTS_QUEUE.md daily. Schedules approved posts to LinkedIn (Austin PB + ERS) and Facebook. Owner of all posting execution. Posts sourced from Social Media Bot.</div>
+  </div>
+  <div class="rob-card">
+    <div class="label">Angela Hayward · Guest Services Lead</div>
+    <div class="value">Manages guest onboarding, in-stay support, departure, vendor coordination. Executes the 4-touch pre-arrival communication sequence. Reports to Austin.</div>
+  </div>
+</div>
+
+<div class="footer">
+  Elias Range Stays · eliasrangestays.ca · Last updated March 14, 2026
+</div>
+
+</body>
+</html>

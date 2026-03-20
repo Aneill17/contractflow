@@ -23,6 +23,7 @@ function RequestForm() {
     contact_email: '',
     contact_phone: '',
     location: '',
+    num_staff: '1',
     units: '1',
     start_date: '',
     end_date: '',
@@ -51,6 +52,7 @@ function RequestForm() {
           contact_email: form.contact_email,
           contact_phone: form.contact_phone,
           location: form.location,
+          num_staff: parseInt(form.num_staff) || 1,
           units: parseInt(form.units) || 1,
           start_date: form.start_date,
           end_date: form.end_date,
@@ -352,6 +354,13 @@ function RequestForm() {
               <div>
                 <label style={labelStyle}>Preferred Area / Region *</label>
                 <input style={inputStyle} value={form.location} onChange={e => set('location', e.target.value)} placeholder="e.g. Squamish, BC — near hospital" required />
+              </div>
+              <div>
+                <label style={labelStyle}>Number of Staff Required *</label>
+                <input style={inputStyle} value={form.num_staff} onChange={e => set('num_staff', e.target.value)} type="number" min="1" placeholder="e.g. 8" required />
+                <div style={{ fontFamily: 'sans-serif', fontSize: 11, color: embed ? 'rgba(168,209,231,0.5)' : '#9CA3AF', marginTop: 5 }}>
+                  Pricing and bedroom allocation is based on number of staff
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Number of Units / Rooms Needed *</label>

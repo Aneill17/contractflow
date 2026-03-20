@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elias Range Stays — Company Mind Map</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #090d13;
+  color: #e6edf3;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  padding: 40px 40px 60px;
+}
+
+.header { text-align:center; margin-bottom:50px; }
+.header h1 { font-size:32px; font-weight:800; color:#fff; letter-spacing:-1px; }
+.header .tagline { font-size:13px; color:#00BFA6; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+.header .updated { font-size:11px; color:#484f58; margin-top:8px; }
+
+.mindmap {
+  display:grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap:0;
+  align-items:start;
+  max-width:1640px;
+  margin:0 auto;
+  position:relative;
+}
+
+.center-col {
+  grid-column:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  padding:0 10px;
+  position:relative;
+  z-index:2;
+}
+
+.core-node {
+  background: linear-gradient(135deg, #1a2332, #0f1923);
+  border: 2px solid #00BFA6;
+  border-radius: 18px;
+  padding: 24px 28px;
+  text-align:center;
+  width:100%;
+  box-shadow: 0 0 40px rgba(0,191,166,0.15), 0 0 80px rgba(0,191,166,0.05);
+}
+.core-node .name { font-size:20px; font-weight:800; color:#fff; letter-spacing:-0.5px; }
+.core-node .tagline-inner { font-size:11px; color:#00BFA6; letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
+.core-node .stats { display:flex; justify-content:center; gap:20px; margin-top:14px; flex-wrap:wrap; }
+.core-node .stat { text-align:center; }
+.core-node .stat-num { font-size:18px; font-weight:700; color:#fff; }
+.core-node .stat-label { font-size:10px; color:#7d8590; text-transform:uppercase; letter-spacing:1px; }
+
+.left-col { grid-column:1; display:flex; flex-direction:column; gap:14px; padding-right:20px; }
+.right-col { grid-column:3; display:flex; flex-direction:column; gap:14px; padding-left:20px; }
+
+.branch {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius:14px;
+  padding:18px;
+  position:relative;
+}
+.branch .branch-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  margin-bottom:12px; display:flex; align-items:center; gap:8px;
+}
+.branch-icon { font-size:16px; }
+.nodes-list { display:flex; flex-direction:column; gap:6px; }
+
+.node {
+  display:flex; align-items:flex-start; gap:8px;
+  padding:7px 10px; border-radius:8px; font-size:12px; line-height:1.5;
+}
+.node-dot { width:7px; height:7px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+.node-text { color:#c9d1d9; }
+.node-badge {
+  font-size:10px; font-weight:600; padding:1px 6px; border-radius:6px;
+  margin-left:auto; flex-shrink:0; margin-top:1px;
+}
+.sub-nodes { padding-left:20px; margin-top:4px; display:flex; flex-direction:column; gap:4px; }
+.sub-node {
+  font-size:11px; color:#8b949e; padding:4px 8px; border-radius:6px;
+  display:flex; align-items:center; gap:6px;
+}
+.sub-dot { width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+
+/* ── DOC LINKS ── */
+a.doc-link {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:600; letter-spacing:0.08em;
+  padding:2px 9px 2px 7px; border-radius:6px; margin-top:6px;
+  background:rgba(0,191,166,0.1); color:#00BFA6;
+  border:1px solid rgba(0,191,166,0.25);
+  text-decoration:none; transition:all 0.15s;
+}
+a.doc-link:hover { background:rgba(0,191,166,0.22); border-color:rgba(0,191,166,0.55); color:#00d4b8; }
+
+/* Branch colour themes */
+.hub      { border-left:3px solid #f0883e; }
+.hub      .branch-title { color:#f0883e; }
+.hub      .node { background:rgba(240,136,62,0.06); }
+.hub      .node-dot { background:#f0883e; }
+.hub      .sub-dot { background:#f0883e; }
+
+.clients  { border-left:3px solid #3fb950; }
+.clients  .branch-title { color:#3fb950; }
+.clients  .node { background:rgba(63,185,80,0.06); }
+.clients  .node-dot { background:#3fb950; }
+.clients  .sub-dot { background:#3fb950; }
+
+.assoc    { border-left:3px solid #39d353; }
+.assoc    .branch-title { color:#39d353; }
+.assoc    .node { background:rgba(57,211,83,0.06); }
+.assoc    .node-dot { background:#39d353; }
+.assoc    .sub-dot { background:#39d353; }
+
+.bizdev   { border-left:3px solid #79c0ff; }
+.bizdev   .branch-title { color:#79c0ff; }
+.bizdev   .node { background:rgba(121,192,255,0.06); }
+.bizdev   .node-dot { background:#79c0ff; }
+.bizdev   .sub-dot { background:#79c0ff; }
+
+.partners { border-left:3px solid #58a6ff; }
+.partners .branch-title { color:#58a6ff; }
+.partners .node { background:rgba(88,166,255,0.06); }
+.partners .node-dot { background:#58a6ff; }
+.partners .sub-dot { background:#58a6ff; }
+
+.capital  { border-left:3px solid #bc8cff; }
+.capital  .branch-title { color:#bc8cff; }
+.capital  .node { background:rgba(188,140,255,0.06); }
+.capital  .node-dot { background:#bc8cff; }
+.capital  .sub-dot { background:#bc8cff; }
+
+.vehicles { border-left:3px solid #ffa657; }
+.vehicles .branch-title { color:#ffa657; }
+.vehicles .node { background:rgba(255,166,87,0.06); }
+.vehicles .node-dot { background:#ffa657; }
+.vehicles .sub-dot { background:#ffa657; }
+
+.internal { border-left:3px solid #f778ba; }
+.internal .branch-title { color:#f778ba; }
+.internal .node { background:rgba(247,120,186,0.06); }
+.internal .node-dot { background:#f778ba; }
+.internal .sub-dot { background:#f778ba; }
+
+.healthy  { border-left:3px solid #7ee787; }
+.healthy  .branch-title { color:#7ee787; }
+.healthy  .node { background:rgba(126,231,135,0.06); }
+.healthy  .node-dot { background:#7ee787; }
+.healthy  .sub-dot { background:#7ee787; }
+
+/* Status badges */
+.badge-live     { background:rgba(63,185,80,0.15);   color:#3fb950; }
+.badge-active   { background:rgba(88,166,255,0.15);  color:#58a6ff; }
+.badge-target   { background:rgba(240,136,62,0.15);  color:#f0883e; }
+.badge-building { background:rgba(188,140,255,0.15); color:#bc8cff; }
+.badge-seeking  { background:rgba(255,166,87,0.15);  color:#ffa657; }
+.badge-pipeline { background:rgba(126,231,135,0.15); color:#7ee787; }
+.badge-member   { background:rgba(0,191,166,0.15);   color:#00BFA6; }
+.badge-sent     { background:rgba(196,121,58,0.15);  color:#C4793A; }
+.badge-done     { background:rgba(63,185,80,0.2);    color:#3fb950; }
+.badge-slow     { background:rgba(148,163,184,0.15); color:#94a3b8; }
+
+/* Services center card */
+.services-center {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-top: 3px solid #00BFA6;
+  border-radius:14px;
+  padding:18px;
+  width:100%;
+}
+.services-center .sc-title { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#00BFA6; margin-bottom:12px; }
+.sc-section-label { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:#484f58; margin:10px 0 6px; padding-left:2px; }
+.services-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.service-pill {
+  background:rgba(0,191,166,0.07);
+  border:1px solid rgba(0,191,166,0.15);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:11px; color:#c9d1d9; text-align:center; line-height:1.4;
+}
+.service-pill.pipeline {
+  border-color:rgba(126,231,135,0.2);
+  background:rgba(126,231,135,0.04);
+  color:#7ee787;
+  font-style:italic;
+}
+
+/* North star card */
+.north-star-card {
+  background:linear-gradient(135deg, rgba(0,191,166,0.08), rgba(88,166,255,0.06));
+  border:1px solid #30363d;
+  border-radius:12px;
+  padding:14px 18px;
+  text-align:center;
+  width:100%;
+}
+.ns-q { font-size:12px; color:#8b949e; font-style:italic; line-height:1.5; }
+.ns-q strong { color:#e6edf3; }
+
+.section-div { height:1px; background:#21262d; margin:40px 0; max-width:1640px; margin-left:auto; margin-right:auto; }
+
+.legend { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:1640px; margin:30px auto 0; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:#8b949e; }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+
+.footer { text-align:center; color:#484f58; font-size:11px; margin-top:40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Elias Range Stays</h1>
+  <div class="tagline">Company Mind Map · All Moving Parts</div>
+  <div class="updated">Last updated March 20, 2026 · v2</div>
+</div>
+
+<div class="mindmap">
+
+  <!-- ═══ LEFT COLUMN ═══ -->
+  <div class="left-col">
+
+    <!-- HEALTHCARE HOUSING HUB -->
+    <div class="branch hub">
+      <div class="branch-title"><span class="branch-icon">🏗️</span> Healthcare Housing Hub</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Dawson Creek Hub — Phase 1</strong><br>10620 10th St · Development permit in progress</div>
+          <span class="node-badge badge-active">Active</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Boss Architecture</strong><br>Design & development partner for hub</div>
+          <span class="node-badge badge-active">Partner</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Northern Health</strong><br>Master lease agreement — in progress</div>
+          <span class="node-badge badge-active">In Progress</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Prince George University Hospital</strong><br>New UHNBC — positioning ERS for staff housing</div>
+          <span class="node-badge badge-target">Targeting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="branch clients">
+      <div class="branch-title"><span class="branch-icon">🤝</span> Clients · Workforce Housing</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Couch Bay</strong><br>Active — ContractFlow managed</div>
+          <span class="node-badge badge-live">Live</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Maxwell Floors</strong><br>Live — 20+ staff housed · ContractFlow managed</div>
+          <span class="node-badge badge-live">Live</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>New Prince George Hospital (UHNBC)</strong><br>Quote sent — awaiting response</div>
+          <span class="node-badge badge-sent">Quote Sent</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Large Hospital Contractors</strong><br>Seeking contractors actively building in BC</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Health Authority Workforce</strong><br>Locums, nurses, allied health — targeting</div>
+          <span class="node-badge badge-target">Targeting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSOCIATIONS -->
+    <div class="branch assoc">
+      <div class="branch-title"><span class="branch-icon">🏛️</span> Associations · Alignment</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>VRCA</strong><br>Vancouver Regional Construction Association</div>
+          <span class="node-badge badge-active">Aligning</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Rural Health BC</strong><br>Active member</div>
+          <span class="node-badge badge-member">Member</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>BC Health Authorities</strong><br>Northern, Fraser, Island, Interior, Vancouver Coastal</div>
+          <span class="node-badge badge-active">Aligning</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Canadian Medical Association</strong><br>National healthcare workforce voice</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Others TBD</strong><br>Healthcare + construction associations in target markets</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSINESS DEVELOPMENT -->
+    <div class="branch bizdev">
+      <div class="branch-title"><span class="branch-icon">📡</span> Business Development</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Infrastructure BC</strong><br>Capital projects — long-range relationship building</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Hospital Construction Pipeline</strong><br>Tracking BC hospital builds for pre-positioning</div>
+          <span class="node-badge badge-active">Monitoring</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Canadian Institute — Healthcare Infrastructure Event</strong><br>Speaking opportunity at national healthcare infrastructure & housing conference</div>
+          <span class="node-badge badge-pipeline">Pipeline</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>CMA Annual Meeting</strong><br>Speaking + brand presence — Canadian Medical Association</div>
+          <span class="node-badge badge-pipeline">Pipeline</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>BC Health Leadership Conference</strong><br>Speaking + positioning ERS with health authority decision-makers</div>
+          <span class="node-badge badge-pipeline">Pipeline</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ CENTER COLUMN ═══ -->
+  <div class="center-col">
+
+    <div class="core-node">
+      <div class="name">Elias Range Stays</div>
+      <div class="tagline-inner">Healthy Living · Stronger Communities</div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">34+</div><div class="stat-label">Units</div></div>
+        <div class="stat"><div class="stat-num">5</div><div class="stat-label">Hospitals</div></div>
+        <div class="stat"><div class="stat-num">$105</div><div class="stat-label">Per Night</div></div>
+        <div class="stat"><div class="stat-num">$750K</div><div class="stat-label">Under Mgmt</div></div>
+        <div class="stat"><div class="stat-num">4yr</div><div class="stat-label">Inc. · 2yr Growth</div></div>
+      </div>
+    </div>
+
+    <div class="services-center">
+      <div class="sc-title">🔧 Services Stack</div>
+      <div class="sc-section-label">Core — Live</div>
+      <div class="services-grid">
+        <div class="service-pill">Healthcare Housing</div>
+        <div class="service-pill">Workforce Housing</div>
+        <div class="service-pill">Housing Hub Development</div>
+        <div class="service-pill">Furnished Units</div>
+        <div class="service-pill">Guest Services</div>
+        <div class="service-pill">Single Invoice</div>
+        <div class="service-pill">24/7 Support</div>
+        <div class="service-pill">Furniture Acquisition & Deployment</div>
+      </div>
+      <div class="sc-section-label">In Pipeline</div>
+      <div class="services-grid">
+        <div class="service-pill pipeline">✦ Draw Close Program</div>
+        <div class="service-pill pipeline">✦ Healthy Living Platform</div>
+      </div>
+    </div>
+
+    <div class="north-star-card">
+      <div class="ns-q">⚡ <strong>"What moves this from 10 years to 1?"</strong><br>Every conversation, partnership, and output runs through this question.</div>
+    </div>
+
+  </div>
+
+  <!-- ═══ RIGHT COLUMN ═══ -->
+  <div class="right-col">
+
+    <!-- STRATEGIC PARTNERSHIPS -->
+    <div class="branch partners">
+      <div class="branch-title"><span class="branch-icon">🔗</span> Strategic Partnerships</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Future Builders Partnership</strong><br>Development + construction alignment</div>
+          <span class="node-badge badge-active">Active</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Boss Architecture</strong><br>Healthcare housing hub design & development</div>
+          <span class="node-badge badge-active">Active</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>YMCA</strong><br>Daycare partnership for healthcare worker families in-hub</div>
+          <span class="node-badge badge-active">In Progress</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Community Partnerships</strong><br>Local stakeholder integration — hub & properties</div>
+          <span class="node-badge badge-active">In Progress</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Northern Lights College</strong><br>One meeting held · Being brought into Board of Deans — workforce pipeline + Dawson Creek presence</div>
+          <span class="node-badge badge-active">Engaged</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Providence Healthcare Ventures</strong><br>Two meetings held · Ongoing conversations — land access + health authority connections</div>
+          <span class="node-badge badge-active">Chatting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPITAL & FUNDING -->
+    <div class="branch capital">
+      <div class="branch-title"><span class="branch-icon">💰</span> Capital & Funding</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Fulmer & Co</strong><br>Venture investment partnership</div>
+          <span class="node-badge badge-active">In Talks</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Lakeview Credit Union</strong><br>Dawson Creek — mortgage funding for healthcare housing hub</div>
+          <span class="node-badge badge-active">In Progress</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>NDIT</strong><br>Northern Development Initiative Trust — south piece grant</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>McKenzie Trust Grant</strong><br>Grant funding for healthcare housing hub</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Community Futures</strong><br>Seeking grant funding for healthcare housing hub</div>
+          <span class="node-badge badge-seeking">Seeking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVESTMENT VEHICLES -->
+    <div class="branch vehicles">
+      <div class="branch-title"><span class="branch-icon">📈</span> Investment Vehicles</div>
+      <div class="nodes-list">
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Healthcare Infrastructure Investment Fund</strong><br>Institutional-grade, health authority-backed properties</div>
+          <span class="node-badge badge-seeking">In the Queue</span>
+        </div>
+        <div class="sub-nodes">
+          <div class="sub-node"><div class="sub-dot" style="background:#ffa657"></div>Institutional Grade — health authority-backed properties</div>
+          <div class="sub-node"><div class="sub-dot" style="background:#ffa657"></div>Small Multifamily Acquisitions — near-hospital BC properties</div>
+        </div>
+        <div class="node">
+          <div class="node-dot"></div>
+          <div class="node-text"><strong>Healthcare Infrastructure Mastermind</strong><br>Investor + operator network — coming later</div>
+          <span class="node-badge badge-seeking">In the Queue</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="section-div"></div>
+
+<!-- BOTTOM ROW -->
+<div style="max-width:1640px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+  <!-- INTERNAL PROJECTS -->
+  <div class="branch internal">
+    <div class="branch-title"><span class="branch-icon">⚙️</span> Internal Projects · Assets Built</div>
+    <div class="nodes-list" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ContractFlow App</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">v1.0 live · 2 active contracts · $750K AUM</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app" target="_blank" style="margin-left:13px;">↗ Open App</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Brand Repository</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Identity, voice, style, design, themes, guest comms — 6 docs</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/Austin_James_Neill_Brand_Foundation.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ERS Market Research Report</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">BC workforce housing market analysis + opportunity sizing</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_Market_Research_Report.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ERS Deep Research Report</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Healthcare housing crisis · Canada deep dive · health authority intel</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_Deep_Research_Report.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Our Story</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">ERS origin story — who we are, where we came from, why it matters</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_OUR_STORY.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Austin's Story</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Austin James Neill brand foundation — personal story + leadership identity</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/Austin_James_Neill_Brand_Foundation.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">The Problem Stack</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">8-layer workforce housing problem document — root to symptom</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_Problem_Stack.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Solution Document + Pitch Deck</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Layer-by-layer solution · community flywheel · full HTML pitch deck</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS-pitch-deck.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Company Mind Map</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">All moving parts — every branch of ERS in one map</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_COMPANY_MINDMAP.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Goals · Team · Daily Focus</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">ERS goals, org chart, AI team, weekly rhythm + daily priorities</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_GOALS_TEAM_DAILY.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ContractFlow V2 Plan</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">V2 system map · multi-client SaaS roadmap · feature pipeline</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/contractflow-v2-system-map.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ERS Website (New)</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Rebuilt site with embedded ContractFlow booking form</div>
+        <a class="doc-link" href="https://eliasrangestays.ca" target="_blank" style="margin-left:13px;">↗ Live Site</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">ERS Impact Report 2026</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Annual proof document for health authority audiences</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_10Year_Vision.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Elias Range Stays Brand Repository</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Full brand system — identity, voice, style, design, themes, guest comms</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/ERS_Introduction.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Austin James Neill Brand Repository</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Personal brand foundation — story, identity, leadership voice, vision</div>
+        <a class="doc-link" href="https://contractflow-omega.vercel.app/docs/Austin_James_Neill_Brand_Foundation.html" target="_blank" style="margin-left:13px;">↗ Open</a>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Draw Close Program</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Long table dinners, outdoor excursions, community events</div>
+        <span class="node-badge badge-seeking" style="margin-left:13px; align-self:flex-start;">Seeking</span>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">In-Suite Branding</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Welcome cards, print materials, in-unit brand presence</div>
+        <span class="node-badge badge-seeking" style="margin-left:13px; align-self:flex-start;">Seeking</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HEALTHY LIVING -->
+  <div class="branch healthy">
+    <div class="branch-title"><span class="branch-icon">🌿</span> Healthy Living · Social & Campaigns</div>
+    <div class="nodes-list" style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Workforce Housing Campaign</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Social media campaign — actively running</div>
+        <span class="node-badge badge-live" style="margin-left:13px; align-self:flex-start;">Active</span>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Healthcare Housing Hub Campaign</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Social campaign around the hub — in the pipeline</div>
+        <span class="node-badge badge-pipeline" style="margin-left:13px; align-self:flex-start;">Pipeline</span>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Burnout to Balance Campaign</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Content series — burnout crisis + ERS as the answer</div>
+        <span class="node-badge badge-pipeline" style="margin-left:13px; align-self:flex-start;">Pipeline</span>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Healthy Living Platform</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Digital wellness + community platform for residents</div>
+        <span class="node-badge badge-pipeline" style="margin-left:13px; align-self:flex-start;">Pipeline</span>
+      </div>
+
+      <div class="node" style="flex-direction:column; gap:4px; grid-column:1/-1;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="node-dot"></div>
+          <strong style="font-size:12px; color:#fff;">Austin Speaking & Podcasting</strong>
+        </div>
+        <div class="node-text" style="font-size:11px; padding-left:13px;">Podcast pitches + speaking at CMA Annual, BC Health Leadership Conference</div>
+        <span class="node-badge badge-pipeline" style="margin-left:13px; align-self:flex-start;">Pipeline</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#f0883e"></div>Housing Hub</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>Clients</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#39d353"></div>Associations</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#79c0ff"></div>Business Dev</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div>Partnerships</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#bc8cff"></div>Capital</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ffa657"></div>Investment Vehicles</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f778ba"></div>Internal Projects</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7ee787"></div>Healthy Living</div>
+</div>
+
+<div class="footer">
+  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 20, 2026
+</div>
+
+</body>
+</html>
