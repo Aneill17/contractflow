@@ -33,7 +33,6 @@ function LoginForm() {
         return
       }
 
-      // Small delay to let the cookie settle before redirect
       await new Promise(r => setTimeout(r, 200))
       window.location.href = next
     } catch (err: unknown) {
@@ -45,125 +44,136 @@ function LoginForm() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0C0E14',
+      background: '#0B2540',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontFamily: "'IBM Plex Mono', monospace",
+      fontFamily: "'Segoe UI', system-ui, sans-serif",
     }}>
       <style>{`
         input { outline: none; width: 100%; }
-        input::placeholder { color: #ffffff22; }
+        input::placeholder { color: rgba(255,255,255,0.25); }
+        .login-inp {
+          background: rgba(255,255,255,0.07);
+          border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 8px;
+          padding: 11px 14px;
+          color: #ffffff;
+          font-size: 13px;
+          font-family: 'Segoe UI', system-ui, sans-serif;
+          transition: border 0.2s, box-shadow 0.2s;
+          width: 100%;
+        }
+        .login-inp:focus {
+          border-color: #00BFA6;
+          box-shadow: 0 0 0 3px rgba(0,191,166,0.15);
+        }
+        .login-lbl {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.4);
+          margin-bottom: 7px;
+          display: block;
+        }
       `}</style>
 
       <div style={{
-        width: 400,
-        background: '#13161D',
-        border: '1px solid #ffffff0D',
+        width: 420,
+        background: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: 14,
         overflow: 'hidden',
       }}>
-        {/* ERS Brand Header */}
+
+        {/* Header with logo */}
         <div style={{
-          background: '#1B4353',
-          padding: '24px 36px 20px',
+          background: '#ffffff',
+          padding: '22px 36px 18px',
           textAlign: 'center',
-          borderBottom: '1px solid #ffffff0D',
+          borderBottom: '3px solid #0B2540',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
         }}>
-          <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.22em', textTransform: 'uppercase' }}>
-            Elias Range Stays
-          </div>
-          <div style={{ fontFamily: "'Source Serif 4', serif", fontStyle: 'italic', fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, letterSpacing: '0.02em' }}>
-            Healthy Living, Stronger Communities
+          <img src="/logo.png" alt="Elias Range Stays" style={{ height: 56, width: 'auto' }} />
+          <div style={{ fontSize: 11, color: '#94a3b8', letterSpacing: '0.04em' }}>
+            Healthy Living · Stronger Communities
           </div>
         </div>
 
-        {/* Form area */}
+        {/* Form */}
         <div style={{ padding: '32px 36px 40px' }}>
-        {/* Title */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontFamily: "'League Spartan', sans-serif", fontSize: 22, fontWeight: 700, color: '#DDD5C8', letterSpacing: '-0.01em' }}>
-            Contract<span style={{ color: '#C9A84C' }}>Flow</span>
-          </div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#ffffff22', letterSpacing: '0.2em', marginTop: 4 }}>
-            TEAM ACCESS
-          </div>
-        </div>
-
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div>
-            <div style={{ fontSize: 10, color: '#ffffff33', letterSpacing: '0.12em', marginBottom: 6 }}>EMAIL</div>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              autoFocus
-              style={{
-                background: '#0C0E14',
-                border: '1px solid #ffffff12',
-                borderRadius: 7,
-                padding: '10px 14px',
-                color: '#DDD5C8',
-                fontSize: 13,
-                fontFamily: 'IBM Plex Mono',
-              }}
-            />
-          </div>
-
-          <div>
-            <div style={{ fontSize: 10, color: '#ffffff33', letterSpacing: '0.12em', marginBottom: 6 }}>PASSWORD</div>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              style={{
-                background: '#0C0E14',
-                border: '1px solid #ffffff12',
-                borderRadius: 7,
-                padding: '10px 14px',
-                color: '#DDD5C8',
-                fontSize: 13,
-                fontFamily: 'IBM Plex Mono',
-              }}
-            />
-          </div>
-
-          {error && (
-            <div style={{
-              background: '#3a1a1a',
-              border: '1px solid #e74c3c44',
-              color: '#e74c3c',
-              borderRadius: 7,
-              padding: '10px 14px',
-              fontSize: 12,
-            }}>
-              {error}
+          <div style={{ textAlign: 'center', marginBottom: 26 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
+              Contract<span style={{ color: '#00BFA6' }}>Flow</span>
             </div>
-          )}
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em', marginTop: 4, textTransform: 'uppercase' }}>
+              Team Access
+            </div>
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              background: loading ? '#8a7030' : '#C9A84C',
-              color: '#0C0E14',
-              border: 'none',
-              borderRadius: 7,
-              padding: '12px 20px',
-              fontSize: 12,
-              fontFamily: 'IBM Plex Mono',
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginTop: 4,
-              transition: 'background 0.18s',
-            }}
-          >
-            {loading ? 'SIGNING IN...' : 'SIGN IN'}
-          </button>
-        </form>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label className="login-lbl">Email</label>
+              <input
+                className="login-inp"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoFocus
+                placeholder="you@eliasrangestays.ca"
+              />
+            </div>
+
+            <div>
+              <label className="login-lbl">Password</label>
+              <input
+                className="login-inp"
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div style={{
+                background: 'rgba(231,76,60,0.12)',
+                border: '1px solid rgba(231,76,60,0.4)',
+                color: '#e74c3c',
+                borderRadius: 8,
+                padding: '10px 14px',
+                fontSize: 13,
+              }}>
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                background: loading ? '#008f7a' : '#00BFA6',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '12px 20px',
+                fontSize: 13,
+                fontFamily: "'Segoe UI', system-ui, sans-serif",
+                fontWeight: 600,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                marginTop: 4,
+                transition: 'background 0.18s',
+              }}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -172,7 +182,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div style={{ background: '#0C0E14', minHeight: '100vh' }} />}>
+    <Suspense fallback={<div style={{ background: '#0B2540', minHeight: '100vh' }} />}>
       <LoginForm />
     </Suspense>
   )

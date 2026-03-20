@@ -27,112 +27,185 @@ export default function NewContract({ onSave }: Props) {
   }
 
   return (
-    <div style={{ padding: '32px 36px', maxWidth: 800 }}>
+    <div style={{ padding: '36px 40px', maxWidth: 860, fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       <style>{`
-        .card { background: #13161D; border: 1px solid #ffffff0D; border-radius: 10px; }
-        .btn { border: none; border-radius: 7px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.07em; padding: 10px 20px; transition: all 0.18s; }
-        .btn-gold { background: #C9A84C; color: #0C0E14; font-weight: 500; }
-        .btn-gold:hover { background: #DDB85C; }
-        .btn-gold:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-ghost { background: transparent; color: #C9A84C; border: 1px solid #C9A84C44; }
-        .btn-ghost:hover { background: #C9A84C11; }
-        .btn-sm { padding: 6px 14px; font-size: 11px; }
-        .inp { background: #0C0E14; border: 1px solid #ffffff15; border-radius: 7px; padding: 9px 13px; color: #DDD5C8; font-size: 13px; font-family: 'IBM Plex Mono', monospace; outline: none; transition: border 0.2s; width: 100%; }
-        .inp:focus { border-color: #C9A84C55; }
-        textarea.inp { resize: vertical; min-height: 72px; }
-        .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #ffffff33; margin-bottom: 5px; display: block; }
-        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .section-title { font-family: 'Playfair Display', serif; font-size: 13px; font-style: italic; color: #C9A84C88; margin-bottom: 16px; }
-        .field { margin-bottom: 14px; }
+        .nc-card {
+          background: #ffffff;
+          border: 1px solid #e8ecf0;
+          border-radius: 10px;
+          box-shadow: 0 1px 4px rgba(11,37,64,0.05);
+        }
+        .nc-inp {
+          background: #f8f9fb;
+          border: 1px solid #e8ecf0;
+          border-radius: 7px;
+          padding: 9px 13px;
+          color: #334155;
+          font-size: 13px;
+          font-family: 'Segoe UI', system-ui, sans-serif;
+          outline: none;
+          transition: border 0.2s, box-shadow 0.2s;
+          width: 100%;
+        }
+        .nc-inp:focus {
+          border-color: #00BFA6;
+          box-shadow: 0 0 0 3px rgba(0,191,166,0.1);
+          background: #ffffff;
+        }
+        textarea.nc-inp { resize: vertical; min-height: 80px; }
+        .nc-lbl {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #94a3b8;
+          margin-bottom: 6px;
+          display: block;
+        }
+        .nc-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .nc-section-title {
+          font-size: 12px;
+          font-weight: 700;
+          color: #0B2540;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid rgba(0,191,166,0.2);
+        }
+        .nc-field { margin-bottom: 14px; }
+        .nc-btn {
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-family: 'Segoe UI', system-ui, sans-serif;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 9px 18px;
+          transition: all 0.18s;
+        }
+        .nc-btn-primary { background: #00BFA6; color: #ffffff; }
+        .nc-btn-primary:hover { background: #00a892; transform: translateY(-1px); }
+        .nc-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        .nc-btn-outline { background: transparent; color: #00BFA6; border: 1.5px solid #00BFA6; }
+        .nc-btn-outline:hover { background: rgba(0,191,166,0.08); }
+        .nc-btn-sm { padding: 5px 13px; font-size: 11px; }
       `}</style>
 
-      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, marginBottom: 4 }}>New Contract</div>
-      <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#ffffff33', marginBottom: 28 }}>Create a new housing request</div>
+      {/* Header */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 26, fontWeight: 700, color: '#0B2540', letterSpacing: '-0.02em' }}>New Contract</div>
+        <div style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>Create a new housing request</div>
+      </div>
 
-      <div className="grid2" style={{ marginBottom: 14 }}>
-        <div className="card" style={{ padding: 22 }}>
-          <div className="section-title">Client Info</div>
+      {/* Top two cards */}
+      <div className="nc-grid2" style={{ marginBottom: 14 }}>
+        <div className="nc-card" style={{ padding: 22 }}>
+          <div className="nc-section-title">Client Info</div>
           {[['client_name','Company Name'],['contact_name','Contact Person'],['contact_email','Email Address']].map(([k,l]) => (
-            <div key={k} className="field">
-              <label className="lbl">{l}</label>
-              <input className="inp" type={k === 'contact_email' ? 'email' : 'text'} value={(form as any)[k]} onChange={e => set(k, e.target.value)} placeholder={l} />
+            <div key={k} className="nc-field">
+              <label className="nc-lbl">{l}</label>
+              <input className="nc-inp" type={k === 'contact_email' ? 'email' : 'text'} value={(form as any)[k]} onChange={e => set(k, e.target.value)} placeholder={l} />
             </div>
           ))}
         </div>
-        <div className="card" style={{ padding: 22 }}>
-          <div className="section-title">Booking Details</div>
-          <div className="field">
-            <label className="lbl">Location</label>
-            <input className="inp" value={form.location} onChange={e => set('location', e.target.value)} placeholder="City, Province — Property Name" />
+        <div className="nc-card" style={{ padding: 22 }}>
+          <div className="nc-section-title">Booking Details</div>
+          <div className="nc-field">
+            <label className="nc-lbl">Location</label>
+            <input className="nc-inp" value={form.location} onChange={e => set('location', e.target.value)} placeholder="City, Province — Property Name" />
           </div>
-          <div className="grid2">
-            <div className="field">
-              <label className="lbl">Start Date</label>
-              <input className="inp" type="date" value={form.start_date} onChange={e => set('start_date', e.target.value)} />
+          <div className="nc-grid2">
+            <div className="nc-field">
+              <label className="nc-lbl">Start Date</label>
+              <input className="nc-inp" type="date" value={form.start_date} onChange={e => set('start_date', e.target.value)} />
             </div>
-            <div className="field">
-              <label className="lbl">End Date</label>
-              <input className="inp" type="date" value={form.end_date} onChange={e => set('end_date', e.target.value)} />
+            <div className="nc-field">
+              <label className="nc-lbl">End Date</label>
+              <input className="nc-inp" type="date" value={form.end_date} onChange={e => set('end_date', e.target.value)} />
             </div>
           </div>
-          <div className="grid2">
-            <div className="field">
-              <label className="lbl">Units</label>
-              <input className="inp" type="number" min={1} value={form.units} onChange={e => set('units', parseInt(e.target.value) || 1)} />
+          <div className="nc-grid2">
+            <div className="nc-field">
+              <label className="nc-lbl">Units</label>
+              <input className="nc-inp" type="number" min={1} value={form.units} onChange={e => set('units', parseInt(e.target.value) || 1)} />
             </div>
-            <div className="field">
-              <label className="lbl">Rate / Unit / Mo</label>
-              <input className="inp" type="number" value={form.price_per_unit} onChange={e => set('price_per_unit', parseInt(e.target.value) || 0)} />
+            <div className="nc-field">
+              <label className="nc-lbl">Rate / Unit / Mo</label>
+              <input className="nc-inp" type="number" value={form.price_per_unit} onChange={e => set('price_per_unit', parseInt(e.target.value) || 0)} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 22, marginBottom: 14 }}>
-        <div className="section-title">Occupants</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+      {/* Occupants */}
+      <div className="nc-card" style={{ padding: 22, marginBottom: 14 }}>
+        <div className="nc-section-title">Occupants</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
           {people.map((p, i) => (
-            <div key={i} style={{ background: '#C9A84C18', border: '1px solid #C9A84C33', borderRadius: 20, padding: '4px 12px 4px 14px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div key={i} style={{
+              background: 'rgba(0,191,166,0.08)',
+              border: '1px solid rgba(0,191,166,0.3)',
+              borderRadius: 20,
+              padding: '4px 12px 4px 14px',
+              fontSize: 12,
+              color: '#0B2540',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}>
               {p}
-              <button onClick={() => setPeople(ps => ps.filter((_,j) => j !== i))} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: 12 }}>✕</button>
+              <button onClick={() => setPeople(ps => ps.filter((_,j) => j !== i))} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: 13 }}>✕</button>
             </div>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <input className="inp" placeholder="Occupant name..." value={newPerson} onChange={e => setNewPerson(e.target.value)}
+          <input
+            className="nc-inp"
+            placeholder="Occupant name..."
+            value={newPerson}
+            onChange={e => setNewPerson(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && newPerson.trim()) { setPeople(p => [...p, newPerson.trim()]); setNewPerson('') } }}
-            style={{ maxWidth: 260 }} />
-          <button className="btn btn-ghost btn-sm" onClick={() => { if (newPerson.trim()) { setPeople(p => [...p, newPerson.trim()]); setNewPerson('') } }}>+ Add</button>
+            style={{ maxWidth: 280 }}
+          />
+          <button
+            className="nc-btn nc-btn-outline nc-btn-sm"
+            onClick={() => { if (newPerson.trim()) { setPeople(p => [...p, newPerson.trim()]); setNewPerson('') } }}
+          >
+            + Add
+          </button>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 22, marginBottom: 22 }}>
-        <div className="section-title">Payment & Notes</div>
-        <div className="grid2" style={{ marginBottom: 14 }}>
-          <div className="field">
-            <label className="lbl">Payment Due Date</label>
-            <input className="inp" type="date" value={form.payment_due} onChange={e => set('payment_due', e.target.value)} />
+      {/* Payment & Notes */}
+      <div className="nc-card" style={{ padding: 22, marginBottom: 24 }}>
+        <div className="nc-section-title">Payment & Notes</div>
+        <div className="nc-grid2" style={{ marginBottom: 14 }}>
+          <div className="nc-field">
+            <label className="nc-lbl">Payment Due Date</label>
+            <input className="nc-inp" type="date" value={form.payment_due} onChange={e => set('payment_due', e.target.value)} />
           </div>
-          <div className="field">
-            <label className="lbl">Payment Method</label>
-            <select className="inp" value={form.payment_method} onChange={e => set('payment_method', e.target.value)}>
+          <div className="nc-field">
+            <label className="nc-lbl">Payment Method</label>
+            <select className="nc-inp" value={form.payment_method} onChange={e => set('payment_method', e.target.value)}>
               <option>EFT</option><option>Wire Transfer</option><option>Certified Cheque</option>
             </select>
           </div>
         </div>
-        <div className="field">
-          <label className="lbl">Special Notes</label>
-          <textarea className="inp" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Parking requirements, preferences..." />
+        <div className="nc-field">
+          <label className="nc-lbl">Special Notes</label>
+          <textarea className="nc-inp" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Parking requirements, preferences..." />
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, alignItems: 'center' }}>
+      {/* Submit */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 14, alignItems: 'center' }}>
         {valid && (
-          <div className="mono" style={{ fontSize: 11, color: '#ffffff33' }}>
+          <div style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'IBM Plex Mono, monospace' }}>
             Est. total: ${(form.units * form.price_per_unit * 3).toLocaleString()}
           </div>
         )}
-        <button className="btn btn-gold" disabled={!valid || saving} onClick={save}>
+        <button className="nc-btn nc-btn-primary" disabled={!valid || saving} onClick={save}>
           {saving ? 'Creating...' : 'Create Contract →'}
         </button>
       </div>

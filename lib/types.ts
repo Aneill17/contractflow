@@ -17,12 +17,12 @@ export const STAGE_LABELS: Record<number, string> = {
 }
 
 export const STAGE_COLORS: Record<number, string> = {
-  0: '#888888',
-  1: '#C9A84C',
-  2: '#4C7BC9',
-  3: '#9B59B6',
-  4: '#4CAF93',
-  5: '#27AE60',
+  0: '#94a3b8',   // Request — gray
+  1: '#C4793A',   // Quote Sent — amber
+  2: '#C4793A',   // Contract — amber
+  3: '#C4793A',   // Contract Sent — amber
+  4: '#00BFA6',   // Signed — teal
+  5: '#0B2540',   // Complete — navy
 }
 
 export interface Occupant {

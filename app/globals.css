@@ -2,37 +2,90 @@
 
 html, body {
   height: 100%;
-  background: #0C0E14;
-  color: #DDD5C8;
-  font-family: 'Georgia', serif;
+  background: #f8f9fb;
+  color: #334155;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: #0C0E14; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f8f9fb; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #0B2540; }
 
-/* Legacy font utility */
-.pf  { font-family: 'League Spartan', Georgia, sans-serif; }
-.mono { font-family: 'IBM Plex Mono', monospace; }
-
-/* Brand font utilities */
-.font-heading { font-family: 'League Spartan', sans-serif; }
-.font-body    { font-family: 'Source Serif 4', serif; }
-.font-mono    { font-family: 'IBM Plex Mono', monospace; }
-
-/* Brand color variables */
+/* ── ERS Brand Tokens ── */
 :root {
-  --teal:      #1B4353;
-  --steel:     #4F87A0;
-  --green:     #2D5A3D;
-  --black:     #1A1A1A;
-  --ice:       #A8D1E7;
-  --off-white: #F7F7F5;
-  --gold:      #C9A84C;
+  --navy:       #0B2540;
+  --teal:       #00BFA6;
+  --teal-faint: rgba(0, 191, 166, 0.08);
+  --off-white:  #f8f9fb;
+  --gray-light: #e8ecf0;
+  --gray-mid:   #94a3b8;
+  --text:       #334155;
+  --white:      #ffffff;
+
+  /* Legacy aliases — kept for backward compat */
+  --teal-legacy:  #1B4353;
+  --steel:        #4F87A0;
+  --green:        #2D5A3D;
+  --black:        #1A1A1A;
+  --ice:          #A8D1E7;
+  --off-white-legacy: #F7F7F5;
+  --gold:         #C4793A;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.6);
+/* ── Font Utilities ── */
+.pf          { font-family: 'Segoe UI', system-ui, sans-serif; }
+.mono        { font-family: 'IBM Plex Mono', monospace; }
+.font-heading { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; }
+.font-body    { font-family: 'Segoe UI', system-ui, sans-serif; }
+.font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+/* ── ERS Button Styles (global) ── */
+.ers-btn-primary {
+  background: var(--teal);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.18s, transform 0.1s;
+}
+.ers-btn-primary:hover  { background: #00a892; transform: translateY(-1px); }
+.ers-btn-primary:active { transform: translateY(0); }
+
+.ers-btn-secondary {
+  background: var(--white);
+  color: var(--teal);
+  border: 1.5px solid var(--teal);
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.ers-btn-secondary:hover { background: var(--teal-faint); }
+
+/* ── ERS Badge Styles (global) ── */
+.ers-badge { display: inline-block; border-radius: 20px; font-size: 11px; font-weight: 600; padding: 3px 11px; letter-spacing: 0.03em; }
+.ers-badge-teal   { background: rgba(0,191,166,0.12); color: #00BFA6; border: 1px solid rgba(0,191,166,0.3); }
+.ers-badge-amber  { background: rgba(196,121,58,0.12); color: #C4793A; border: 1px solid rgba(196,121,58,0.3); }
+.ers-badge-navy   { background: rgba(11,37,64,0.10); color: #0B2540; border: 1px solid rgba(11,37,64,0.25); }
+.ers-badge-gray   { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+
+/* ── Form Inputs ── */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.4);
+  cursor: pointer;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 3px rgba(0,191,166,0.12);
 }
