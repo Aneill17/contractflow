@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERS — Team Goals 2026</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #090d13;
+  color: #e6edf3;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  padding: 40px 40px 60px;
+}
+.header { text-align:center; margin-bottom:40px; }
+.header h1 { font-size:32px; font-weight:800; color:#fff; letter-spacing:-1px; }
+.header .tagline { font-size:13px; color:#00BFA6; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+.header .updated { font-size:11px; color:#484f58; margin-top:8px; }
+
+/* TABS */
+.tabs { display:flex; justify-content:center; gap:4px; flex-wrap:wrap; margin-bottom:36px; }
+.tab-btn {
+  background:#0d1117; border:1px solid #21262d; border-radius:8px;
+  padding:9px 20px; font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:#8b949e; cursor:pointer; transition:all 0.15s;
+}
+.tab-btn:hover { border-color:#00BFA6; color:#00BFA6; }
+.tab-btn.active { background:rgba(0,191,166,0.1); border-color:#00BFA6; color:#00BFA6; }
+
+.section { display:none; max-width:1000px; margin:0 auto; }
+.section.visible { display:block; }
+
+/* PERSON HEADER */
+.person-header {
+  border-radius:14px;
+  padding:28px 32px;
+  margin-bottom:20px;
+  position:relative; overflow:hidden;
+}
+.person-header::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 80% 30%, rgba(0,191,166,0.1), transparent 60%);
+  pointer-events:none;
+}
+.person-name { font-size:26px; font-weight:800; color:#fff; letter-spacing:-0.5px; margin-bottom:4px; position:relative; }
+.person-title { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px; position:relative; font-weight:700; }
+.person-tags { display:flex; flex-wrap:wrap; gap:6px; position:relative; }
+.person-tag {
+  font-size:10px; padding:3px 10px; border-radius:6px;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+/* BRANCH */
+.branch {
+  background:#0d1117; border:1px solid #21262d; border-radius:14px;
+  padding:20px; margin-bottom:14px;
+}
+.branch-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+
+/* GOAL ITEMS */
+.goal-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; border-radius:8px; margin-bottom:6px; font-size:13px;
+  line-height:1.5;
+}
+.goal-item:last-child { margin-bottom:0; }
+.goal-dot { width:8px; height:8px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+.goal-text { color:#c9d1d9; flex:1; }
+.goal-text strong { color:#e6edf3; display:block; margin-bottom:2px; }
+.goal-text span { font-size:12px; color:#8b949e; }
+.goal-badge {
+  font-size:10px; font-weight:600; padding:2px 8px; border-radius:6px;
+  margin-left:auto; flex-shrink:0; white-space:nowrap;
+}
+
+/* METRIC ROW */
+.metric-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:4px; }
+.metric-card {
+  background:#13161d; border:1px solid #21262d; border-radius:10px; padding:14px 16px;
+}
+.metric-num { font-size:22px; font-weight:800; color:#00BFA6; font-family:monospace; line-height:1; }
+.metric-label { font-size:10px; color:#484f58; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+/* NORTH STAR */
+.north-star {
+  background:rgba(0,191,166,0.06); border:1px solid rgba(0,191,166,0.2); border-radius:10px;
+  padding:14px 18px; margin-top:6px; font-size:12px; color:#8b949e; font-style:italic; text-align:center; line-height:1.7;
+}
+.north-star strong { color:#e6edf3; }
+
+/* COLOUR VARIANTS */
+/* Austin — teal */
+.ph-austin { background:linear-gradient(135deg,#1a2332,#0f1923); border:2px solid #00BFA6; box-shadow:0 0 30px rgba(0,191,166,0.1); }
+.ph-austin .person-title { color:#00BFA6; }
+.bt-austin { border-left:3px solid #00BFA6; }
+.bt-austin .branch-title { color:#00BFA6; }
+.bt-austin .goal-item { background:rgba(0,191,166,0.05); }
+.bt-austin .goal-dot { background:#00BFA6; }
+.badge-austin { background:rgba(0,191,166,0.15); color:#00BFA6; border:1px solid rgba(0,191,166,0.3); }
+
+/* Rob — blue */
+.ph-rob { background:linear-gradient(135deg,#0f1a2a,#0d1520); border:2px solid #58a6ff; box-shadow:0 0 30px rgba(88,166,255,0.08); }
+.ph-rob .person-title { color:#58a6ff; }
+.bt-rob { border-left:3px solid #58a6ff; }
+.bt-rob .branch-title { color:#58a6ff; }
+.bt-rob .goal-item { background:rgba(88,166,255,0.05); }
+.bt-rob .goal-dot { background:#58a6ff; }
+.badge-rob { background:rgba(88,166,255,0.15); color:#58a6ff; border:1px solid rgba(88,166,255,0.3); }
+
+/* Angela — teal-green */
+.ph-angela { background:linear-gradient(135deg,#0e1c16,#0d1511); border:2px solid #3fb950; box-shadow:0 0 30px rgba(63,185,80,0.08); }
+.ph-angela .person-title { color:#3fb950; }
+.bt-angela { border-left:3px solid #3fb950; }
+.bt-angela .branch-title { color:#3fb950; }
+.bt-angela .goal-item { background:rgba(63,185,80,0.05); }
+.bt-angela .goal-dot { background:#3fb950; }
+.badge-angela { background:rgba(63,185,80,0.15); color:#3fb950; border:1px solid rgba(63,185,80,0.3); }
+
+/* Megan — pink */
+.ph-megan { background:linear-gradient(135deg,#1c1020,#150d1a); border:2px solid #f778ba; box-shadow:0 0 30px rgba(247,120,186,0.08); }
+.ph-megan .person-title { color:#f778ba; }
+.bt-megan { border-left:3px solid #f778ba; }
+.bt-megan .branch-title { color:#f778ba; }
+.bt-megan .goal-item { background:rgba(247,120,186,0.05); }
+.bt-megan .goal-dot { background:#f778ba; }
+.badge-megan { background:rgba(247,120,186,0.15); color:#f778ba; border:1px solid rgba(247,120,186,0.3); }
+
+/* Braden — amber */
+.ph-braden { background:linear-gradient(135deg,#1c1510,#15100c); border:2px solid #C4793A; box-shadow:0 0 30px rgba(196,121,58,0.1); }
+.ph-braden .person-title { color:#C4793A; }
+.bt-braden { border-left:3px solid #C4793A; }
+.bt-braden .branch-title { color:#C4793A; }
+.bt-braden .goal-item { background:rgba(196,121,58,0.05); }
+.bt-braden .goal-dot { background:#C4793A; }
+.badge-braden { background:rgba(196,121,58,0.15); color:#C4793A; border:1px solid rgba(196,121,58,0.3); }
+
+.section-div { height:1px; background:#21262d; margin:20px 0; }
+.footer { text-align:center; color:#484f58; font-size:11px; margin-top:40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Elias Range Stays</h1>
+  <div class="tagline">Team Goals · 2026</div>
+  <div class="updated">Last updated March 20, 2026</div>
+</div>
+
+<div class="tabs">
+  <div class="tab-btn active" onclick="show('austin',this)">👤 Austin</div>
+  <div class="tab-btn" onclick="show('rob',this)">📣 Rob</div>
+  <div class="tab-btn" onclick="show('angela',this)">🏠 Angela</div>
+  <div class="tab-btn" onclick="show('megan',this)">👥 Megan</div>
+  <div class="tab-btn" onclick="show('braden',this)">💰 Braden</div>
+</div>
+
+
+<!-- ══ AUSTIN ══ -->
+<div id="austin" class="section visible">
+  <div class="person-header ph-austin">
+    <div class="person-name">Austin Neill</div>
+    <div class="person-title">Founder & CEO</div>
+    <div class="person-tags">
+      <span class="person-tag">Strategy</span>
+      <span class="person-tag">Sales</span>
+      <span class="person-tag">Capital</span>
+      <span class="person-tag">Partnerships</span>
+      <span class="person-tag">Vision</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-card"><div class="metric-num">3+</div><div class="metric-label">New Workforce Clients</div></div>
+    <div class="metric-card"><div class="metric-num">1</div><div class="metric-label">Master Lease Signed</div></div>
+    <div class="metric-card"><div class="metric-num">1</div><div class="metric-label">Hospital Deal Closed</div></div>
+    <div class="metric-card"><div class="metric-num">2nd</div><div class="metric-label">Hub Site Identified</div></div>
+    <div class="metric-card"><div class="metric-num">$</div><div class="metric-label">Venture Funding Secured</div></div>
+  </div>
+
+  <div class="section-div"></div>
+
+  <div class="branch bt-austin">
+    <div class="branch-title">🏗️ Healthcare Housing Hub — Dawson Creek</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Secure Northern Health Master Lease</strong><span>Lock in the foundational partnership that anchors the hub and validates the model for every future deal</span></div>
+      <span class="goal-badge badge-austin">Priority 1</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Development Permit Approved</strong><span>10620 10th St — move through permit process with Boss Architecture, clear all requirements</span></div>
+      <span class="goal-badge badge-austin">Priority 2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Venture Funding On Board</strong><span>Fulmer & Co, NDIT, McKenzie Trust, Community Futures — get capital lined up for Phase 1</span></div>
+      <span class="goal-badge badge-austin">Priority 3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Reverse Equity Completed</strong><span>Structure and close the reverse equity on the Dawson property</span></div>
+      <span class="goal-badge badge-austin">2026</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>2nd Healthcare Housing Hub Site Identified</strong><span>Scout and evaluate the next hub location — position ERS as a multi-site operator</span></div>
+      <span class="goal-badge badge-austin">Year 1</span>
+    </div>
+  </div>
+
+  <div class="branch bt-austin">
+    <div class="branch-title">🤝 Client Growth — Workforce Housing</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Sign 3+ New Workforce Housing Clients</strong><span>Construction firms, healthcare contractors, health authority workforce — targeted outreach and closings</span></div>
+      <span class="goal-badge badge-austin">2026</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Close UHNBC / Prince George Hospital Deal</strong><span>Quote is out — follow up, negotiate, confirm. This is the flagship hospital contract that opens the door nationally</span></div>
+      <span class="goal-badge badge-austin">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Northern Lights College — Board of Deans Relationship</strong><span>Leverage the introduction, build the partnership, explore housing for college workforce in Dawson</span></div>
+      <span class="goal-badge badge-austin">Q2</span>
+    </div>
+  </div>
+
+  <div class="branch bt-austin">
+    <div class="branch-title">📡 Business Development & Partnerships</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Providence Healthcare Ventures</strong><span>Advance from initial conversations to a defined partnership structure — land access + health authority connections</span></div>
+      <span class="goal-badge badge-austin">Q2–Q3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Canadian Institute Healthcare Infrastructure Event</strong><span>Secure speaking slot — position Austin as the voice on workforce housing in healthcare infrastructure</span></div>
+      <span class="goal-badge badge-austin">Pipeline</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>VRCA + Rural Health BC — Association Presence</strong><span>Show up, contribute, get ERS known inside the associations that matter</span></div>
+      <span class="goal-badge badge-austin">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="north-star">⚡ <strong>"What moves this from 10 years to 1?"</strong> — Every conversation, every deal, every dollar.</div>
+</div>
+
+
+<!-- ══ ROB ══ -->
+<div id="rob" class="section">
+  <div class="person-header ph-rob">
+    <div class="person-name">Rob</div>
+    <div class="person-title">Brand, Influence & Associations</div>
+    <div class="person-tags">
+      <span class="person-tag">Social Media</span>
+      <span class="person-tag">Podcast Pipeline</span>
+      <span class="person-tag">Association Outreach</span>
+      <span class="person-tag">Community Influence</span>
+      <span class="person-tag">Brand Presence</span>
+    </div>
+  </div>
+
+  <div class="branch bt-rob">
+    <div class="branch-title">📣 Social Media & Brand Presence</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Workforce Housing Campaign — Running & Consistent</strong><span>Keep the campaign active, on-brand, and producing real reach — regular posting cadence across platforms</span></div>
+      <span class="goal-badge badge-rob">Active</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Healthcare Housing Hub Campaign</strong><span>Build awareness around the Dawson Creek Hub — position ERS as the category leader in healthcare housing development</span></div>
+      <span class="goal-badge badge-rob">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Burnout to Balance Campaign</strong><span>Lead this content series — burnout crisis in healthcare + ERS as the solution. Owned by Rob.</span></div>
+      <span class="goal-badge badge-rob">Pipeline</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Austin's Personal Brand — Amplification</strong><span>Help grow Austin's presence as the voice on workforce housing — amplify posts, build the audience</span></div>
+      <span class="goal-badge badge-rob">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="branch bt-rob">
+    <div class="branch-title">🎙️ Podcast Pipeline</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Build Austin's Podcast Pitch List</strong><span>Identify 20+ relevant podcasts in healthcare, construction, real estate, workforce — build outreach list</span></div>
+      <span class="goal-badge badge-rob">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Secure 3+ Podcast Bookings for Austin</strong><span>Pitch, follow up, confirm — get Austin in front of the audiences that matter for ERS growth</span></div>
+      <span class="goal-badge badge-rob">2026</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>ERS Podcast / Content Series Strategy</strong><span>Map out whether ERS should own a podcast or content series — produce a recommendation by Q3</span></div>
+      <span class="goal-badge badge-rob">Q3</span>
+    </div>
+  </div>
+
+  <div class="branch bt-rob">
+    <div class="branch-title">🏛️ Association Outreach & Community Influence</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Merge ERS Into Association Networks</strong><span>VRCA, Rural Health BC, CMA — get ERS known, show up at events, build relationships inside the rooms that matter</span></div>
+      <span class="goal-badge badge-rob">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Community Partnerships — Brand Integration</strong><span>Identify and activate local community partnerships that align with the ERS brand and the Draw Close / Healthy Living vision</span></div>
+      <span class="goal-badge badge-rob">Q3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Speaking Opportunities</strong><span>CMA Annual, BC Health Leadership Conference, Canadian Institute Healthcare Infrastructure Event — coordinate logistics and prep</span></div>
+      <span class="goal-badge badge-rob">Pipeline</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ ANGELA ══ -->
+<div id="angela" class="section">
+  <div class="person-header ph-angela">
+    <div class="person-name">Angela</div>
+    <div class="person-title">Guest Services</div>
+    <div class="person-tags">
+      <span class="person-tag">Guest Experience</span>
+      <span class="person-tag">Property Leasing</span>
+      <span class="person-tag">Tenant Relations</span>
+      <span class="person-tag">Services Coordination</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-card"><div class="metric-num">100%</div><div class="metric-label">Properties Lease Online</div></div>
+    <div class="metric-card"><div class="metric-num">24hr</div><div class="metric-label">Guest Response Time</div></div>
+    <div class="metric-card"><div class="metric-num">0</div><div class="metric-label">Unresolved Guest Issues</div></div>
+  </div>
+
+  <div class="section-div"></div>
+
+  <div class="branch bt-angela">
+    <div class="branch-title">🏘️ Leasing — All Properties Online</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>All Active Properties Listed & Lease-Ready Online</strong><span>Every ERS property live, accurate, and bookable — no gaps in the leasing pipeline</span></div>
+      <span class="goal-badge badge-angela">Priority 1</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Leasing Process Documented & Standardised</strong><span>Clear SOP for every step from inquiry to signed lease — consistent experience for every client</span></div>
+      <span class="goal-badge badge-angela">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Zero Vacancy Days Target</strong><span>Track vacancy by unit — identify gaps, fill them fast, report monthly</span></div>
+      <span class="goal-badge badge-angela">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="branch bt-angela">
+    <div class="branch-title">🌿 Guest Services — Streamlined</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Guest Services Playbook</strong><span>Document every touchpoint — check-in, check-out, maintenance request, emergency, welcome experience</span></div>
+      <span class="goal-badge badge-angela">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>24-Hour Response Standard</strong><span>No guest inquiry or issue goes more than 24 hours without a response — tracked and maintained</span></div>
+      <span class="goal-badge badge-angela">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Guest Welcome Experience</strong><span>Every new resident receives a proper welcome — in-suite materials, intro call, clear points of contact</span></div>
+      <span class="goal-badge badge-angela">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Guest Satisfaction Feedback Loop</strong><span>Simple feedback system — track satisfaction, catch issues early, build a retention record</span></div>
+      <span class="goal-badge badge-angela">Q3</span>
+    </div>
+  </div>
+
+  <div class="branch bt-angela">
+    <div class="branch-title">📋 Reporting</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Monthly Occupancy & Guest Services Report</strong><span>Vacancy rates, guest issues resolved, response times, lease status by property — delivered to Austin + Braden monthly</span></div>
+      <span class="goal-badge badge-angela">Monthly</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ MEGAN ══ -->
+<div id="megan" class="section">
+  <div class="person-header ph-megan">
+    <div class="person-name">Megan Banks</div>
+    <div class="person-title">Operations & HR</div>
+    <div class="person-tags">
+      <span class="person-tag">Hiring</span>
+      <span class="person-tag">HR</span>
+      <span class="person-tag">Team Onboarding</span>
+      <span class="person-tag">Culture</span>
+      <span class="person-tag">Management</span>
+    </div>
+  </div>
+
+  <div class="branch bt-megan">
+    <div class="branch-title">👥 Hiring & Onboarding</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Hire Operations Manager</strong><span>Define the role clearly, source candidates, interview, select — first major hire of the year</span></div>
+      <span class="goal-badge badge-megan">Priority 1</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Build & Hire Ground Team</strong><span>Property management, maintenance, guest services on the ground — get the right people in place as the portfolio grows</span></div>
+      <span class="goal-badge badge-megan">Q2–Q3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Onboarding Process Built & Running</strong><span>Every new hire goes through a clear, consistent onboarding — role clarity, culture, vision, tools, expectations</span></div>
+      <span class="goal-badge badge-megan">Q2</span>
+    </div>
+  </div>
+
+  <div class="branch bt-megan">
+    <div class="branch-title">🌿 Culture & Alignment</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Every Team Member Knows the Vision</strong><span>All staff have read the core documents — Our Story, 10-Year Vision, Problem Stack, Goals. Megan ensures this happens.</span></div>
+      <span class="goal-badge badge-megan">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Culture Playbook</strong><span>Document ERS culture — values, expectations, how we treat each other, how we show up for clients. The foundation for every hire.</span></div>
+      <span class="goal-badge badge-megan">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Team Check-in Rhythm</strong><span>Regular 1:1s and team touchpoints — everyone knows where they're at, blockers surface early, morale stays high</span></div>
+      <span class="goal-badge badge-megan">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="branch bt-megan">
+    <div class="branch-title">⚙️ Team Management</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Manage Angela, Rob & Ground Team Day-to-Day</strong><span>Clear direction, accountability, support — no one is operating without a clear mandate and someone who has their back</span></div>
+      <span class="goal-badge badge-megan">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Performance Clarity for Every Role</strong><span>Each person knows their goals, knows how they're being measured, and gets real feedback — not just assumptions</span></div>
+      <span class="goal-badge badge-megan">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Monthly Team Report to Austin</strong><span>Hiring status, team health, blockers, culture pulse — keep Austin informed without requiring micromanagement</span></div>
+      <span class="goal-badge badge-megan">Monthly</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ BRADEN ══ -->
+<div id="braden" class="section">
+  <div class="person-header ph-braden">
+    <div class="person-name">Braden Seguin</div>
+    <div class="person-title">Director & Business Advisor</div>
+    <div class="person-tags">
+      <span class="person-tag">Financial Dashboard</span>
+      <span class="person-tag">AR / AP</span>
+      <span class="person-tag">Kenora Leasing</span>
+      <span class="person-tag">Property Management</span>
+      <span class="person-tag">Strategic Advisory</span>
+    </div>
+  </div>
+
+  <div class="branch bt-braden">
+    <div class="branch-title">📊 Internal Financial Dashboard — Priority 1</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Build the ERS Financial Dashboard</strong><span>Comprehensive internal view — revenue, expenses, margins, where every dollar goes and where it comes from</span></div>
+      <span class="goal-badge badge-braden">Priority 1</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Per-Contract P&L</strong><span>How much does each active contract produce? Revenue, cost of delivery, margin — clear and tracked per client</span></div>
+      <span class="goal-badge badge-braden">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Unit Pricing Model — Complete</strong><span>1-bed, 2-bed, 3-bed rates locked in, documented, and reflected in ContractFlow — fully up to date</span></div>
+      <span class="goal-badge badge-braden">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Cash Flow Forecasting</strong><span>Monthly cash flow projection — how much coming in, how much going out, what the runway looks like</span></div>
+      <span class="goal-badge badge-braden">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Key Metrics Defined & Tracked</strong><span>Revenue per unit, occupancy rate, cost per placement, gross margin per contract — the numbers that tell the real story</span></div>
+      <span class="goal-badge badge-braden">Q2</span>
+    </div>
+  </div>
+
+  <div class="branch bt-braden">
+    <div class="branch-title">💰 AR / AP & Financial Operations</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>AR Cycle — Clean & Current</strong><span>All invoices sent on time, all receivables tracked, nothing falls through the cracks — report to Austin monthly</span></div>
+      <span class="goal-badge badge-braden">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>AP — Vendor & Expense Tracking</strong><span>All outgoing payments tracked, categorised, and reconciled with Lexi monthly</span></div>
+      <span class="goal-badge badge-braden">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Monthly Financial Report to Austin</strong><span>One-page summary — revenue, expenses, margin, outstanding AR, cash position — delivered end of every month</span></div>
+      <span class="goal-badge badge-braden">Monthly</span>
+    </div>
+  </div>
+
+  <div class="branch bt-braden">
+    <div class="branch-title">🏘️ Kenora Leasing & Property Management</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Kenora Properties — Fully Managed & Current</strong><span>Leases in order, maintenance on top of, tenants managed — nothing outstanding or unaddressed</span></div>
+      <span class="goal-badge badge-braden">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Maintenance Coordination</strong><span>All maintenance requests logged, assigned, and resolved — no open items sitting more than 48 hours without a response</span></div>
+      <span class="goal-badge badge-braden">Ongoing</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="footer">
+  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 20, 2026
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

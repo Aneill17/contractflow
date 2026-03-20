@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Role Profile — Institutional & Contract Consulting</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #090d13;
+  color: #e6edf3;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  padding: 40px 40px 80px;
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+
+/* HEADER */
+.role-header {
+  background: linear-gradient(135deg, #1a2332, #0f1923);
+  border: 2px solid #bc8cff;
+  border-radius: 16px;
+  padding: 40px 44px;
+  margin-bottom: 24px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 0 40px rgba(188,140,255,0.1);
+}
+.role-header::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(188,140,255,0.1), transparent 55%);
+  pointer-events: none;
+}
+.role-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #bc8cff; margin-bottom: 12px; position: relative;
+}
+.role-title {
+  font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+  margin-bottom: 8px; position: relative; line-height: 1.2;
+}
+.role-sub {
+  font-size: 14px; color: rgba(188,140,255,0.7); margin-bottom: 20px; position: relative; line-height: 1.7;
+}
+.role-tags { display: flex; flex-wrap: wrap; gap: 6px; position: relative; }
+.role-tag {
+  font-size: 10px; padding: 3px 10px; border-radius: 6px;
+  background: rgba(188,140,255,0.1); color: #bc8cff;
+  border: 1px solid rgba(188,140,255,0.25);
+}
+
+/* BRANCH */
+.branch {
+  background: #0d1117; border: 1px solid #21262d; border-radius: 14px;
+  padding: 20px 22px; margin-bottom: 14px;
+  border-left: 3px solid #bc8cff;
+}
+.branch-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: #bc8cff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+  background: rgba(188,140,255,0.05); font-size: 13px; line-height: 1.5;
+}
+.item:last-child { margin-bottom: 0; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #bc8cff; margin-top: 4px; flex-shrink: 0; }
+.item-text { color: #c9d1d9; flex: 1; }
+.item-text strong { color: #e6edf3; display: block; margin-bottom: 2px; }
+.item-text span { font-size: 12px; color: #8b949e; }
+.badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+  background: rgba(188,140,255,0.15); color: #bc8cff;
+  border: 1px solid rgba(188,140,255,0.3); white-space: nowrap; flex-shrink: 0;
+}
+
+/* ALT COLOUR BLOCKS */
+.branch-teal { border-left-color: #00BFA6; }
+.branch-teal .branch-title { color: #00BFA6; }
+.branch-teal .item { background: rgba(0,191,166,0.05); }
+.branch-teal .dot { background: #00BFA6; }
+.branch-teal .badge { background: rgba(0,191,166,0.15); color: #00BFA6; border-color: rgba(0,191,166,0.3); }
+
+.branch-amber { border-left-color: #C4793A; }
+.branch-amber .branch-title { color: #C4793A; }
+.branch-amber .item { background: rgba(196,121,58,0.05); }
+.branch-amber .dot { background: #C4793A; }
+.branch-amber .badge { background: rgba(196,121,58,0.15); color: #C4793A; border-color: rgba(196,121,58,0.3); }
+
+.branch-green { border-left-color: #3fb950; }
+.branch-green .branch-title { color: #3fb950; }
+.branch-green .item { background: rgba(63,185,80,0.05); }
+.branch-green .dot { background: #3fb950; }
+
+/* CANDIDATE BOX */
+.candidate-box {
+  background: rgba(188,140,255,0.06);
+  border: 1px solid rgba(188,140,255,0.2);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.candidate-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #bc8cff; margin-bottom: 8px; font-weight: 700; }
+.candidate-name { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.candidate-note { font-size: 13px; color: #8b949e; line-height: 1.7; }
+
+.section-div { height: 1px; background: #21262d; margin: 20px 0; }
+
+.footer { text-align: center; color: #484f58; font-size: 11px; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="role-header">
+    <div class="role-eyebrow">New Role · Elias Range Stays</div>
+    <div class="role-title">Institutional & Commercial Contract Consultant</div>
+    <div class="role-sub">
+      The bridge between ERS and health authority institutions — curating how we present, what we offer, and how we close. A role built around translating healthcare organizational needs into ERS contracts and long-term partnerships.
+    </div>
+    <div class="role-tags">
+      <span class="role-tag">Institutional Consulting</span>
+      <span class="role-tag">Contract Management</span>
+      <span class="role-tag">Health Authority Relations</span>
+      <span class="role-tag">Commercial Partnerships</span>
+      <span class="role-tag">Document Curation</span>
+      <span class="role-tag">Process Building</span>
+    </div>
+  </div>
+
+  <!-- CANDIDATE CONTEXT -->
+  <div class="candidate-box">
+    <div class="candidate-label">Candidate Being Considered</div>
+    <div class="candidate-name">Dr. Rob Johnson</div>
+    <div class="candidate-note">
+      Initial conversation pending — exploring whether this role aligns with his interests and capacity. His background in healthcare gives him direct credibility with health authority decision-makers. The role may not suit everyone — it's corporate-facing and process-heavy — but for the right person with both clinical credibility and an appetite for institutional business development, it's a unique position.
+    </div>
+  </div>
+
+  <!-- THE ROLE -->
+  <div class="branch">
+    <div class="branch-title">🎯 The Role in One Paragraph</div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text">
+        ERS is building partnerships with health authorities and hospital systems across BC and Canada. The challenge isn't the product — it's the translation. Health authorities receive information in a specific way, make decisions through specific channels, and need specific things confirmed before they commit. This role exists to own that interface: understanding what institutions need, curating how ERS presents to them, managing the contract consulting process, and building a repeatable system that gets health authorities from "interested" to "signed" — and keeps them there.
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE RESPONSIBILITIES -->
+  <div class="branch">
+    <div class="branch-title">📋 Core Responsibilities</div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Institutional Consulting — Health Authority Partnerships</strong><span>Engage with health authority procurement, HR, and facilities teams. Understand their needs, constraints, and decision processes. Translate those into what ERS can offer.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Document Curation — Present What They Want to Receive</strong><span>Health authorities don't want a pitch — they want evidence. Curate ERS's research, case studies, pricing, and service model into the formats, language, and structures that institutional buyers respond to.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Commercial Contract Consulting</strong><span>Work alongside Austin on major contracts — helping structure agreements that meet institutional procurement requirements while protecting ERS's terms and margins.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Process Building — Repeatable Partnership System</strong><span>Document and build the process from first contact to signed contract. Create a system that can be handed off, scaled, and repeated across multiple health authorities.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Relationship Management</strong><span>Maintain ongoing relationships with institutional contacts — not just for the current contract, but for the next one. ERS needs embedded relationships inside health authority organizations.</span></div>
+    </div>
+  </div>
+
+  <!-- WHAT THEY BRING -->
+  <div class="branch branch-teal">
+    <div class="branch-title">✦ What the Right Person Brings</div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Healthcare Credibility</strong><span>A clinical or healthcare background gives instant credibility with health authority decision-makers. They speak the same language — understands how hospitals and health systems operate from the inside.</span></div>
+      <span class="badge">Key</span>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Institutional Intelligence</strong><span>Understands how health authority procurement works, who the real decision-makers are, what language moves things forward, and what kills a deal inside a bureaucratic system.</span></div>
+      <span class="badge">Key</span>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Process-Oriented</strong><span>Comfortable building structure out of ambiguity — can take a complex relationship and turn it into a documented, repeatable process.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Comfortable in Corporate Environments</strong><span>This is not a clinical role — it's business development inside institutional systems. The right person is energized by that, not drained by it.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Networked in Healthcare</strong><span>Existing relationships inside health authorities, hospital systems, or healthcare leadership — every warm introduction accelerates the pipeline.</span></div>
+    </div>
+  </div>
+
+  <!-- WHAT THEY'D EXPERIENCE -->
+  <div class="branch branch-amber">
+    <div class="branch-title">🌿 What They'd Experience in This Role</div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>A Company That's Building Something Real</strong><span>ERS isn't a concept — 34+ units, 5 hospitals, live contracts. The person stepping into this role is joining a company mid-momentum, not starting from zero.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Significant Influence on Direction</strong><span>This role shapes how ERS enters and wins inside health authority systems. The process they build becomes the institutional playbook for the whole company.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Flexible, Consulting-Style Engagement</strong><span>This is a consulting role, not a 9-to-5. Engagement structured around outcomes — what gets done matters more than when or where.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Working on a Problem That Matters</strong><span>Healthcare worker housing is a genuine crisis. The person in this role is helping fix something broken — that context makes the work meaningful.</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Path to Deeper Involvement</strong><span>If the fit is right and the results are there, this role grows with the company. Healthcare housing is a decade-long build — the right person grows with it.</span></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS LOOKS LIKE -->
+  <div class="branch branch-green">
+    <div class="branch-title">✓ What Success Looks Like — Year 1</div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>At least 2 health authority partnership conversations converted to contracts</strong><span>Working alongside Austin to get Northern Health, UHNBC, or equivalent to a signed agreement</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>ERS institutional document suite curated and field-tested</strong><span>The right documents, in the right format, presented the right way — proven to land with institutional buyers</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>A repeatable institutional outreach and contract process documented</strong><span>Not just doing it — building the system so it can scale beyond one person</span></div>
+    </div>
+    <div class="item">
+      <div class="dot"></div>
+      <div class="item-text"><strong>Active relationships inside at least 3 BC health authority organizations</strong><span>Known contacts, warm channels — not just cold names in a spreadsheet</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Elias Range Stays · Confidential · March 2026 · Built with Maestro 🎼
+  </div>
+
+</div>
+</body>
+</html>
