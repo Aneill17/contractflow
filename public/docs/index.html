@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERS Document Hub — Elias Range Stays</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: #F4F6F8;
+    color: #1A1A1A;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: #0B2540;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-logo {
+    background: white;
+    border-radius: 10px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+  }
+  .header-logo img { height: 44px; display: block; }
+  .header-right {
+    text-align: right;
+  }
+  .header-right .tagline {
+    font-family: 'League Spartan', sans-serif;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .header-right .mission {
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* HERO */
+  .hero {
+    background: #0B2540;
+    padding: 48px 40px 56px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,191,166,0.2);
+  }
+  .hero-chip {
+    display: inline-block;
+    background: rgba(0,191,166,0.15);
+    border: 1px solid rgba(0,191,166,0.35);
+    color: #00BFA6;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.55);
+    font-size: 16px;
+    font-style: italic;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-label {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #00BFA6;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,191,166,0.25);
+  }
+  .doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  /* DOC CARD */
+  .doc-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E0E6EE;
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.18s ease;
+    cursor: pointer;
+  }
+  .doc-card:hover {
+    border-color: #00BFA6;
+    box-shadow: 0 4px 20px rgba(0,191,166,0.12);
+    transform: translateY(-2px);
+  }
+  .doc-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .doc-icon.teal  { background: rgba(0,191,166,0.12); }
+  .doc-icon.navy  { background: rgba(11,37,64,0.08); }
+  .doc-icon.green { background: rgba(45,90,61,0.10); }
+  .doc-icon.amber { background: rgba(196,121,58,0.12); }
+  .doc-icon.blue  { background: rgba(79,135,160,0.12); }
+
+  .doc-info {}
+  .doc-title {
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #0B2540;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .doc-desc {
+    font-size: 13px;
+    color: #6B7C93;
+    line-height: 1.4;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #0B2540;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    background: white;
+    border-radius: 10px;
+    padding: 7px 13px;
+  }
+  .footer-logo img { height: 38px; display: block; }
+  .footer-right {
+    text-align: right;
+  }
+  .footer-right p {
+    color: rgba(255,255,255,0.45);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .footer-right .ft-tagline {
+    font-family: 'League Spartan', sans-serif;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .hero { padding: 36px 20px 44px; }
+    .hero h1 { font-size: 36px; }
+    main { padding: 32px 16px 60px; }
+    footer { padding: 24px 20px; flex-direction: column; gap: 16px; text-align: center; }
+    .footer-right { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <img src="img/logo-v2-cropped.png" alt="Elias Range Stays">
+  </div>
+  <div class="header-right">
+    <div class="tagline">Healthy Living · Stronger Communities</div>
+    <div class="mission">To serve those who provide health to others</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-chip">Elias Range Stays</div>
+  <h1>Document Hub</h1>
+  <p>Internal reference library — all company documents in one place.</p>
+</div>
+
+<main>
+
+  <!-- COMPANY OVERVIEW -->
+  <div class="section">
+    <div class="section-label">Company Overview</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="ERS_COMPANY_MINDMAP.html" target="_blank">
+        <div class="doc-icon teal">🗺️</div>
+        <div class="doc-info">
+          <div class="doc-title">Company Mind Map</div>
+          <div class="doc-desc">Everything ERS is working on — full company overview, all branches.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_OUR_STORY.html" target="_blank">
+        <div class="doc-icon navy">📖</div>
+        <div class="doc-info">
+          <div class="doc-title">Our Story</div>
+          <div class="doc-desc">Why ERS exists — Our Why, Mission, and Vision.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_Triangle.html" target="_blank">
+        <div class="doc-icon teal">🏔️</div>
+        <div class="doc-info">
+          <div class="doc-title">The ERS Triangle</div>
+          <div class="doc-desc">Core business model — the Triangle, Platform, and Five Doors.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS-pitch-deck.html" target="_blank">
+        <div class="doc-icon blue">📊</div>
+        <div class="doc-info">
+          <div class="doc-title">Pitch Deck</div>
+          <div class="doc-desc">Full ERS pitch — problem stack, solution, flywheel, why now.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_10Year_Vision.html" target="_blank">
+        <div class="doc-icon navy">🔭</div>
+        <div class="doc-info">
+          <div class="doc-title">10-Year Vision</div>
+          <div class="doc-desc">Where ERS is going — 2035 scale, hub model, national expansion.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- GOALS & TEAM -->
+  <div class="section">
+    <div class="section-label">Goals &amp; Team</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="ERS_GOALS_TEAM_DAILY.html" target="_blank">
+        <div class="doc-icon green">🎯</div>
+        <div class="doc-info">
+          <div class="doc-title">Goals, Team &amp; Daily Focus</div>
+          <div class="doc-desc">Company goals, full team roster, top 3 needle-movers, weekly rhythm.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_TEAM_GOALS.html" target="_blank">
+        <div class="doc-icon green">👥</div>
+        <div class="doc-info">
+          <div class="doc-title">Team Goals (Per Person)</div>
+          <div class="doc-desc">Individual goals for Austin, Rob, Angela, Megan, and Braden.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ers-bot-team-mindmap.html" target="_blank">
+        <div class="doc-icon amber">🤖</div>
+        <div class="doc-info">
+          <div class="doc-title">Bot Team Mind Map</div>
+          <div class="doc-desc">All 11 ERS AI bots — roles, responsibilities, how they connect.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- MARKET & RESEARCH -->
+  <div class="section">
+    <div class="section-label">Market Intelligence &amp; Research</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="ERS_Deep_Research_Report.html" target="_blank">
+        <div class="doc-icon blue">🔬</div>
+        <div class="doc-info">
+          <div class="doc-title">Deep Research Report</div>
+          <div class="doc-desc">Full healthcare workforce housing research — data, trends, and insights.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_Market_Research_Report.html" target="_blank">
+        <div class="doc-icon blue">📈</div>
+        <div class="doc-info">
+          <div class="doc-title">Market Research Report</div>
+          <div class="doc-desc">BC healthcare housing market — opportunity sizing and analysis.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_8020_MARKET_INTELLIGENCE_REPORT.html" target="_blank">
+        <div class="doc-icon teal">⚡</div>
+        <div class="doc-info">
+          <div class="doc-title">80/20 Market Intelligence</div>
+          <div class="doc-desc">The 20% of markets driving 80% of ERS opportunity. Priority targets.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_HealthAuthority_Intelligence_Report.html" target="_blank">
+        <div class="doc-icon blue">🏥</div>
+        <div class="doc-info">
+          <div class="doc-title">Health Authority Intelligence</div>
+          <div class="doc-desc">BC health authority breakdown — contacts, priorities, opportunity map.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_Problem_Stack.html" target="_blank">
+        <div class="doc-icon navy">📋</div>
+        <div class="doc-info">
+          <div class="doc-title">Problem Stack</div>
+          <div class="doc-desc">The 8-layer problem — healthcare staffing crisis mapped layer by layer.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- BRAND & PEOPLE -->
+  <div class="section">
+    <div class="section-label">Brand &amp; People</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="Austin_James_Neill_Brand_Foundation.html" target="_blank">
+        <div class="doc-icon amber">🧭</div>
+        <div class="doc-info">
+          <div class="doc-title">Austin James Neill — Brand Foundation</div>
+          <div class="doc-desc">Austin's personal brand story, origin, and positioning.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_Introduction.html" target="_blank">
+        <div class="doc-icon navy">🤝</div>
+        <div class="doc-info">
+          <div class="doc-title">ERS Introduction</div>
+          <div class="doc-desc">Company intro doc — for landlords, new partners, and team onboarding.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="ERS_ROLE_PROFILE_DrRobJohnson.html" target="_blank">
+        <div class="doc-icon blue">👨‍⚕️</div>
+        <div class="doc-info">
+          <div class="doc-title">Role Profile — Dr. Rob Johnson</div>
+          <div class="doc-desc">Healthcare Advisor role — institutional consulting and health authority strategy.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SYSTEMS & TECH -->
+  <div class="section">
+    <div class="section-label">Systems &amp; Technology</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="/dashboard" target="_blank">
+        <div class="doc-icon teal">⚙️</div>
+        <div class="doc-info">
+          <div class="doc-title">ContractFlow Dashboard</div>
+          <div class="doc-desc">Live contract management — quotes, contracts, signing, pipeline.</div>
+        </div>
+      </a>
+      <a class="doc-card" href="contractflow-v2-system-map.html" target="_blank">
+        <div class="doc-icon amber">🗂️</div>
+        <div class="doc-info">
+          <div class="doc-title">ContractFlow V2 System Map</div>
+          <div class="doc-desc">Full V2 feature vision — all modules, roles, and integrations mapped.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-logo">
+    <img src="img/logo-v2-cropped.png" alt="Elias Range Stays">
+  </div>
+  <div class="footer-right">
+    <div class="ft-tagline">Healthy Living · Stronger Communities</div>
+    <p>To serve those who provide health to others</p>
+    <p style="margin-top:4px;">eliasrangestays.ca</p>
+  </div>
+</footer>
+
+</body>
+</html>
