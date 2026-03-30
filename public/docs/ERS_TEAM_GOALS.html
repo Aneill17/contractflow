@@ -139,6 +139,15 @@ body {
 .bt-braden .goal-dot { background:#C4793A; }
 .badge-braden { background:rgba(196,121,58,0.15); color:#C4793A; border:1px solid rgba(196,121,58,0.3); }
 
+
+/* Mairi-Anne — orange/rust */
+.ph-mairi { background:linear-gradient(135deg,#1c1308,#150f06); border:2px solid #e0813a; box-shadow:0 0 30px rgba(224,129,58,0.1); }
+.ph-mairi .person-title { color:#e0813a; }
+.bt-mairi { border-left:3px solid #e0813a; }
+.bt-mairi .branch-title { color:#e0813a; }
+.bt-mairi .goal-item { background:rgba(224,129,58,0.05); }
+.bt-mairi .goal-dot { background:#e0813a; }
+.badge-mairi { background:rgba(224,129,58,0.15); color:#e0813a; border:1px solid rgba(224,129,58,0.3); }
 .section-div { height:1px; background:#21262d; margin:20px 0; }
 .footer { text-align:center; color:#484f58; font-size:11px; margin-top:40px; }
 </style>
@@ -148,7 +157,7 @@ body {
 <div class="header">
   <h1>Elias Range Stays</h1>
   <div class="tagline">Team Goals · 2026</div>
-  <div class="updated">Last updated March 20, 2026</div>
+  <div class="updated">Last updated March 30, 2026</div>
 </div>
 
 <div class="tabs">
@@ -157,6 +166,7 @@ body {
   <div class="tab-btn" onclick="show('angela',this)">🏠 Angela</div>
   <div class="tab-btn" onclick="show('megan',this)">👥 Megan</div>
   <div class="tab-btn" onclick="show('braden',this)">💰 Braden</div>
+  <div class="tab-btn" onclick="show('mairi',this)">📦 Mairi-Anne</div>
 </div>
 
 
@@ -559,8 +569,140 @@ body {
 </div>
 
 
+
+<!-- ══ MAIRI-ANNE ══ -->
+<div id="mairi" class="section">
+  <div class="person-header ph-mairi">
+    <div class="person-name">Mairi-Anne MacLeod</div>
+    <div class="person-title">Logistics Coordinator</div>
+    <div class="person-tags">
+      <span class="person-tag">Deployment</span>
+      <span class="person-tag">Unit Setup</span>
+      <span class="person-tag">Inventory</span>
+      <span class="person-tag">Labour Management</span>
+      <span class="person-tag">Procurement</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-card"><div class="metric-num">100%</div><div class="metric-label">On-Time Unit Readiness</div></div>
+    <div class="metric-card"><div class="metric-num">90%+</div><div class="metric-label">Budget Adherence</div></div>
+    <div class="metric-card"><div class="metric-num">0</div><div class="metric-label">Critical Stock-Outs</div></div>
+    <div class="metric-card"><div class="metric-num">48hr</div><div class="metric-label">Utility Activation Before Move-In</div></div>
+  </div>
+
+  <div class="section-div"></div>
+
+  <div class="branch bt-mairi">
+    <div class="branch-title">📦 Deployment Operations — Build the System</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Complete First 5 Deployments Independently</strong><span>Learn the full process end-to-end — from contract received to guest-ready handoff — by the end of Q2. These are the reps that build the system.</span></div>
+      <span class="goal-badge badge-mairi">Priority 1</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Deployment Checklist — Owned & Refined</strong><span>Build and own the standard deployment checklist. Each deployment improves it. By Q3, it's something any team member could follow.</span></div>
+      <span class="goal-badge badge-mairi">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>100% On-Time Unit Readiness</strong><span>Every unit guest-ready 24+ hours before arrival. No last-minute scrambles — build the timeline buffer into every deployment plan.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Offboarding Process Documented</strong><span>Clean, documented process for unit takedown — furniture removal, utility cancellation, landlord handback. Done once, done consistently.</span></div>
+      <span class="goal-badge badge-mairi">Q2</span>
+    </div>
+  </div>
+
+  <div class="branch bt-mairi">
+    <div class="branch-title">🏗️ Warehouse & Inventory — Get It Under Control</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Full Inventory Audit — Completed in First 30 Days</strong><span>Know exactly what ERS has, where it is, and what condition it's in. This is the foundation everything else builds on.</span></div>
+      <span class="goal-badge badge-mairi">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Warehouse Organised & Labelled</strong><span>Everything has a place. Everything is labelled. Anyone could walk in and find what they need in under 5 minutes.</span></div>
+      <span class="goal-badge badge-mairi">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Standardised Deployment Kits — Built Per Unit Type</strong><span>Studio, 1BR, 2BR kits packed and ready before each deployment. Reduces scramble, reduces errors, reduces cost.</span></div>
+      <span class="goal-badge badge-mairi">Q2–Q3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Zero Critical Stock-Outs Before a Confirmed Deployment</strong><span>Maintain enough inventory visibility that we never show up to set up a unit and discover we're missing something essential.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="branch bt-mairi">
+    <div class="branch-title">👷 Labour Team — Build a Reliable Roster</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Identify & Vet Labourer Roster — Each Active Region</strong><span>Dawson Creek first, then expand to other ERS markets. Reliable, vetted crews you can call on short notice without starting from scratch each time.</span></div>
+      <span class="goal-badge badge-mairi">Q2</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Labour Cost Tracking Per Deployment</strong><span>Every deployment logged with actual labourer costs vs. budget. Track trends over time — improve cost-per-unit as volume scales.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Labourer Briefing Standard — Documented</strong><span>Clear briefing template so every crew knows what done looks like before they start. Reduces rework, speeds up deployment days.</span></div>
+      <span class="goal-badge badge-mairi">Q3</span>
+    </div>
+  </div>
+
+  <div class="branch bt-mairi">
+    <div class="branch-title">🛒 Procurement — Smart, Fast, On Budget</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Preferred Supplier Relationships — Established</strong><span>Identify go-to suppliers for furniture, linens, kitchenware, and supplies. Preferred pricing, reliable delivery, no surprises.</span></div>
+      <span class="goal-badge badge-mairi">Q2–Q3</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Procurement Cycle — Ahead of the Pipeline</strong><span>Anticipate needs from the upcoming deployment schedule. Never ordering furniture the week we need it. Always ahead by at least one deployment.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Cost Per Unit Baseline — Established by Q3</strong><span>What does it actually cost to deploy a 1BR? A 2BR? A 3BR? Get the baseline locked in so every future deal is priced accurately.</span></div>
+      <span class="goal-badge badge-mairi">Q3</span>
+    </div>
+  </div>
+
+  <div class="branch bt-mairi">
+    <div class="branch-title">📋 Documentation & Reporting</div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Monday.com — Real-Time, Zero Gaps</strong><span>Every deployment task updated in real time. Austin, Braden, and Megan have full visibility without having to ask for updates.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Per-Deployment Records — Complete & Accurate</strong><span>Costs, timeline, labourer hours, issues, lessons learned — documented for every deployment. Builds the institutional knowledge that scales the operation.</span></div>
+      <span class="goal-badge badge-mairi">Ongoing</span>
+    </div>
+    <div class="goal-item">
+      <div class="goal-dot"></div>
+      <div class="goal-text"><strong>Monthly Logistics Report to Austin & Braden</strong><span>Deployments completed, costs vs. budget, inventory status, upcoming pipeline, any issues. One page, delivered end of month.</span></div>
+      <span class="goal-badge badge-mairi">Monthly</span>
+    </div>
+  </div>
+
+  <div class="north-star">📦 <strong>"Take a signed contract and turn it into a guest-ready home."</strong> — That's the job. Do it fast, do it well, build the system so it scales.</div>
+</div>
+
 <div class="footer">
-  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 20, 2026
+  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 30, 2026
 </div>
 
 <script>
