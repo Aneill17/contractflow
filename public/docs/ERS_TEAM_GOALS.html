@@ -2,167 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="updated" content="2026-03-30-1420">
+<meta name="updated" content="2026-03-30-1430">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ERS — Team Goals 2026</title>
+<title>ERS — 2026 Goal Tracker</title>
 <style>
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #090d13;
-  color: #e6edf3;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  min-height: 100vh;
-  padding: 40px 40px 60px;
-}
-.header { text-align:center; margin-bottom:40px; }
-.header h1 { font-size:32px; font-weight:800; color:#fff; letter-spacing:-1px; }
-.header .tagline { font-size:13px; color:#00BFA6; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
-.header .updated { font-size:11px; color:#484f58; margin-top:8px; }
+body { background: #090d13; color: #e6edf3; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; padding: 0 0 60px; }
+
+/* HEADER */
+.header { text-align:center; padding:36px 20px 0; }
+.header h1 { font-size:28px; font-weight:800; color:#fff; letter-spacing:-1px; }
+.header .tagline { font-size:12px; color:#00BFA6; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+.header .updated { font-size:11px; color:#484f58; margin-top:6px; }
 
 /* TABS */
-.tabs { display:flex; justify-content:center; gap:4px; flex-wrap:wrap; margin-bottom:36px; }
-.tab-btn {
-  background:#0d1117; border:1px solid #21262d; border-radius:8px;
-  padding:9px 20px; font-size:11px; font-weight:700; letter-spacing:1.5px;
-  text-transform:uppercase; color:#8b949e; cursor:pointer; transition:all 0.15s;
-}
+.tabs { display:flex; justify-content:center; gap:4px; flex-wrap:wrap; padding:24px 20px 0; }
+.tab-btn { background:#0d1117; border:1px solid #21262d; border-radius:8px; padding:8px 16px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#8b949e; cursor:pointer; transition:all .15s; white-space:nowrap; }
 .tab-btn:hover { border-color:#00BFA6; color:#00BFA6; }
 .tab-btn.active { background:rgba(0,191,166,0.1); border-color:#00BFA6; color:#00BFA6; }
 
-.section { display:none; max-width:1000px; margin:0 auto; }
+/* SECTIONS */
+.section { display:none; max-width:860px; margin:28px auto 0; padding:0 20px; }
 .section.visible { display:block; }
 
+/* DASHBOARD */
+.dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-top:8px; }
+.dash-card { background:#0d1117; border:1px solid #21262d; border-radius:14px; padding:18px 20px; transition:all .15s; }
+.dash-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+.dash-card-top { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.dash-emoji { font-size:24px; }
+.dash-name { font-size:14px; font-weight:700; color:#e6edf3; }
+.dash-title { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+.dash-progress-wrap { background:#161b22; border-radius:6px; height:6px; overflow:hidden; margin-bottom:6px; }
+.dash-progress-bar { height:100%; border-radius:6px; transition:width .4s ease; }
+.dash-frac { font-size:11px; color:#484f58; }
+.dash-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.dash-title-row h2 { font-size:18px; font-weight:800; color:#fff; }
+.dash-subtitle { font-size:12px; color:#8b949e; }
+
 /* PERSON HEADER */
-.person-header {
-  border-radius:14px;
-  padding:28px 32px;
-  margin-bottom:20px;
-  position:relative; overflow:hidden;
-}
-.person-header::before {
-  content:''; position:absolute; inset:0;
-  background:radial-gradient(ellipse at 80% 30%, rgba(0,191,166,0.1), transparent 60%);
-  pointer-events:none;
-}
-.person-name { font-size:26px; font-weight:800; color:#fff; letter-spacing:-0.5px; margin-bottom:4px; position:relative; }
-.person-title { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px; position:relative; font-weight:700; }
-.person-tags { display:flex; flex-wrap:wrap; gap:6px; position:relative; }
-.person-tag {
-  font-size:10px; padding:3px 10px; border-radius:6px;
-  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.1);
-}
+.person-header { background:linear-gradient(135deg,#0d1117,#111720); border-radius:16px; padding:24px 28px; margin-bottom:18px; }
+.person-name { font-size:24px; font-weight:800; color:#fff; letter-spacing:-0.5px; margin-bottom:3px; }
+.person-title { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; margin-bottom:12px; }
+.person-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.person-tag { font-size:10px; padding:3px 10px; border-radius:6px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.1); }
 
-/* BRANCH */
-.branch {
-  background:#0d1117; border:1px solid #21262d; border-radius:14px;
-  padding:20px; margin-bottom:14px;
-}
-.branch-title {
-  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
-  margin-bottom:14px; display:flex; align-items:center; gap:8px;
-}
-
-/* GOAL ITEMS */
-.goal-item {
-  display:flex; align-items:flex-start; gap:10px;
-  padding:10px 12px; border-radius:8px; margin-bottom:6px; font-size:13px;
-  line-height:1.5;
-}
-.goal-item:last-child { margin-bottom:0; }
-.goal-dot { width:8px; height:8px; border-radius:50%; margin-top:4px; flex-shrink:0; }
-.goal-text { color:#c9d1d9; flex:1; }
-.goal-text strong { color:#e6edf3; display:block; margin-bottom:2px; }
-.goal-text span { font-size:12px; color:#8b949e; }
-.goal-badge {
-  font-size:10px; font-weight:600; padding:2px 8px; border-radius:6px;
-  margin-left:auto; flex-shrink:0; white-space:nowrap;
-}
-
-/* METRIC ROW */
-.metric-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:4px; }
-.metric-card {
-  background:#13161d; border:1px solid #21262d; border-radius:10px; padding:14px 16px;
-}
-.metric-num { font-size:22px; font-weight:800; color:#00BFA6; font-family:monospace; line-height:1; }
-.metric-label { font-size:10px; color:#484f58; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+/* RING PROGRESS */
+.big-progress-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.big-progress-ring { position:relative; width:56px; height:56px; }
+.ring-svg { width:56px; height:56px; transform:rotate(-90deg); }
+.ring-bg { fill:none; stroke:#21262d; stroke-width:3; }
+.ring-fill { fill:none; stroke-width:3; stroke-linecap:round; transition:stroke-dasharray .5s ease; }
+.ring-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#e6edf3; }
+.ring-label { font-size:10px; color:#484f58; }
 
 /* NORTH STAR */
-.north-star {
-  background:rgba(0,191,166,0.06); border:1px solid rgba(0,191,166,0.2); border-radius:10px;
-  padding:14px 18px; margin-top:6px; font-size:12px; color:#8b949e; font-style:italic; text-align:center; line-height:1.7;
+.north-star { background:rgba(0,191,166,0.04); border:1px solid rgba(0,191,166,0.15); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:#8b949e; font-style:italic; line-height:1.7; }
+.north-star strong { color:#e6edf3; font-style:normal; }
+
+/* QUARTER SECTIONS */
+.quarter-section { background:#0d1117; border:1px solid #21262d; border-radius:14px; padding:18px 20px; margin-bottom:12px; }
+.quarter-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.quarter-label { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; flex:1; }
+.quarter-progress-wrap { width:80px; background:#161b22; border-radius:4px; height:4px; overflow:hidden; }
+.quarter-progress-bar { height:100%; border-radius:4px; transition:width .3s ease; }
+.quarter-frac { font-size:11px; color:#484f58; min-width:32px; text-align:right; }
+
+/* GOAL ROWS */
+.goal-row { display:flex; align-items:flex-start; gap:12px; padding:10px 12px; border-radius:8px; margin-bottom:4px; cursor:pointer; transition:background .12s; user-select:none; }
+.goal-row:hover { background:rgba(255,255,255,0.04); }
+.goal-row:last-child { margin-bottom:0; }
+.goal-row.done { opacity:0.5; }
+.goal-row.done .goal-title { text-decoration:line-through; color:#8b949e; }
+
+/* CHECKBOX */
+.cb { width:20px; height:20px; border-radius:50%; border:2px solid #30363d; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; transition:all .15s; }
+.cb.checked { border-color:transparent; }
+.cb.checked::after { content:'✓'; font-size:12px; font-weight:800; color:white; }
+
+/* GOAL CONTENT */
+.goal-content { flex:1; }
+.goal-title { font-size:13px; font-weight:600; color:#e6edf3; line-height:1.4; margin-bottom:2px; transition:all .15s; }
+.goal-desc { font-size:12px; color:#8b949e; line-height:1.5; }
+
+@media(max-width:600px) {
+  .tabs { gap:3px; }
+  .tab-btn { padding:6px 10px; font-size:10px; letter-spacing:1px; }
+  .person-header { padding:18px; }
+  .person-name { font-size:20px; }
+  .dash-grid { grid-template-columns:1fr 1fr; }
 }
-.north-star strong { color:#e6edf3; }
 
-/* COLOUR VARIANTS */
-/* Austin — teal */
-.ph-austin { background:linear-gradient(135deg,#1a2332,#0f1923); border:2px solid #00BFA6; box-shadow:0 0 30px rgba(0,191,166,0.1); }
-.ph-austin .person-title { color:#00BFA6; }
-.bt-austin { border-left:3px solid #00BFA6; }
-.bt-austin .branch-title { color:#00BFA6; }
-.bt-austin .goal-item { background:rgba(0,191,166,0.05); }
-.bt-austin .goal-dot { background:#00BFA6; }
-.badge-austin { background:rgba(0,191,166,0.15); color:#00BFA6; border:1px solid rgba(0,191,166,0.3); }
-
-/* Rob — blue */
-.ph-rob { background:linear-gradient(135deg,#0f1a2a,#0d1520); border:2px solid #58a6ff; box-shadow:0 0 30px rgba(88,166,255,0.08); }
-.ph-rob .person-title { color:#58a6ff; }
-.bt-rob { border-left:3px solid #58a6ff; }
-.bt-rob .branch-title { color:#58a6ff; }
-.bt-rob .goal-item { background:rgba(88,166,255,0.05); }
-.bt-rob .goal-dot { background:#58a6ff; }
-.badge-rob { background:rgba(88,166,255,0.15); color:#58a6ff; border:1px solid rgba(88,166,255,0.3); }
-
-/* Angela — teal-green */
-.ph-angela { background:linear-gradient(135deg,#0e1c16,#0d1511); border:2px solid #3fb950; box-shadow:0 0 30px rgba(63,185,80,0.08); }
-.ph-angela .person-title { color:#3fb950; }
-.bt-angela { border-left:3px solid #3fb950; }
-.bt-angela .branch-title { color:#3fb950; }
-.bt-angela .goal-item { background:rgba(63,185,80,0.05); }
-.bt-angela .goal-dot { background:#3fb950; }
-.badge-angela { background:rgba(63,185,80,0.15); color:#3fb950; border:1px solid rgba(63,185,80,0.3); }
-
-/* Megan — pink */
-.ph-megan { background:linear-gradient(135deg,#1c1020,#150d1a); border:2px solid #f778ba; box-shadow:0 0 30px rgba(247,120,186,0.08); }
-.ph-megan .person-title { color:#f778ba; }
-.bt-megan { border-left:3px solid #f778ba; }
-.bt-megan .branch-title { color:#f778ba; }
-.bt-megan .goal-item { background:rgba(247,120,186,0.05); }
-.bt-megan .goal-dot { background:#f778ba; }
-.badge-megan { background:rgba(247,120,186,0.15); color:#f778ba; border:1px solid rgba(247,120,186,0.3); }
-
-/* Braden — amber */
-.ph-braden { background:linear-gradient(135deg,#1c1510,#15100c); border:2px solid #C4793A; box-shadow:0 0 30px rgba(196,121,58,0.1); }
-.ph-braden .person-title { color:#C4793A; }
-.bt-braden { border-left:3px solid #C4793A; }
-.bt-braden .branch-title { color:#C4793A; }
-.bt-braden .goal-item { background:rgba(196,121,58,0.05); }
-.bt-braden .goal-dot { background:#C4793A; }
-.badge-braden { background:rgba(196,121,58,0.15); color:#C4793A; border:1px solid rgba(196,121,58,0.3); }
-
-
-/* Mairi-Anne — orange/rust */
-.ph-mairi { background:linear-gradient(135deg,#1c1308,#150f06); border:2px solid #e0813a; box-shadow:0 0 30px rgba(224,129,58,0.1); }
-.ph-mairi .person-title { color:#e0813a; }
-.bt-mairi { border-left:3px solid #e0813a; }
-.bt-mairi .branch-title { color:#e0813a; }
-.bt-mairi .goal-item { background:rgba(224,129,58,0.05); }
-.bt-mairi .goal-dot { background:#e0813a; }
-.badge-mairi { background:rgba(224,129,58,0.15); color:#e0813a; border:1px solid rgba(224,129,58,0.3); }
-.section-div { height:1px; background:#21262d; margin:20px 0; }
-.footer { text-align:center; color:#484f58; font-size:11px; margin-top:40px; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>Elias Range Stays</h1>
-  <div class="tagline">Team Goals · 2026</div>
-  <div class="updated">Last updated March 30, 2026</div>
+  <div class="tagline">2026 Goal Tracker · Q2 Entry</div>
+  <div class="updated">Updated March 30, 2026 — live check-in document</div>
 </div>
 
 <div class="tabs">
-  <div class="tab-btn active" onclick="show('austin',this)">👤 Austin</div>
+  <div class="tab-btn  active" onclick="show('dashboard',this)">📊 Dashboard</div>
+  <div class="tab-btn" onclick="show('austin',this)">🎯 Austin</div>
   <div class="tab-btn" onclick="show('rob',this)">📣 Rob</div>
   <div class="tab-btn" onclick="show('angela',this)">🏠 Angela</div>
   <div class="tab-btn" onclick="show('megan',this)">👥 Megan</div>
@@ -170,627 +114,1066 @@ body {
   <div class="tab-btn" onclick="show('mairi',this)">📦 Mairi-Anne</div>
 </div>
 
-
-<!-- ══ AUSTIN ══ -->
-<div id="austin" class="section visible">
-  <div class="person-header ph-austin">
-    <div class="person-name">Austin Neill</div>
-    <div class="person-title">Founder & CEO</div>
-    <div class="person-tags">
-      <span class="person-tag">Strategy</span>
-      <span class="person-tag">Sales</span>
-      <span class="person-tag">Capital</span>
-      <span class="person-tag">Partnerships</span>
-      <span class="person-tag">Vision</span>
+<div id="dashboard" class="section visible">
+  <div class="dash-title-row">
+    <div>
+      <h2>2026 Goal Tracker</h2>
+      <div class="dash-subtitle">Q2 entry — three quarters remaining · click a person to see their goals</div>
     </div>
   </div>
-
-  <div class="metric-row">
-    <div class="metric-card"><div class="metric-num">3+</div><div class="metric-label">New Workforce Clients</div></div>
-    <div class="metric-card"><div class="metric-num">1</div><div class="metric-label">Dawson Creek Master Lease Signed</div></div>
-    <div class="metric-card"><div class="metric-num">1</div><div class="metric-label">Hospital Deal Closed</div></div>
-    <div class="metric-card"><div class="metric-num">$</div><div class="metric-label">Hub Funding Secured</div></div>
-    <div class="metric-card"><div class="metric-num">✓</div><div class="metric-label">Lakeview Credit Union On Board</div></div>
-  </div>
-
-  <div class="section-div"></div>
-
-  <div class="branch bt-austin">
-    <div class="branch-title">🏗️ Healthcare Housing Hub — Dawson Creek</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Dawson Creek Master Lease Agreement — Signed &amp; Closed</strong><span>Lock in the foundational master lease that anchors the hub and validates the model for every future deal</span></div>
-      <span class="goal-badge badge-austin">Priority 1</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Development Permit Approved</strong><span>10620 10th St — move through permit process with Boss Architecture, clear all requirements</span></div>
-      <span class="goal-badge badge-austin">Priority 2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Healthcare Housing Hub Funding Secured</strong><span>McKenzie Trust / South Peace McKenzie Trust funding approved — offset the construction challenge and lock in the capital stack for Phase 1</span></div>
-      <span class="goal-badge badge-austin">Priority 3</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Lakeview Credit Union — Construction Funding &amp; New Mortgage On Board</strong><span>Lakeview confirmed for project/construction funding and new mortgage — foundational financing partner for the hub</span></div>
-      <span class="goal-badge badge-austin">2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Refinance the Dawson Property</strong><span>Restructure and refinance the Dawson Creek property to optimize the capital position ahead of development</span></div>
-      <span class="goal-badge badge-austin">2026</span>
-    </div>
-  </div>
-
-  <div class="branch bt-austin">
-    <div class="branch-title">🤝 Client Growth — Workforce Housing</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Sign 3+ New Workforce Housing Clients</strong><span>Construction firms, healthcare contractors, health authority workforce — targeted outreach and closings</span></div>
-      <span class="goal-badge badge-austin">2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Close UBC / Prince George Hospital Deal</strong><span>Quote is out — follow up, negotiate, confirm. This is the flagship hospital contract that opens the door nationally</span></div>
-      <span class="goal-badge badge-austin">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Northern Lights College — Board of Deans Relationship</strong><span>Leverage the introduction, build the partnership, explore housing for college workforce in Dawson</span></div>
-      <span class="goal-badge badge-austin">Q2</span>
-    </div>
-  </div>
-
-  <div class="branch bt-austin">
-    <div class="branch-title">📡 Business Development &amp; Partnerships</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build Out Board of Directors for Elias Range Stays</strong><span>Recruit a full-strength board — healthcare seat, business/finance seat, community/foundation seat, and capital seat. The governance structure that takes ERS to the next level.</span></div>
-      <span class="goal-badge badge-austin">Priority 1</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Providence Healthcare Ventures</strong><span>Advance from initial conversations to a defined partnership structure — land access + health authority connections</span></div>
-      <span class="goal-badge badge-austin">Q2–Q3</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Canadian Institute Healthcare Infrastructure Event — Attend This Year</strong><span>Attend the event this year to build relationships and visibility. Target a speaking slot for next year — plant the flag now.</span></div>
-      <span class="goal-badge badge-austin">2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>VRCA + Rural Health BC — Association Presence</strong><span>Show up, contribute, get ERS known inside the associations that matter</span></div>
-      <span class="goal-badge badge-austin">Ongoing</span>
+  <div class="dash-grid">
+    <div class="dash-card" onclick="show('austin', null)" style="border-color:#00BFA644; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">🎯</div>
+        <div>
+          <div class="dash-name">Austin Neill</div>
+          <div class="dash-title" style="color:#00BFA6">Founder & CEO</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_austin" style="background:#00BFA6; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_austin">0 / 14 goals</div>
+    </div>    <div class="dash-card" onclick="show('rob', null)" style="border-color:#58a6ff44; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">📣</div>
+        <div>
+          <div class="dash-name">Rob</div>
+          <div class="dash-title" style="color:#58a6ff">Brand, Influence & Associations</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_rob" style="background:#58a6ff; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_rob">0 / 15 goals</div>
+    </div>    <div class="dash-card" onclick="show('angela', null)" style="border-color:#3fb95044; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">🏠</div>
+        <div>
+          <div class="dash-name">Angela</div>
+          <div class="dash-title" style="color:#3fb950">Guest Services</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_angela" style="background:#3fb950; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_angela">0 / 13 goals</div>
+    </div>    <div class="dash-card" onclick="show('megan', null)" style="border-color:#f778ba44; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">👥</div>
+        <div>
+          <div class="dash-name">Megan Banks</div>
+          <div class="dash-title" style="color:#f778ba">Operations & HR</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_megan" style="background:#f778ba; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_megan">0 / 12 goals</div>
+    </div>    <div class="dash-card" onclick="show('braden', null)" style="border-color:#C4793A44; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">💰</div>
+        <div>
+          <div class="dash-name">Braden Seguin</div>
+          <div class="dash-title" style="color:#C4793A">Director & Business Advisor</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_braden" style="background:#C4793A; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_braden">0 / 11 goals</div>
+    </div>    <div class="dash-card" onclick="show('mairi', null)" style="border-color:#e0813a44; cursor:pointer;">
+      <div class="dash-card-top">
+        <div class="dash-emoji">📦</div>
+        <div>
+          <div class="dash-name">Mairi-Anne MacLeod</div>
+          <div class="dash-title" style="color:#e0813a">Logistics Coordinator</div>
+        </div>
+      </div>
+      <div class="dash-progress-wrap">
+        <div class="dash-progress-bar" id="dbar_mairi" style="background:#e0813a; width:0%;"></div>
+      </div>
+      <div class="dash-frac" id="dfrac_mairi">0 / 14 goals</div>
     </div>
   </div>
-
-  <div class="north-star">⚡ <strong>"What moves this from 10 years to 1?"</strong> — Every conversation, every deal, every dollar.</div>
 </div>
 
+<!-- Austin Neill -->
+<div id="austin" class="section">
+  <div class="person-header" style="border:2px solid #00BFA6; box-shadow:0 0 30px #00BFA618;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Austin Neill</div>
+        <div class="person-title" style="color:#00BFA6">Founder & CEO</div>
+        <div class="person-tags"><span class="person-tag">Strategy</span><span class="person-tag">Sales</span><span class="person-tag">Capital</span><span class="person-tag">Partnerships</span><span class="person-tag">Vision</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_austin" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#00BFA6;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_austin">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_austin">0 / 14</div>
+      </div>
+    </div>
+  </div>
+  <div class="north-star" style="border-color:#00BFA633;">
+    ⚡ <strong>Year-End Goal:</strong> Northern Health master lease signed. Hub funded and permitted. Austin Neill is the known voice on healthcare workforce housing in Canada.
+  </div>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#00BFA6">Q2 — April to June</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_austin_q2" style="background:#00BFA6; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_austin_q2">0/6</div>
+      </div>
+      <div class="goal-row" id="row_a_q2_1" onclick="toggleGoal('a_q2_1')">
+        <div class="cb" id="cb_a_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Dawson Creek Master Lease — Signed & Closed</div>
+          <div class="goal-desc">Lock in the foundational master lease that anchors the hub and validates the model for every future deal.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q2_2" onclick="toggleGoal('a_q2_2')">
+        <div class="cb" id="cb_a_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Development Permit Approved — 10620 10th St</div>
+          <div class="goal-desc">Through permit process with Boss Architecture. All requirements cleared.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q2_3" onclick="toggleGoal('a_q2_3')">
+        <div class="cb" id="cb_a_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Lakeview Credit Union — Construction Funding & New Mortgage On Board</div>
+          <div class="goal-desc">Lakeview confirmed as foundational financing partner — construction funding and mortgage locked.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q2_4" onclick="toggleGoal('a_q2_4')">
+        <div class="cb" id="cb_a_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Close UBC / Prince George Hospital Deal</div>
+          <div class="goal-desc">Quote is out. Follow up, negotiate, confirm. Flagship hospital contract that opens the door nationally.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q2_5" onclick="toggleGoal('a_q2_5')">
+        <div class="cb" id="cb_a_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Advance Providence Healthcare Ventures</div>
+          <div class="goal-desc">Move from conversations to a defined partnership structure — land access + HA connections.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q2_6" onclick="toggleGoal('a_q2_6')">
+        <div class="cb" id="cb_a_q2_6"></div>
+        <div class="goal-content">
+          <div class="goal-title">Attend Canadian Institute Healthcare Infrastructure Event</div>
+          <div class="goal-desc">Be in the room this year. Target speaking slot for next year. Plant the flag.</div>
+        </div>
+      </div>
+    </div>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#00BFA6">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_austin_q3" style="background:#00BFA6; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_austin_q3">0/5</div>
+      </div>
+      <div class="goal-row" id="row_a_q3_1" onclick="toggleGoal('a_q3_1')">
+        <div class="cb" id="cb_a_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Healthcare Housing Hub Funding Secured</div>
+          <div class="goal-desc">McKenzie Trust / South Peace McKenzie Trust funding approved — capital stack locked for Phase 1.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q3_2" onclick="toggleGoal('a_q3_2')">
+        <div class="cb" id="cb_a_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Refinance the Dawson Creek Property</div>
+          <div class="goal-desc">Restructure and refinance to optimize capital position ahead of development.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q3_3" onclick="toggleGoal('a_q3_3')">
+        <div class="cb" id="cb_a_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">3+ New Workforce Housing Clients Signed (cumulative)</div>
+          <div class="goal-desc">Construction firms, healthcare contractors, or health authority workforce — signed and active.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q3_4" onclick="toggleGoal('a_q3_4')">
+        <div class="cb" id="cb_a_q3_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Board of Directors — First Seat Filled</div>
+          <div class="goal-desc">Recruitment active. At least one director confirmed (healthcare, business, or community seat).</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q3_5" onclick="toggleGoal('a_q3_5')">
+        <div class="cb" id="cb_a_q3_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Attended VRCA or Rural Health BC Event — Present & Connected</div>
+          <div class="goal-desc">In the room, introduced ERS, at least one meaningful new connection made.</div>
+        </div>
+      </div>
+    </div>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#00BFA6">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_austin_q4" style="background:#00BFA6; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_austin_q4">0/3</div>
+      </div>
+      <div class="goal-row" id="row_a_q4_1" onclick="toggleGoal('a_q4_1')">
+        <div class="cb" id="cb_a_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Board of Directors — Full Board Seated</div>
+          <div class="goal-desc">Healthcare seat, business/finance seat, community/foundation seat, capital seat — all filled.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q4_2" onclick="toggleGoal('a_q4_2')">
+        <div class="cb" id="cb_a_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Northern Lights College — Board of Deans Partnership Defined</div>
+          <div class="goal-desc">Leverage the intro. Housing for college workforce in Dawson defined and agreed.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_a_q4_3" onclick="toggleGoal('a_q4_3')">
+        <div class="cb" id="cb_a_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Attended 3+ Association Events in 2026 (total)</div>
+          <div class="goal-desc">VRCA, Rural Health BC, CMA, or Canadian Institute — showed up, met people, followed up.</div>
+        </div>
+      </div>
+    </div>
+</div>
 
-<!-- ══ ROB ══ -->
+<!-- Rob -->
 <div id="rob" class="section">
-  <div class="person-header ph-rob">
-    <div class="person-name">Rob</div>
-    <div class="person-title">Brand, Influence & Associations</div>
-    <div class="person-tags">
-      <span class="person-tag">Social Media</span>
-      <span class="person-tag">Podcast Placement</span>
-      <span class="person-tag">Association Pipeline</span>
-      <span class="person-tag">Community Influence</span>
-      <span class="person-tag">Media Credibility</span>
+  <div class="person-header" style="border:2px solid #58a6ff; box-shadow:0 0 30px #58a6ff18;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Rob</div>
+        <div class="person-title" style="color:#58a6ff">Brand, Influence & Associations</div>
+        <div class="person-tags"><span class="person-tag">Social Media</span><span class="person-tag">Podcast Placement</span><span class="person-tag">Association Pipeline</span><span class="person-tag">Media Credibility</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_rob" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#58a6ff;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_rob">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_rob">0 / 15</div>
+      </div>
     </div>
   </div>
-
-  <div class="north-star" style="margin-bottom:20px;">🎯 <strong>The North Star:</strong> By end of 2026, Austin Neill is the recognizable voice on healthcare workforce housing in Canada — health authority executives, GC leadership, and capital partners already know his name before he walks in the room. Rob builds and operates the machine that makes that happen.</div>
-
-  <div class="metric-row">
-    <div class="metric-card"><div class="metric-num">—</div><div class="metric-label">LinkedIn Followers (Austin)</div></div>
-    <div class="metric-card"><div class="metric-num">—</div><div class="metric-label">LinkedIn Followers (ERS)</div></div>
-    <div class="metric-card"><div class="metric-num">—</div><div class="metric-label">Facebook Reach (ERS)</div></div>
-    <div class="metric-card"><div class="metric-num">5+</div><div class="metric-label">Podcast Appearances (Austin)</div></div>
-    <div class="metric-card"><div class="metric-num">3+</div><div class="metric-label">Events Austin Attends</div></div>
+  <div class="north-star" style="border-color:#58a6ff33;">
+    ⚡ <strong>Year-End Goal:</strong> By year-end, Austin Neill is the recognizable voice on healthcare workforce housing in Canada. Rob builds and operates the machine that makes that happen.
   </div>
-
-  <div class="section-div"></div>
-
-  <div class="branch bt-rob">
-    <div class="branch-title">📣 Social Media — Two Platforms, Consistent Cadence</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Workforce Housing Campaign — Running & Consistent</strong><span>Active campaign across LinkedIn and Facebook — Austin (personal) and ERS (business). Regular cadence, on-brand, building reach week over week.</span></div>
-      <span class="goal-badge badge-rob">Active</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#58a6ff">Q2 — April to June</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_rob_q2" style="background:#58a6ff; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_rob_q2">0/6</div>
+      </div>
+      <div class="goal-row" id="row_r_q2_1" onclick="toggleGoal('r_q2_1')">
+        <div class="cb" id="cb_r_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Workforce Housing Campaign — Running Consistently (LinkedIn + Facebook)</div>
+          <div class="goal-desc">Active campaign across both platforms, both accounts. Regular cadence, on-brand.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q2_2" onclick="toggleGoal('r_q2_2')">
+        <div class="cb" id="cb_r_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Healthcare Housing Hub Campaign — Launched on ERS Business Account</div>
+          <div class="goal-desc">Plant the flag publicly. Dawson Creek Hub is in development. Signal momentum to Northern Health.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q2_3" onclick="toggleGoal('r_q2_3')">
+        <div class="cb" id="cb_r_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Austin's Podcast Target List — 20+ Shows Identified</div>
+          <div class="goal-desc">Healthcare, construction, real estate, rural workforce, leadership. The shows decision-makers actually listen to.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q2_4" onclick="toggleGoal('r_q2_4')">
+        <div class="cb" id="cb_r_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">2026 Association Event Calendar — Built & Delivered to Austin</div>
+          <div class="goal-desc">Every relevant event mapped: VRCA, Rural Health BC, CMA, BC Health Leadership, Canadian Institute. Austin commits to 3+.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q2_5" onclick="toggleGoal('r_q2_5')">
+        <div class="cb" id="cb_r_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Austin's Credibility Roadmap (Dent Framework) — Mapped Out</div>
+          <div class="goal-desc">Where Austin is now. What milestones look like. Local → sector → national voice. Reported quarterly.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q2_6" onclick="toggleGoal('r_q2_6')">
+        <div class="cb" id="cb_r_q2_6"></div>
+        <div class="goal-content">
+          <div class="goal-title">Engagement Baseline — Documented (LinkedIn + Facebook Followers & Reach)</div>
+          <div class="goal-desc">Set the starting numbers for the year so growth can be tracked and reported monthly.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Healthcare Housing Hub Campaign</strong><span>Plant the flag publicly — Dawson Creek Hub is in development. Signal momentum to Northern Health without needing their approval to move. ERS business account, Q2 launch.</span></div>
-      <span class="goal-badge badge-rob">Q2</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#58a6ff">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_rob_q3" style="background:#58a6ff; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_rob_q3">0/5</div>
+      </div>
+      <div class="goal-row" id="row_r_q3_1" onclick="toggleGoal('r_q3_1')">
+        <div class="cb" id="cb_r_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Burnout to Balance Campaign — Launched</div>
+          <div class="goal-desc">Burnout crisis in healthcare is a housing infrastructure failure. ERS is the solution. Rob owns this campaign.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q3_2" onclick="toggleGoal('r_q3_2')">
+        <div class="cb" id="cb_r_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">3+ Podcast Appearances Booked for Austin</div>
+          <div class="goal-desc">Outreach sent, back-and-forth handled, booking confirmed. Austin has a one-page brief before each show.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q3_3" onclick="toggleGoal('r_q3_3')">
+        <div class="cb" id="cb_r_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Austin Attended 2+ Association Events</div>
+          <div class="goal-desc">Rob handled registration, travel research, and pre-event briefs for both. Austin showed up and worked the room.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q3_4" onclick="toggleGoal('r_q3_4')">
+        <div class="cb" id="cb_r_q3_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Pre-Meeting Credibility Sequences Built — 2 Key Targets</div>
+          <div class="goal-desc">Before Austin walks in: Northern Health contacts + 1 major GC have seen 2–3 ERS touchpoints. Rob maps and executes.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q3_5" onclick="toggleGoal('r_q3_5')">
+        <div class="cb" id="cb_r_q3_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Monthly Engagement Report — Delivered 3 Months Running</div>
+          <div class="goal-desc">LinkedIn + Facebook growth, reach, engagement rate. Numbers tell Rob where to push harder.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Burnout to Balance Campaign</strong><span>Burnout crisis in healthcare is a housing infrastructure failure. This is ERS's most powerful content angle — Rob owns this campaign from ideation to delivery.</span></div>
-      <span class="goal-badge badge-rob">Q2–Q3</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#58a6ff">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_rob_q4" style="background:#58a6ff; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_rob_q4">0/4</div>
+      </div>
+      <div class="goal-row" id="row_r_q4_1" onclick="toggleGoal('r_q4_1')">
+        <div class="cb" id="cb_r_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">5+ Podcast Appearances Total for Austin in 2026</div>
+          <div class="goal-desc">Running total — all booked and delivered. Clips repurposed across social.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q4_2" onclick="toggleGoal('r_q4_2')">
+        <div class="cb" id="cb_r_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Austin Attended 3+ Association Events Total in 2026</div>
+          <div class="goal-desc">All briefed, all followed up. ERS known inside the rooms that matter.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q4_3" onclick="toggleGoal('r_q4_3')">
+        <div class="cb" id="cb_r_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Pre-Event Brief Delivered for Every Single Event</div>
+          <div class="goal-desc">No event Austin attends without knowing who to meet, what to say, what to leave behind.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_r_q4_4" onclick="toggleGoal('r_q4_4')">
+        <div class="cb" id="cb_r_q4_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Austin's Personal Brand — Measurable LinkedIn Follower Growth vs Baseline</div>
+          <div class="goal-desc">Grew from baseline set in Q2. Target TBD once baseline is established.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Austin's Personal Brand — Amplify & Grow</strong><span>Austin personal LinkedIn is the primary credibility channel with health authority and institutional audiences. Rob drafts, schedules, amplifies. Austin approves and shows up.</span></div>
-      <span class="goal-badge badge-rob">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Engagement Metrics — Tracked & Reported Monthly</strong><span>LinkedIn (Austin + ERS) and Facebook (ERS) — follower growth, post reach, engagement rate. Monthly report to Austin. Numbers set the direction; Rob is accountable to growing them.</span></div>
-      <span class="goal-badge badge-rob">Monthly</span>
-    </div>
-  </div>
-
-  <div class="branch bt-rob">
-    <div class="branch-title">🎙️ Podcast Placement — Get Austin on the Right Shows</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build Austin's Podcast Target List — 20+ Shows</strong><span>Healthcare, construction, real estate, rural workforce, leadership. Find the shows where health authority HRDs, GC executives, and capital partners actually listen.</span></div>
-      <span class="goal-badge badge-rob">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Pitch, Follow Up, Book — 5+ Appearances for Austin in 2026</strong><span>Rob does the outreach, handles the back-and-forth, confirms the booking, preps the brief. Austin shows up and delivers. That's the model.</span></div>
-      <span class="goal-badge badge-rob">2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>One-Page Podcast Brief for Each Booking</strong><span>Before every appearance: host background, audience profile, 3 key talking points, ERS angles to hit. Austin never walks in unprepared.</span></div>
-      <span class="goal-badge badge-rob">Ongoing</span>
-    </div>
-  </div>
-
-  <div class="branch bt-rob">
-    <div class="branch-title">🏛️ Association Pipeline — Build the Calendar, Work the Room</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build the 2026 Association Event Calendar</strong><span>VRCA, Rural Health BC, CMA, BC Health Leadership Conference, Canadian Institute Healthcare Infrastructure — map every relevant event this year. Build a calendar Austin can commit to. Rob owns the research and logistics.</span></div>
-      <span class="goal-badge badge-rob">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Get Austin to 3+ Association Events in 2026</strong><span>Not just registered — actually there, in the room, meeting the people. Rob handles registration, travel research, and pre-event briefings so Austin can just show up and work the room.</span></div>
-      <span class="goal-badge badge-rob">2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build ERS's Association Presence — Not Just Austin's</strong><span>ERS as an organization should be known inside VRCA, Rural Health BC, CMA. Rob actively builds those ties — follows up after events, contributes where possible, keeps ERS in the conversation.</span></div>
-      <span class="goal-badge badge-rob">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Pre-Event Brief for Every Association Event</strong><span>Who's attending. Who Austin needs to meet. What to say. What to leave behind. Rob prepares it; Austin executes it. No wasted room time.</span></div>
-      <span class="goal-badge badge-rob">Ongoing</span>
-    </div>
-  </div>
-
-  <div class="branch bt-rob">
-    <div class="branch-title">🌐 Media Credibility — The Dent Framework</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Map Austin's Credibility Roadmap Against The Dent Framework</strong><span>Use the Dent media credibility model to map where Austin is now and what the milestones look like — local voice → sector voice → national voice. Rob owns this roadmap and reports progress quarterly.</span></div>
-      <span class="goal-badge badge-rob">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Pre-Meeting Credibility Sequences — Built for Key Targets</strong><span>Before Austin walks into a meeting with Northern Health, a major GC, or a capital partner — they've already seen 2–3 ERS touchpoints. Rob maps and executes these sequences. Social + podcast + event = warm room before Austin arrives.</span></div>
-      <span class="goal-badge badge-rob">Ongoing</span>
-    </div>
-  </div>
-
 </div>
 
-
-<!-- ══ ANGELA ══ -->
+<!-- Angela -->
 <div id="angela" class="section">
-  <div class="person-header ph-angela">
-    <div class="person-name">Angela</div>
-    <div class="person-title">Guest Services</div>
-    <div class="person-tags">
-      <span class="person-tag">Guest Experience</span>
-      <span class="person-tag">Property Leasing</span>
-      <span class="person-tag">Guest Satisfaction</span>
-      <span class="person-tag">Communication Standards</span>
-      <span class="person-tag">Community Data</span>
+  <div class="person-header" style="border:2px solid #3fb950; box-shadow:0 0 30px #3fb95018;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Angela</div>
+        <div class="person-title" style="color:#3fb950">Guest Services</div>
+        <div class="person-tags"><span class="person-tag">Guest Experience</span><span class="person-tag">Guest Satisfaction</span><span class="person-tag">Comms Standards</span><span class="person-tag">Leasing</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_angela" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#3fb950;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_angela">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_angela">0 / 13</div>
+      </div>
     </div>
   </div>
-
-  <div class="north-star" style="margin-bottom:20px;">🎯 <strong>The North Star:</strong> Every healthcare worker staying with ERS feels genuinely taken care of — and Angela captures the proof. Guest satisfaction data becomes one of ERS's most powerful assets: with health authorities, with clients, and with the communities we serve.</div>
-
-  <div class="metric-row">
-    <div class="metric-card"><div class="metric-num">100%</div><div class="metric-label">Properties Lease Online</div></div>
-    <div class="metric-card"><div class="metric-num">24hr</div><div class="metric-label">Max Response Time</div></div>
-    <div class="metric-card"><div class="metric-num">0</div><div class="metric-label">Unresolved Issues at Month-End</div></div>
-    <div class="metric-card"><div class="metric-num">4.5+</div><div class="metric-label">Avg Guest Satisfaction Score</div></div>
-    <div class="metric-card"><div class="metric-num">80%+</div><div class="metric-label">Feedback Response Rate</div></div>
+  <div class="north-star" style="border-color:#3fb95033;">
+    ⚡ <strong>Year-End Goal:</strong> Every healthcare worker staying with ERS feels genuinely taken care of — and Angela has the data to prove it. Guest satisfaction becomes one of ERS's most powerful assets with health authorities.
   </div>
-
-  <div class="section-div"></div>
-
-  <div class="branch bt-angela">
-    <div class="branch-title">⭐ Guest Satisfaction — Priority 1</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Guest Satisfaction Feedback System — Built & Running</strong><span>Simple, consistent feedback loop for every guest — Google review link + short satisfaction survey sent at check-in and at the 30-day mark. Angela drives the collection, tracks responses, and reports results monthly.</span></div>
-      <span class="goal-badge badge-angela">Priority 1</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#3fb950">Q2 — April to June</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_angela_q2" style="background:#3fb950; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_angela_q2">0/5</div>
+      </div>
+      <div class="goal-row" id="row_an_q2_1" onclick="toggleGoal('an_q2_1')">
+        <div class="cb" id="cb_an_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Guest Satisfaction Feedback System — Built & Running</div>
+          <div class="goal-desc">Google review link + 30-day satisfaction survey. Sent to every guest at check-in and 30-day mark. Angela drives collection.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q2_2" onclick="toggleGoal('an_q2_2')">
+        <div class="cb" id="cb_an_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">ERS Communication Guidelines Document — Completed</div>
+          <div class="goal-desc">Tone, structure, response types mapped (standard, urgent, maintenance, miscommunication, check-in, escalation). Becomes the ERS standard.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q2_3" onclick="toggleGoal('an_q2_3')">
+        <div class="cb" id="cb_an_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Guest Services Playbook — Documented</div>
+          <div class="goal-desc">Every touchpoint mapped: check-in, welcome, 30-day check-in, maintenance, emergency, checkout. Consistent experience in every unit.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q2_4" onclick="toggleGoal('an_q2_4')">
+        <div class="cb" id="cb_an_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">All Active Properties Listed & Lease-Ready Online</div>
+          <div class="goal-desc">Every ERS property live, accurate, and bookable. No gaps in the leasing pipeline.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q2_5" onclick="toggleGoal('an_q2_5')">
+        <div class="cb" id="cb_an_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Guest Welcome Experience — Consistent Across All Units</div>
+          <div class="goal-desc">Every new resident receives a proper welcome: in-suite materials, intro message, clear points of contact.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Monthly Guest Satisfaction Report to Austin</strong><span>What are guests saying? What score are we hitting? What issues are coming up repeatedly? One clear report — patterns, highlights, and recommended actions. This data tells the ERS story to health authorities better than any brochure.</span></div>
-      <span class="goal-badge badge-angela">Monthly</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#3fb950">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_angela_q3" style="background:#3fb950; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_angela_q3">0/4</div>
+      </div>
+      <div class="goal-row" id="row_an_q3_1" onclick="toggleGoal('an_q3_1')">
+        <div class="cb" id="cb_an_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Monthly Guest Satisfaction Report — Delivered 3 Months Running</div>
+          <div class="goal-desc">What are guests saying? Patterns, scores, highlights, recommended actions. One clear report to Austin monthly.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q3_2" onclick="toggleGoal('an_q3_2')">
+        <div class="cb" id="cb_an_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">4.5+ Average Satisfaction Score — Maintained All of Q3</div>
+          <div class="goal-desc">Track, protect, improve. Dips flagged immediately with a plan. Strong scores → capture the stories.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q3_3" onclick="toggleGoal('an_q3_3')">
+        <div class="cb" id="cb_an_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">24hr Response Standard — Zero Exceptions in Q3</div>
+          <div class="goal-desc">Every guest message answered within 24 hours. Tracked. No open items going stale.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q3_4" onclick="toggleGoal('an_q3_4')">
+        <div class="cb" id="cb_an_q3_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">10+ Guest Testimonials Captured (with permission)</div>
+          <div class="goal-desc">Real voices of healthcare workers whose lives ERS improved. Collected for use in marketing and HA presentations.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>4.5+ Average Satisfaction Score — Maintained All Year</strong><span>Track, protect, and improve. If it dips, Angela flags it immediately and brings a plan. If it's strong, capture the testimonials and stories.</span></div>
-      <span class="goal-badge badge-angela">Ongoing</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#3fb950">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_angela_q4" style="background:#3fb950; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_angela_q4">0/4</div>
+      </div>
+      <div class="goal-row" id="row_an_q4_1" onclick="toggleGoal('an_q4_1')">
+        <div class="cb" id="cb_an_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">80%+ Guest Feedback Response Rate — Maintained</div>
+          <div class="goal-desc">Guests are completing the surveys. Angela is following up where needed to hit the target.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q4_2" onclick="toggleGoal('an_q4_2')">
+        <div class="cb" id="cb_an_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Leasing Process Documented & Standardised</div>
+          <div class="goal-desc">Clear SOP from inquiry to signed lease. Consistent every time.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q4_3" onclick="toggleGoal('an_q4_3')">
+        <div class="cb" id="cb_an_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">0 Unresolved Guest Issues at Year-End</div>
+          <div class="goal-desc">Everything logged, tracked, and resolved. Nothing falling through the cracks going into 2027.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_an_q4_4" onclick="toggleGoal('an_q4_4')">
+        <div class="cb" id="cb_an_q4_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Draw Close Data Collection — Scope Defined</div>
+          <div class="goal-desc">As the community hub rolls out, Angela's role in capturing healthcare worker experience data defined and handed to Austin.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Capture Guest Testimonials & Stories</strong><span>The real voices of healthcare workers whose lives ERS improved. Collect these — with permission — for use in marketing, health authority presentations, and the community hub. Angela is the one closest to these stories.</span></div>
-      <span class="goal-badge badge-angela">Ongoing</span>
-    </div>
-  </div>
-
-  <div class="branch bt-angela">
-    <div class="branch-title">📞 Communication Standards — Build the Framework</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>ERS Communication Guidelines Document — Completed</strong><span>Tone, structure, what we're committed to in every interaction. Response types mapped out: standard inquiry, urgent response, maintenance issue, miscommunication, check-in/check-out, escalation. Angela drafts this — it becomes the ERS standard for all guest-facing communication.</span></div>
-      <span class="goal-badge badge-angela">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>24-Hour Response Standard — Zero Exceptions</strong><span>No guest message goes unanswered for more than 24 hours. Tracked. If something is missed, it's flagged and fixed — not ignored.</span></div>
-      <span class="goal-badge badge-angela">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Guest Services Playbook — Documented</strong><span>Every touchpoint mapped: check-in, welcome, 30-day check-in, maintenance request, emergency, check-out, offboarding. Consistent experience regardless of which unit or which region.</span></div>
-      <span class="goal-badge badge-angela">Q2</span>
-    </div>
-  </div>
-
-  <div class="branch bt-angela">
-    <div class="branch-title">🏘️ Leasing & Occupancy</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>All Active Properties Listed & Lease-Ready Online</strong><span>Every ERS property live, accurate, and bookable — no gaps in the leasing pipeline.</span></div>
-      <span class="goal-badge badge-angela">Priority 2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Leasing Process Documented & Standardised</strong><span>Clear SOP from inquiry to signed lease. Consistent experience every time.</span></div>
-      <span class="goal-badge badge-angela">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Zero Unplanned Vacancy — Track & Fill Fast</strong><span>Vacancy tracked by unit. Gaps identified and filled proactively. Reported monthly.</span></div>
-      <span class="goal-badge badge-angela">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Guest Welcome Experience — Consistent Across All Units</strong><span>Every new resident gets a proper welcome: in-suite materials, intro message, clear points of contact, what to expect. No one arrives to silence.</span></div>
-      <span class="goal-badge badge-angela">Q2</span>
-    </div>
-  </div>
-
-  <div class="branch bt-angela" style="border-left-color:rgba(63,185,80,0.3); opacity:0.85;">
-    <div class="branch-title" style="color:rgba(63,185,80,0.6);">🌱 To Come — Draw Close &amp; Community Hub (H2 2026)</div>
-    <div class="goal-item">
-      <div class="goal-dot" style="background:rgba(63,185,80,0.4);"></div>
-      <div class="goal-text" style="color:#6e7e6f;"><strong>Healthcare Issues Tracker — Data Collection Role</strong><span style="color:#4a5e4b;">As the Draw Close platform and ERS Community Hub roll out, Angela's guest relationships become a data pipeline. She's closest to what healthcare workers are actually experiencing — housing barriers, burnout patterns, community needs. Her role evolves to capture and synthesize that intelligence.</span></div>
-      <span class="goal-badge" style="background:rgba(63,185,80,0.08);color:rgba(63,185,80,0.5);border:1px solid rgba(63,185,80,0.2);">H2 2026</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot" style="background:rgba(63,185,80,0.4);"></div>
-      <div class="goal-text" style="color:#6e7e6f;"><strong>Community Engagement — ERS Hub Residents</strong><span style="color:#4a5e4b;">As ERS builds community programming into its housing, Angela's guest services role grows to include connecting residents to community resources, programs, and the broader Draw Close network. She becomes the human link between the platform and the people.</span></div>
-      <span class="goal-badge" style="background:rgba(63,185,80,0.08);color:rgba(63,185,80,0.5);border:1px solid rgba(63,185,80,0.2);">H2 2026</span>
-    </div>
-  </div>
-
 </div>
 
-
-<!-- ══ MEGAN ══ -->
+<!-- Megan Banks -->
 <div id="megan" class="section">
-  <div class="person-header ph-megan">
-    <div class="person-name">Megan Banks</div>
-    <div class="person-title">Operations & HR</div>
-    <div class="person-tags">
-      <span class="person-tag">Hiring</span>
-      <span class="person-tag">HR</span>
-      <span class="person-tag">Team Onboarding</span>
-      <span class="person-tag">Culture</span>
-      <span class="person-tag">Management</span>
+  <div class="person-header" style="border:2px solid #f778ba; box-shadow:0 0 30px #f778ba18;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Megan Banks</div>
+        <div class="person-title" style="color:#f778ba">Operations & HR</div>
+        <div class="person-tags"><span class="person-tag">Hiring</span><span class="person-tag">HR</span><span class="person-tag">Onboarding</span><span class="person-tag">Culture</span><span class="person-tag">Team Management</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_megan" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#f778ba;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_megan">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_megan">0 / 12</div>
+      </div>
     </div>
   </div>
-
-  <div class="branch bt-megan">
-    <div class="branch-title">👥 Hiring & Onboarding</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Hire Operations Manager</strong><span>Define the role clearly, source candidates, interview, select — first major hire of the year</span></div>
-      <span class="goal-badge badge-megan">Priority 1</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build & Hire Ground Team</strong><span>Property management, maintenance, guest services on the ground — get the right people in place as the portfolio grows</span></div>
-      <span class="goal-badge badge-megan">Q2–Q3</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Onboarding Process Built & Running</strong><span>Every new hire goes through a clear, consistent onboarding — role clarity, culture, vision, tools, expectations</span></div>
-      <span class="goal-badge badge-megan">Q2</span>
-    </div>
+  <div class="north-star" style="border-color:#f778ba33;">
+    ⚡ <strong>Year-End Goal:</strong> ERS has the right people in the right seats with a shared culture and clear expectations — so Austin can focus on the deals, not the people problems.
   </div>
-
-  <div class="branch bt-megan">
-    <div class="branch-title">🌿 Culture & Alignment</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Every Team Member Knows the Vision</strong><span>All staff have read the core documents — Our Story, 10-Year Vision, Problem Stack, Goals. Megan ensures this happens.</span></div>
-      <span class="goal-badge badge-megan">Q2</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#f778ba">Q2 — April to June</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_megan_q2" style="background:#f778ba; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_megan_q2">0/5</div>
+      </div>
+      <div class="goal-row" id="row_m_q2_1" onclick="toggleGoal('m_q2_1')">
+        <div class="cb" id="cb_m_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Operations Manager — Hired</div>
+          <div class="goal-desc">Role defined, candidates sourced, interviews done, decision made. First major hire of the year.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q2_2" onclick="toggleGoal('m_q2_2')">
+        <div class="cb" id="cb_m_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Onboarding Process — Built & Running</div>
+          <div class="goal-desc">Every new hire goes through a clear, consistent onboarding: role clarity, culture, vision, tools, expectations.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q2_3" onclick="toggleGoal('m_q2_3')">
+        <div class="cb" id="cb_m_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Every Team Member Has Read Core ERS Documents</div>
+          <div class="goal-desc">Our Story, 10-Year Vision, Problem Stack, their individual goals. Megan ensures this happens and can confirm it.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q2_4" onclick="toggleGoal('m_q2_4')">
+        <div class="cb" id="cb_m_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Culture Playbook — Drafted</div>
+          <div class="goal-desc">Values, ways of working, how we treat each other, how we show up for clients. Foundation for every hire.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q2_5" onclick="toggleGoal('m_q2_5')">
+        <div class="cb" id="cb_m_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Team Check-in Rhythm — Running (Weekly 1:1s Active)</div>
+          <div class="goal-desc">Regular 1:1s and team touchpoints live. Everyone knows where they're at, blockers surface early.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Culture Playbook</strong><span>Document ERS culture — values, expectations, how we treat each other, how we show up for clients. The foundation for every hire.</span></div>
-      <span class="goal-badge badge-megan">Q2</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#f778ba">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_megan_q3" style="background:#f778ba; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_megan_q3">0/4</div>
+      </div>
+      <div class="goal-row" id="row_m_q3_1" onclick="toggleGoal('m_q3_1')">
+        <div class="cb" id="cb_m_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Culture Playbook — Finalized & Distributed</div>
+          <div class="goal-desc">Reviewed, finalized, shared with every team member. Referenced in onboarding from this point forward.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q3_2" onclick="toggleGoal('m_q3_2')">
+        <div class="cb" id="cb_m_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Ground Team — First Hire Made</div>
+          <div class="goal-desc">Property management, maintenance, or guest services on the ground. Right person in place.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q3_3" onclick="toggleGoal('m_q3_3')">
+        <div class="cb" id="cb_m_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Performance Clarity for Every Role — Documented</div>
+          <div class="goal-desc">Each person knows their goals, how they're measured, and gets real feedback. Not just assumptions.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q3_4" onclick="toggleGoal('m_q3_4')">
+        <div class="cb" id="cb_m_q3_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Monthly Team Report — Delivered 3 Months Running</div>
+          <div class="goal-desc">Hiring status, team health, blockers, culture pulse. Austin informed without micromanagement.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Team Check-in Rhythm</strong><span>Regular 1:1s and team touchpoints — everyone knows where they're at, blockers surface early, morale stays high</span></div>
-      <span class="goal-badge badge-megan">Ongoing</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#f778ba">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_megan_q4" style="background:#f778ba; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_megan_q4">0/3</div>
+      </div>
+      <div class="goal-row" id="row_m_q4_1" onclick="toggleGoal('m_q4_1')">
+        <div class="cb" id="cb_m_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Ground Team — Built to Operational Capacity</div>
+          <div class="goal-desc">Right people in place to support the current portfolio and incoming growth.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q4_2" onclick="toggleGoal('m_q4_2')">
+        <div class="cb" id="cb_m_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Mairi-Anne 90-Day Review Completed & Next Goals Set</div>
+          <div class="goal-desc">Formal review at end of probation. Role adjustments confirmed. Q3/Q4 goals updated.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_m_q4_3" onclick="toggleGoal('m_q4_3')">
+        <div class="cb" id="cb_m_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">All Team Goals Reviewed & Updated for 2027</div>
+          <div class="goal-desc">Megan leads the 2027 goal-setting process before year-end. Nobody heads into January without a plan.</div>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="branch bt-megan">
-    <div class="branch-title">⚙️ Team Management</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Manage Angela, Rob & Ground Team Day-to-Day</strong><span>Clear direction, accountability, support — no one is operating without a clear mandate and someone who has their back</span></div>
-      <span class="goal-badge badge-megan">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Performance Clarity for Every Role</strong><span>Each person knows their goals, knows how they're being measured, and gets real feedback — not just assumptions</span></div>
-      <span class="goal-badge badge-megan">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Monthly Team Report to Austin</strong><span>Hiring status, team health, blockers, culture pulse — keep Austin informed without requiring micromanagement</span></div>
-      <span class="goal-badge badge-megan">Monthly</span>
-    </div>
-  </div>
 </div>
 
-
-<!-- ══ BRADEN ══ -->
+<!-- Braden Seguin -->
 <div id="braden" class="section">
-  <div class="person-header ph-braden">
-    <div class="person-name">Braden Seguin</div>
-    <div class="person-title">Director & Business Advisor</div>
-    <div class="person-tags">
-      <span class="person-tag">Financial Dashboard</span>
-      <span class="person-tag">AR / AP</span>
-      <span class="person-tag">Kenora Leasing</span>
-      <span class="person-tag">Property Management</span>
-      <span class="person-tag">Strategic Advisory</span>
+  <div class="person-header" style="border:2px solid #C4793A; box-shadow:0 0 30px #C4793A18;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Braden Seguin</div>
+        <div class="person-title" style="color:#C4793A">Director & Business Advisor</div>
+        <div class="person-tags"><span class="person-tag">Financial Dashboard</span><span class="person-tag">AR/AP</span><span class="person-tag">Kenora</span><span class="person-tag">Property Mgmt</span><span class="person-tag">Strategic Advisory</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_braden" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#C4793A;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_braden">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_braden">0 / 11</div>
+      </div>
     </div>
   </div>
-
-  <div class="branch bt-braden">
-    <div class="branch-title">📊 Internal Financial Dashboard — Priority 1</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Build the ERS Financial Dashboard</strong><span>Comprehensive internal view — revenue, expenses, margins, where every dollar goes and where it comes from</span></div>
-      <span class="goal-badge badge-braden">Priority 1</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Per-Contract P&L</strong><span>How much does each active contract produce? Revenue, cost of delivery, margin — clear and tracked per client</span></div>
-      <span class="goal-badge badge-braden">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Unit Pricing Model — Complete</strong><span>1-bed, 2-bed, 3-bed rates locked in, documented, and reflected in ContractFlow — fully up to date</span></div>
-      <span class="goal-badge badge-braden">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Cash Flow Forecasting</strong><span>Monthly cash flow projection — how much coming in, how much going out, what the runway looks like</span></div>
-      <span class="goal-badge badge-braden">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Key Metrics Defined & Tracked</strong><span>Revenue per unit, occupancy rate, cost per placement, gross margin per contract — the numbers that tell the real story</span></div>
-      <span class="goal-badge badge-braden">Q2</span>
-    </div>
+  <div class="north-star" style="border-color:#C4793A33;">
+    ⚡ <strong>Year-End Goal:</strong> Austin knows exactly where ERS stands financially at any moment — revenue, margins, cash position, per-contract P&L. No surprises. Full visibility.
   </div>
-
-  <div class="branch bt-braden">
-    <div class="branch-title">💰 AR / AP & Financial Operations</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>AR Cycle — Clean & Current</strong><span>All invoices sent on time, all receivables tracked, nothing falls through the cracks — report to Austin monthly</span></div>
-      <span class="goal-badge badge-braden">Ongoing</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#C4793A">Q2 — April to June</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_braden_q2" style="background:#C4793A; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_braden_q2">0/5</div>
+      </div>
+      <div class="goal-row" id="row_b_q2_1" onclick="toggleGoal('b_q2_1')">
+        <div class="cb" id="cb_b_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Financial Dashboard — Built & Running</div>
+          <div class="goal-desc">Comprehensive internal view: revenue, expenses, margins, where every dollar goes. Live and accessible.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q2_2" onclick="toggleGoal('b_q2_2')">
+        <div class="cb" id="cb_b_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Unit Pricing Model — Complete & In ContractFlow</div>
+          <div class="goal-desc">1BR, 2BR, 3BR rates locked, documented, reflected in ContractFlow. Fully up to date.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q2_3" onclick="toggleGoal('b_q2_3')">
+        <div class="cb" id="cb_b_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Per-Contract P&L — Tracking All Active Contracts</div>
+          <div class="goal-desc">Revenue, cost of delivery, margin — clear and tracked per client. No guessing.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q2_4" onclick="toggleGoal('b_q2_4')">
+        <div class="cb" id="cb_b_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">AR Cycle — Clean & Current</div>
+          <div class="goal-desc">All invoices sent on time, all receivables tracked. Nothing falling through the cracks.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q2_5" onclick="toggleGoal('b_q2_5')">
+        <div class="cb" id="cb_b_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Kenora Properties — Fully Managed & Current</div>
+          <div class="goal-desc">Leases in order, maintenance on top of, tenants managed. Nothing outstanding or unaddressed.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>AP — Vendor & Expense Tracking</strong><span>All outgoing payments tracked, categorised, and reconciled with Lexi monthly</span></div>
-      <span class="goal-badge badge-braden">Ongoing</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#C4793A">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_braden_q3" style="background:#C4793A; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_braden_q3">0/3</div>
+      </div>
+      <div class="goal-row" id="row_b_q3_1" onclick="toggleGoal('b_q3_1')">
+        <div class="cb" id="cb_b_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Cash Flow Forecasting — Monthly Model Running</div>
+          <div class="goal-desc">How much coming in, how much going out, what the runway looks like. Delivered monthly.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q3_2" onclick="toggleGoal('b_q3_2')">
+        <div class="cb" id="cb_b_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Key Metrics Defined & Tracked</div>
+          <div class="goal-desc">Revenue per unit, occupancy rate, cost per placement, gross margin per contract — the numbers that tell the real story.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q3_3" onclick="toggleGoal('b_q3_3')">
+        <div class="cb" id="cb_b_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Monthly Financial Report — Delivered 3 Months Running</div>
+          <div class="goal-desc">Revenue, expenses, margin, outstanding AR, cash position — one page, end of every month.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Monthly Financial Report to Austin</strong><span>One-page summary — revenue, expenses, margin, outstanding AR, cash position — delivered end of every month</span></div>
-      <span class="goal-badge badge-braden">Monthly</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#C4793A">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_braden_q4" style="background:#C4793A; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_braden_q4">0/3</div>
+      </div>
+      <div class="goal-row" id="row_b_q4_1" onclick="toggleGoal('b_q4_1')">
+        <div class="cb" id="cb_b_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Full Q1–Q3 Financial Review Completed</div>
+          <div class="goal-desc">All three quarters reconciled, reported, and presented to Austin before year-end.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q4_2" onclick="toggleGoal('b_q4_2')">
+        <div class="cb" id="cb_b_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Capital Structure for Hub Financing — Modeled & Presented</div>
+          <div class="goal-desc">Full financing stack for Phase 1 modeled: CMHC, Lakeview, grants, equity. Presented to Austin.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_b_q4_3" onclick="toggleGoal('b_q4_3')">
+        <div class="cb" id="cb_b_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Per-Unit Cost Baselines Established</div>
+          <div class="goal-desc">What does it actually cost to deploy and operate a 1BR, 2BR, 3BR? Numbers locked. Every future deal priced accurately.</div>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="branch bt-braden">
-    <div class="branch-title">🏘️ Kenora Leasing & Property Management</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Kenora Properties — Fully Managed & Current</strong><span>Leases in order, maintenance on top of, tenants managed — nothing outstanding or unaddressed</span></div>
-      <span class="goal-badge badge-braden">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Maintenance Coordination</strong><span>All maintenance requests logged, assigned, and resolved — no open items sitting more than 48 hours without a response</span></div>
-      <span class="goal-badge badge-braden">Ongoing</span>
-    </div>
-  </div>
 </div>
 
-
-
-<!-- ══ MAIRI-ANNE ══ -->
+<!-- Mairi-Anne MacLeod -->
 <div id="mairi" class="section">
-  <div class="person-header ph-mairi">
-    <div class="person-name">Mairi-Anne MacLeod</div>
-    <div class="person-title">Logistics Coordinator</div>
-    <div class="person-tags">
-      <span class="person-tag">Deployment</span>
-      <span class="person-tag">Unit Setup</span>
-      <span class="person-tag">Inventory</span>
-      <span class="person-tag">Labour Management</span>
-      <span class="person-tag">Procurement</span>
+  <div class="person-header" style="border:2px solid #e0813a; box-shadow:0 0 30px #e0813a18;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="person-name">Mairi-Anne MacLeod</div>
+        <div class="person-title" style="color:#e0813a">Logistics Coordinator</div>
+        <div class="person-tags"><span class="person-tag">Deployment</span><span class="person-tag">Unit Setup</span><span class="person-tag">Inventory</span><span class="person-tag">Labour</span><span class="person-tag">Procurement</span></div>
+      </div>
+      <div class="big-progress-wrap">
+        <div class="big-progress-ring">
+          <svg viewBox="0 0 36 36" class="ring-svg">
+            <path class="ring-bg" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32"/>
+            <path class="ring-fill" id="ring_mairi" d="M18 2 a16 16 0 0 1 0 32 a16 16 0 0 1 0 -32" style="stroke:#e0813a;stroke-dasharray:0 100;"/>
+          </svg>
+          <div class="ring-text" id="ringtext_mairi">0%</div>
+        </div>
+        <div class="ring-label" id="ringfrac_mairi">0 / 14</div>
+      </div>
     </div>
   </div>
-
-  <div class="metric-row">
-    <div class="metric-card"><div class="metric-num">100%</div><div class="metric-label">On-Time Unit Readiness</div></div>
-    <div class="metric-card"><div class="metric-num">90%+</div><div class="metric-label">Budget Adherence</div></div>
-    <div class="metric-card"><div class="metric-num">0</div><div class="metric-label">Critical Stock-Outs</div></div>
-    <div class="metric-card"><div class="metric-num">48hr</div><div class="metric-label">Utility Activation Before Move-In</div></div>
+  <div class="north-star" style="border-color:#e0813a33;">
+    ⚡ <strong>Year-End Goal:</strong> Every unit is guest-ready 24 hours before arrival, every time. The deployment system is documented, repeatable, and built to scale as the portfolio grows.
   </div>
-
-  <div class="section-div"></div>
-
-  <div class="branch bt-mairi">
-    <div class="branch-title">📦 Deployment Operations — Build the System</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Complete First 5 Deployments Independently</strong><span>Learn the full process end-to-end — from contract received to guest-ready handoff — by the end of Q2. These are the reps that build the system.</span></div>
-      <span class="goal-badge badge-mairi">Priority 1</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#e0813a">Q2 — April to June (Probation)</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_mairi_q2" style="background:#e0813a; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_mairi_q2">0/6</div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_1" onclick="toggleGoal('ma_q2_1')">
+        <div class="cb" id="cb_ma_q2_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Full Inventory Audit — Completed in First 30 Days</div>
+          <div class="goal-desc">Every asset counted, catalogued, and recorded. Know exactly what ERS has, where it is, what condition it's in.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_2" onclick="toggleGoal('ma_q2_2')">
+        <div class="cb" id="cb_ma_q2_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Warehouse Organised & Labelled</div>
+          <div class="goal-desc">Everything has a place. Everything is labelled. Anyone can find what they need in under 5 minutes.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_3" onclick="toggleGoal('ma_q2_3')">
+        <div class="cb" id="cb_ma_q2_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">First 5 Deployments Completed Independently</div>
+          <div class="goal-desc">End-to-end. Signed contract to guest-ready handoff. The reps that build the system.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_4" onclick="toggleGoal('ma_q2_4')">
+        <div class="cb" id="cb_ma_q2_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Deployment Checklist — Owned & Documented</div>
+          <div class="goal-desc">Build and own the standard checklist. Each deployment improves it. By Q3, anyone could follow it.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_5" onclick="toggleGoal('ma_q2_5')">
+        <div class="cb" id="cb_ma_q2_5"></div>
+        <div class="goal-content">
+          <div class="goal-title">Labourer Roster — Identified & Vetted in Dawson Creek</div>
+          <div class="goal-desc">Reliable casual labourers you can call on short notice. Background checked, quality confirmed.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q2_6" onclick="toggleGoal('ma_q2_6')">
+        <div class="cb" id="cb_ma_q2_6"></div>
+        <div class="goal-content">
+          <div class="goal-title">90-Day Probation Review — Passed</div>
+          <div class="goal-desc">Formal review with Austin and Megan. Performance, reliability, and culture alignment confirmed. Role continues.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Deployment Checklist — Owned & Refined</strong><span>Build and own the standard deployment checklist. Each deployment improves it. By Q3, it's something any team member could follow.</span></div>
-      <span class="goal-badge badge-mairi">Q2</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#e0813a">Q3 — July to September</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_mairi_q3" style="background:#e0813a; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_mairi_q3">0/4</div>
+      </div>
+      <div class="goal-row" id="row_ma_q3_1" onclick="toggleGoal('ma_q3_1')">
+        <div class="cb" id="cb_ma_q3_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Standardised Deployment Kits — Built Per Unit Type</div>
+          <div class="goal-desc">Studio, 1BR, 2BR, 3BR kits packed and ready before each deployment. Reduces scramble, reduces errors.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q3_2" onclick="toggleGoal('ma_q3_2')">
+        <div class="cb" id="cb_ma_q3_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Preferred Supplier Relationships — Established (3+ Vendors)</div>
+          <div class="goal-desc">Go-to suppliers for furniture, linens, kitchenware. Preferred pricing, reliable delivery, no surprises.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q3_3" onclick="toggleGoal('ma_q3_3')">
+        <div class="cb" id="cb_ma_q3_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Labour Cost Tracking Per Deployment — Running & Reported</div>
+          <div class="goal-desc">Every deployment logged with actual vs. budget. Trends tracked. Cost-per-unit improving over time.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q3_4" onclick="toggleGoal('ma_q3_4')">
+        <div class="cb" id="cb_ma_q3_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">100% On-Time Unit Readiness — Maintained All of Q3</div>
+          <div class="goal-desc">Every unit guest-ready 24+ hours before arrival. No last-minute scrambles.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>100% On-Time Unit Readiness</strong><span>Every unit guest-ready 24+ hours before arrival. No last-minute scrambles — build the timeline buffer into every deployment plan.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
+    <div class="quarter-section">
+      <div class="quarter-header">
+        <div class="quarter-label" style="color:#e0813a">Q4 — October to December</div>
+        <div class="quarter-progress-wrap">
+          <div class="quarter-progress-bar" id="qbar_mairi_q4" style="background:#e0813a; width:0%"></div>
+        </div>
+        <div class="quarter-frac" id="qfrac_mairi_q4">0/4</div>
+      </div>
+      <div class="goal-row" id="row_ma_q4_1" onclick="toggleGoal('ma_q4_1')">
+        <div class="cb" id="cb_ma_q4_1"></div>
+        <div class="goal-content">
+          <div class="goal-title">Cost Per Unit Baseline — Established for Each Unit Type</div>
+          <div class="goal-desc">What does it cost to deploy a 1BR? A 2BR? A 3BR? Numbers locked. Every future deal priced accurately.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q4_2" onclick="toggleGoal('ma_q4_2')">
+        <div class="cb" id="cb_ma_q4_2"></div>
+        <div class="goal-content">
+          <div class="goal-title">Labourer Briefing Standard — Documented</div>
+          <div class="goal-desc">Clear briefing template every crew receives. They know what done looks like before they start.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q4_3" onclick="toggleGoal('ma_q4_3')">
+        <div class="cb" id="cb_ma_q4_3"></div>
+        <div class="goal-content">
+          <div class="goal-title">Offboarding Process — Documented</div>
+          <div class="goal-desc">Clean, repeatable process for unit takedown: furniture removal, utility cancellation, landlord handback.</div>
+        </div>
+      </div>
+      <div class="goal-row" id="row_ma_q4_4" onclick="toggleGoal('ma_q4_4')">
+        <div class="cb" id="cb_ma_q4_4"></div>
+        <div class="goal-content">
+          <div class="goal-title">Monthly Logistics Report — Delivered 3 Months Running</div>
+          <div class="goal-desc">Deployments completed, costs vs. budget, inventory status, upcoming pipeline. One page, end of month.</div>
+        </div>
+      </div>
     </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Offboarding Process Documented</strong><span>Clean, documented process for unit takedown — furniture removal, utility cancellation, landlord handback. Done once, done consistently.</span></div>
-      <span class="goal-badge badge-mairi">Q2</span>
-    </div>
-  </div>
-
-  <div class="branch bt-mairi">
-    <div class="branch-title">🏗️ Warehouse & Inventory — Get It Under Control</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Full Inventory Audit — Completed in First 30 Days</strong><span>Know exactly what ERS has, where it is, and what condition it's in. This is the foundation everything else builds on.</span></div>
-      <span class="goal-badge badge-mairi">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Warehouse Organised & Labelled</strong><span>Everything has a place. Everything is labelled. Anyone could walk in and find what they need in under 5 minutes.</span></div>
-      <span class="goal-badge badge-mairi">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Standardised Deployment Kits — Built Per Unit Type</strong><span>Studio, 1BR, 2BR kits packed and ready before each deployment. Reduces scramble, reduces errors, reduces cost.</span></div>
-      <span class="goal-badge badge-mairi">Q2–Q3</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Zero Critical Stock-Outs Before a Confirmed Deployment</strong><span>Maintain enough inventory visibility that we never show up to set up a unit and discover we're missing something essential.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
-    </div>
-  </div>
-
-  <div class="branch bt-mairi">
-    <div class="branch-title">👷 Labour Team — Build a Reliable Roster</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Identify & Vet Labourer Roster — Each Active Region</strong><span>Dawson Creek first, then expand to other ERS markets. Reliable, vetted crews you can call on short notice without starting from scratch each time.</span></div>
-      <span class="goal-badge badge-mairi">Q2</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Labour Cost Tracking Per Deployment</strong><span>Every deployment logged with actual labourer costs vs. budget. Track trends over time — improve cost-per-unit as volume scales.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Labourer Briefing Standard — Documented</strong><span>Clear briefing template so every crew knows what done looks like before they start. Reduces rework, speeds up deployment days.</span></div>
-      <span class="goal-badge badge-mairi">Q3</span>
-    </div>
-  </div>
-
-  <div class="branch bt-mairi">
-    <div class="branch-title">🛒 Procurement — Smart, Fast, On Budget</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Preferred Supplier Relationships — Established</strong><span>Identify go-to suppliers for furniture, linens, kitchenware, and supplies. Preferred pricing, reliable delivery, no surprises.</span></div>
-      <span class="goal-badge badge-mairi">Q2–Q3</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Procurement Cycle — Ahead of the Pipeline</strong><span>Anticipate needs from the upcoming deployment schedule. Never ordering furniture the week we need it. Always ahead by at least one deployment.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Cost Per Unit Baseline — Established by Q3</strong><span>What does it actually cost to deploy a 1BR? A 2BR? A 3BR? Get the baseline locked in so every future deal is priced accurately.</span></div>
-      <span class="goal-badge badge-mairi">Q3</span>
-    </div>
-  </div>
-
-  <div class="branch bt-mairi">
-    <div class="branch-title">📋 Documentation & Reporting</div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Monday.com — Real-Time, Zero Gaps</strong><span>Every deployment task updated in real time. Austin, Braden, and Megan have full visibility without having to ask for updates.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Per-Deployment Records — Complete & Accurate</strong><span>Costs, timeline, labourer hours, issues, lessons learned — documented for every deployment. Builds the institutional knowledge that scales the operation.</span></div>
-      <span class="goal-badge badge-mairi">Ongoing</span>
-    </div>
-    <div class="goal-item">
-      <div class="goal-dot"></div>
-      <div class="goal-text"><strong>Monthly Logistics Report to Austin & Braden</strong><span>Deployments completed, costs vs. budget, inventory status, upcoming pipeline, any issues. One page, delivered end of month.</span></div>
-      <span class="goal-badge badge-mairi">Monthly</span>
-    </div>
-  </div>
-
-  <div class="north-star">📦 <strong>"Take a signed contract and turn it into a guest-ready home."</strong> — That's the job. Do it fast, do it well, build the system so it scales.</div>
-</div>
-
-<div class="footer">
-  Elias Range Stays · eliasrangestays.ca · Built with Maestro 🎼 · March 30, 2026
 </div>
 
 <script>
+
+const REGISTRY = {
+  austin: ['a_q2_1', 'a_q2_2', 'a_q2_3', 'a_q2_4', 'a_q2_5', 'a_q2_6', 'a_q3_1', 'a_q3_2', 'a_q3_3', 'a_q3_4', 'a_q3_5', 'a_q4_1', 'a_q4_2', 'a_q4_3'],
+  rob: ['r_q2_1', 'r_q2_2', 'r_q2_3', 'r_q2_4', 'r_q2_5', 'r_q2_6', 'r_q3_1', 'r_q3_2', 'r_q3_3', 'r_q3_4', 'r_q3_5', 'r_q4_1', 'r_q4_2', 'r_q4_3', 'r_q4_4'],
+  angela: ['an_q2_1', 'an_q2_2', 'an_q2_3', 'an_q2_4', 'an_q2_5', 'an_q3_1', 'an_q3_2', 'an_q3_3', 'an_q3_4', 'an_q4_1', 'an_q4_2', 'an_q4_3', 'an_q4_4'],
+  megan: ['m_q2_1', 'm_q2_2', 'm_q2_3', 'm_q2_4', 'm_q2_5', 'm_q3_1', 'm_q3_2', 'm_q3_3', 'm_q3_4', 'm_q4_1', 'm_q4_2', 'm_q4_3'],
+  braden: ['b_q2_1', 'b_q2_2', 'b_q2_3', 'b_q2_4', 'b_q2_5', 'b_q3_1', 'b_q3_2', 'b_q3_3', 'b_q4_1', 'b_q4_2', 'b_q4_3'],
+  mairi: ['ma_q2_1', 'ma_q2_2', 'ma_q2_3', 'ma_q2_4', 'ma_q2_5', 'ma_q2_6', 'ma_q3_1', 'ma_q3_2', 'ma_q3_3', 'ma_q3_4', 'ma_q4_1', 'ma_q4_2', 'ma_q4_3', 'ma_q4_4'],
+};
+
+function getKey(id) { return 'ers2026_' + id; }
+
+function isDone(id) { return localStorage.getItem(getKey(id)) === '1'; }
+
+function toggleGoal(id) {
+  const now = isDone(id);
+  localStorage.setItem(getKey(id), now ? '0' : '1');
+  updateGoalUI(id, !now);
+  updateAllProgress();
+}
+
+function updateGoalUI(id, done) {
+  const row = document.getElementById('row_' + id);
+  const cb = document.getElementById('cb_' + id);
+  if (!row || !cb) return;
+  if (done) {
+    row.classList.add('done');
+    cb.classList.add('checked');
+  } else {
+    row.classList.remove('done');
+    cb.classList.remove('checked');
+  }
+}
+
+function updateAllProgress() {
+  for (const pid in REGISTRY) {
+    const ids = REGISTRY[pid];
+    const done = ids.filter(isDone).length;
+    const total = ids.length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    // dashboard bar
+    const dbar = document.getElementById('dbar_' + pid);
+    const dfrac = document.getElementById('dfrac_' + pid);
+    if (dbar) dbar.style.width = pct + '%';
+    if (dfrac) dfrac.textContent = done + ' / ' + total + ' goals';
+    // ring
+    const ring = document.getElementById('ring_' + pid);
+    const ringtxt = document.getElementById('ringtext_' + pid);
+    const ringfrac = document.getElementById('ringfrac_' + pid);
+    if (ring) ring.style.strokeDasharray = pct + ' 100';
+    if (ringtxt) ringtxt.textContent = pct + '%';
+    if (ringfrac) ringfrac.textContent = done + ' / ' + total;
+  }
+  // quarter bars
+    updateQuarter('austin','q2',['a_q2_1', 'a_q2_2', 'a_q2_3', 'a_q2_4', 'a_q2_5', 'a_q2_6']);
+  updateQuarter('austin','q3',['a_q3_1', 'a_q3_2', 'a_q3_3', 'a_q3_4', 'a_q3_5']);
+  updateQuarter('austin','q4',['a_q4_1', 'a_q4_2', 'a_q4_3']);
+  updateQuarter('rob','q2',['r_q2_1', 'r_q2_2', 'r_q2_3', 'r_q2_4', 'r_q2_5', 'r_q2_6']);
+  updateQuarter('rob','q3',['r_q3_1', 'r_q3_2', 'r_q3_3', 'r_q3_4', 'r_q3_5']);
+  updateQuarter('rob','q4',['r_q4_1', 'r_q4_2', 'r_q4_3', 'r_q4_4']);
+  updateQuarter('angela','q2',['an_q2_1', 'an_q2_2', 'an_q2_3', 'an_q2_4', 'an_q2_5']);
+  updateQuarter('angela','q3',['an_q3_1', 'an_q3_2', 'an_q3_3', 'an_q3_4']);
+  updateQuarter('angela','q4',['an_q4_1', 'an_q4_2', 'an_q4_3', 'an_q4_4']);
+  updateQuarter('megan','q2',['m_q2_1', 'm_q2_2', 'm_q2_3', 'm_q2_4', 'm_q2_5']);
+  updateQuarter('megan','q3',['m_q3_1', 'm_q3_2', 'm_q3_3', 'm_q3_4']);
+  updateQuarter('megan','q4',['m_q4_1', 'm_q4_2', 'm_q4_3']);
+  updateQuarter('braden','q2',['b_q2_1', 'b_q2_2', 'b_q2_3', 'b_q2_4', 'b_q2_5']);
+  updateQuarter('braden','q3',['b_q3_1', 'b_q3_2', 'b_q3_3']);
+  updateQuarter('braden','q4',['b_q4_1', 'b_q4_2', 'b_q4_3']);
+  updateQuarter('mairi','q2',['ma_q2_1', 'ma_q2_2', 'ma_q2_3', 'ma_q2_4', 'ma_q2_5', 'ma_q2_6']);
+  updateQuarter('mairi','q3',['ma_q3_1', 'ma_q3_2', 'ma_q3_3', 'ma_q3_4']);
+  updateQuarter('mairi','q4',['ma_q4_1', 'ma_q4_2', 'ma_q4_3', 'ma_q4_4']);
+}
+
+function updateQuarter(pid, qid, ids) {
+  const done = ids.filter(isDone).length;
+  const total = ids.length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const bar = document.getElementById('qbar_' + pid + '_' + qid);
+  const frac = document.getElementById('qfrac_' + pid + '_' + qid);
+  if (bar) bar.style.width = pct + '%';
+  if (frac) frac.textContent = done + '/' + total;
+}
+
+function loadState() {
+  for (const pid in REGISTRY) {
+    for (const id of REGISTRY[pid]) {
+      if (isDone(id)) updateGoalUI(id, true);
+    }
+  }
+  updateAllProgress();
+}
+
 function show(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('visible');
-  el.classList.add('active');
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('visible');
+  if (el) el.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+document.addEventListener('DOMContentLoaded', loadState);
+
 </script>
 </body>
 </html>
