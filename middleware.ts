@@ -8,6 +8,7 @@ const PUBLIC_PATHS = [
   '/api/client/',
   '/api/booking',
   '/api/auth/',
+  '/api/client-portal/',
   '/_next',
   '/favicon',
   '/v2-plan.html',
