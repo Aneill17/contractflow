@@ -1139,6 +1139,160 @@ function AuditTab({ contract: c }: { contract: Contract }) {
   )
 }
 
+// ── TAB: Contract Calendar ─────────────────────────────────
+function ContractCalendar({ contract: c }: { contract: Contract }) {
+  const [unitLeases, setUnitLeases] = useState<Array<{ unit_id: string; address: string; leases: any[] }>>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      const headers = await getAuthHeader()
+      const res = await fetch(`/api/units?contract_id=${c.id}`, { headers })
+      if (res.ok) {
+        const units: any[] = await res.json()
+        const withLeases = await Promise.all(
+          units.map(async (u) => {
+            const lr = await fetch(`/api/units/${u.id}/leases`, { headers })
+            const leases = lr.ok ? await lr.json() : []
+            return { unit_id: u.id, address: u.address, leases }
+          })
+        )
+        setUnitLeases(withLeases)
+      }
+      setLoading(false)
+    }
+    load()
+  }, [c.id])
+
+  const startDate = c.start_date ? new Date(c.start_date) : null
+  const endDate = c.end_date ? new Date(c.end_date) : null
+
+  const fmtDate = (d: string | null | undefined) => {
+    if (!d) return '—'
+    return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+  }
+
+  const getDurationDays = (start: string, end: string) => {
+    const s = new Date(start), e = new Date(end)
+    return Math.max(1, Math.round((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)))
+  }
+
+  // Timeline bar: position as % of contract duration
+  const contractDays = startDate && endDate ? getDurationDays(c.start_date, c.end_date) : 0
+
+  const getBar = (start: string, end: string) => {
+    if (!startDate || contractDays === 0) return { left: '0%', width: '100%' }
+    const s = new Date(start), e = new Date(end)
+    const offsetDays = Math.max(0, (s.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    const durDays = getDurationDays(start, end)
+    const left = Math.min(100, (offsetDays / contractDays) * 100)
+    const width = Math.min(100 - left, (durDays / contractDays) * 100)
+    return { left: `${left}%`, width: `${Math.max(2, width)}%` }
+  }
+
+  return (
+    <div>
+      <div style={styles.card}>
+        <div style={styles.sectionTitle}>Contract Timeline</div>
+
+        {/* Main contract bar */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 600, fontSize: 13, color: '#0B2540' }}>
+              {c.client_name}
+            </div>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8' }}>
+              {fmtDate(c.start_date)} → {fmtDate(c.end_date)}
+              {contractDays > 0 && <span style={{ marginLeft: 8, color: '#00BFA6' }}>({contractDays} days)</span>}
+            </div>
+          </div>
+          <div style={{ position: 'relative', height: 22, background: '#f1f4f8', borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{
+              position: 'absolute',
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: 'linear-gradient(90deg, #0B2540, #1B4353)',
+              borderRadius: 6,
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: 8,
+            }}>
+              <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: 'rgba(255,255,255,0.8)', letterSpacing: '0.05em' }}>
+                CONTRACT PERIOD
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Today marker (conceptual) */}
+        <div style={{ marginBottom: 6, fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          Key Dates
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+          <div style={{ background: 'rgba(0,191,166,0.06)', border: '1px solid rgba(0,191,166,0.2)', borderRadius: 8, padding: '10px 14px' }}>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#00BFA6', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>Start Date</div>
+            <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 600, fontSize: 14, color: '#0B2540' }}>{fmtDate(c.start_date)}</div>
+          </div>
+          <div style={{ background: 'rgba(196,121,58,0.06)', border: '1px solid rgba(196,121,58,0.2)', borderRadius: 8, padding: '10px 14px' }}>
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 9, color: '#C4793A', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>End Date</div>
+            <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 600, fontSize: 14, color: '#0B2540' }}>{fmtDate(c.end_date)}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Unit lease timelines */}
+      {!loading && unitLeases.length > 0 && (
+        <div style={styles.card}>
+          <div style={styles.sectionTitle}>Unit Lease Dates</div>
+          {unitLeases.map(({ unit_id, address, leases }) => (
+            <div key={unit_id} style={{ marginBottom: 16 }}>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#334155', marginBottom: 8, fontWeight: 600 }}>
+                🏠 {address || '(no address)'}
+              </div>
+              {leases.length === 0 && (
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', paddingLeft: 8 }}>No leases uploaded</div>
+              )}
+              {leases.map((lease: any) => {
+                const bar = lease.lease_start && lease.lease_end && contractDays > 0
+                  ? getBar(lease.lease_start, lease.lease_end)
+                  : null
+                return (
+                  <div key={lease.id} style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: lease.type === 'landlord' ? '#1B4353' : '#C4793A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        {lease.type} lease
+                      </div>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8' }}>
+                        {fmtDate(lease.lease_start)} → {fmtDate(lease.lease_end)}
+                      </div>
+                    </div>
+                    {bar && (
+                      <div style={{ position: 'relative', height: 14, background: '#f1f4f8', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{
+                          position: 'absolute',
+                          left: bar.left,
+                          width: bar.width,
+                          height: '100%',
+                          background: lease.type === 'landlord' ? 'rgba(27,67,83,0.7)' : 'rgba(196,121,58,0.7)',
+                          borderRadius: 4,
+                        }} />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+              <div style={{ borderBottom: '1px solid #f1f4f8', marginTop: 8 }} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {loading && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', padding: 12 }}>Loading unit leases…</div>}
+    </div>
+  )
+}
+
 // ── Shared styles (ERS light theme) ──────────────────────────
 const styles: Record<string, any> = {
   card: {
@@ -1247,6 +1401,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
     { key: 'quote',    label: '✦ Quote' },
     { key: 'contract', label: '📋 Contract' },
     { key: 'units',    label: '🏠 Units' },
+    { key: 'calendar', label: '📅 Calendar' },
     { key: 'audit',    label: 'Audit Trail' },
   ]
   const [tab, setTab] = useState('request')
@@ -1372,6 +1527,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {tab === 'quote'    && <QuoteTab    contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'units'    && <UnitsTab    contract={c} showToast={showToast} />}
+      {tab === 'calendar' && <ContractCalendar contract={c} />}
       {tab === 'audit'    && <AuditTab    contract={c} />}
     </div>
   )
