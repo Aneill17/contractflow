@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
+import { useRole } from '@/components/UserRoleContext'
 
 // Lazy-load PDF button — browser only
 const ContractPDFButton = dynamic(() => import('./ContractPDFButton'), {
@@ -1240,6 +1241,7 @@ const styles: Record<string, any> = {
 
 // ── Main ContractDetail ────────────────────────────────────
 export default function ContractDetail({ contract: c, onUpdate, onRefresh, showToast }: Props) {
+  const { role } = useRole()
   const TABS = [
     { key: 'request',  label: 'Request' },
     { key: 'quote',    label: '✦ Quote' },
@@ -1303,6 +1305,28 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
           }}>
             {STAGE_LABELS[c.stage]}
           </div>
+          {role === 'owner' && (c as any).status !== 'active' && (
+            <button
+              style={{ ...styles.btnPrimary, fontSize: 11, padding: '6px 16px', background: '#0B2540' }}
+              onClick={async () => {
+                const headers = await getAuthHeader()
+                const res = await fetch(`/api/contracts/${c.id}`, {
+                  method: 'PATCH',
+                  headers: { ...headers, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'active', audit_action: 'Marked as Operational', actor: 'Owner' }),
+                })
+                if (res.ok) { showToast('Contract marked as Operational'); onRefresh() }
+                else showToast('Error', 'error')
+              }}
+            >
+              ✓ Mark as Operational
+            </button>
+          )}
+          {(c as any).status === 'active' && (
+            <div style={{ fontSize: 11, fontFamily: 'IBM Plex Mono', padding: '5px 12px', borderRadius: 12, background: 'rgba(0,191,166,0.12)', color: '#00BFA6', border: '1px solid rgba(0,191,166,0.3)' }}>
+              ● Operational
+            </div>
+          )}
           <button
             style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }}
             onClick={() => { navigator.clipboard.writeText(clientPortalUrl); showToast('Client link copied') }}
