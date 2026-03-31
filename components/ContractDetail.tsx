@@ -202,6 +202,21 @@ function RequestTab({ contract: c }: { contract: Contract }) {
 function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const occupants = (c as any).occupants || []
   const months = calcMonths(c)
+  const [activeUnitsCount, setActiveUnitsCount] = useState<number | null>(null)
+  const [totalUnitsCount, setTotalUnitsCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    const loadUnitStats = async () => {
+      const headers = await getAuthHeader()
+      const res = await fetch(`/api/units?contract_id=${c.id}`, { headers })
+      if (res.ok) {
+        const units: any[] = await res.json()
+        setTotalUnitsCount(units.length)
+        setActiveUnitsCount(units.filter((u: any) => u.status === 'active').length)
+      }
+    }
+    loadUnitStats()
+  }, [c.id])
   const [pricePerUnit, setPricePerUnit] = useState(c.price_per_unit || 0)
   const [damageDeposit, setDamageDeposit] = useState(c.damage_deposit || 0)
   const [paymentSchedule, setPaymentSchedule] = useState(c.payment_schedule || 'Monthly')
@@ -339,6 +354,32 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
           <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Quote Value</span>
           <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 26, color: '#C4793A', fontWeight: 700 }}>${grandTotal.toLocaleString()}</span>
         </div>
+        {/* Billing auto-adjustment indicator */}
+        {totalUnitsCount !== null && totalUnitsCount > 0 && (
+          <div style={{
+            marginTop: 14,
+            padding: '10px 14px',
+            borderRadius: 8,
+            background: activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.06)' : 'rgba(196,121,58,0.06)',
+            border: `1px solid ${activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.2)' : 'rgba(196,121,58,0.2)'}`,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: activeUnitsCount === totalUnitsCount ? '#00BFA6' : '#C4793A' }}>
+                {activeUnitsCount} of {totalUnitsCount} units active — billing adjusted
+              </div>
+              {pricePerUnit > 0 && activeUnitsCount !== null && (
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155', fontWeight: 600 }}>
+                  ${((activeUnitsCount ?? 0) * pricePerUnit * 30).toLocaleString()} / mo
+                </div>
+              )}
+            </div>
+            {activeUnitsCount !== totalUnitsCount && pricePerUnit > 0 && activeUnitsCount !== null && (
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', marginTop: 4 }}>
+                Full rate: ${(totalUnitsCount * pricePerUnit * 30).toLocaleString()} / mo · Adjusted: ${(activeUnitsCount * pricePerUnit * 30).toLocaleString()} / mo
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Terms */}
