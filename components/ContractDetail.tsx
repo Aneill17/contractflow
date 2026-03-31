@@ -639,6 +639,485 @@ function ContractTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   )
 }
 
+// ── TAB: Units ────────────────────────────────────────────
+interface ContractUnit {
+  id: string
+  contract_id: string
+  address: string
+  wifi_ssid?: string
+  wifi_password?: string
+  guest_name?: string
+  guest_contact?: string
+  status: 'active' | 'inactive'
+  created_at: string
+  unit_photos?: { id: string; url: string; is_primary: boolean }[]
+}
+
+function UnitsTab({ contract: c, showToast }: { contract: Contract; showToast: (msg: string, t?: string) => void }) {
+  const [units, setUnits] = useState<ContractUnit[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showAdd, setShowAdd] = useState(false)
+  const [selectedUnit, setSelectedUnit] = useState<ContractUnit | null>(null)
+  const [form, setForm] = useState({ address: '', wifi_ssid: '', wifi_password: '', guest_name: '', guest_contact: '' })
+  const [saving, setSaving] = useState(false)
+
+  const load = async () => {
+    const headers = await getAuthHeader()
+    const res = await fetch(`/api/units?contract_id=${c.id}`, { headers })
+    if (res.ok) {
+      const data = await res.json()
+      setUnits(data)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [c.id])
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    const headers = await getAuthHeader()
+    const res = await fetch('/api/units', {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, contract_id: c.id }),
+    })
+    if (res.ok) {
+      setForm({ address: '', wifi_ssid: '', wifi_password: '', guest_name: '', guest_contact: '' })
+      setShowAdd(false)
+      showToast('Unit added')
+      load()
+    } else {
+      showToast('Error adding unit', 'error')
+    }
+    setSaving(false)
+  }
+
+  if (loading) return <div style={{ padding: 20, fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#94a3b8' }}>Loading units…</div>
+
+  if (selectedUnit) {
+    return <UnitDetail unit={selectedUnit} contractId={c.id} onBack={() => { setSelectedUnit(null); load() }} showToast={showToast} />
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 700, fontSize: 15, color: '#0B2540' }}>
+          Units ({units.length})
+        </div>
+        <button style={styles.btnPrimary} onClick={() => setShowAdd(!showAdd)}>
+          {showAdd ? '✕ Cancel' : '+ Add Unit'}
+        </button>
+      </div>
+
+      {showAdd && (
+        <div style={{ ...styles.card, marginBottom: 16, background: '#f8fbff', border: '1px solid rgba(0,191,166,0.3)' }}>
+          <div style={styles.sectionTitle}>New Unit</div>
+          <form onSubmit={handleAdd}>
+            <div style={styles.grid2}>
+              <div>
+                <div style={styles.lbl}>Address *</div>
+                <input style={styles.inp} required value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="123 Main St, City, BC" />
+              </div>
+              <div>
+                <div style={styles.lbl}>Guest Name</div>
+                <input style={styles.inp} value={form.guest_name} onChange={e => setForm(f => ({ ...f, guest_name: e.target.value }))} placeholder="Occupant name" />
+              </div>
+              <div>
+                <div style={styles.lbl}>Guest Contact</div>
+                <input style={styles.inp} value={form.guest_contact} onChange={e => setForm(f => ({ ...f, guest_contact: e.target.value }))} placeholder="Phone or email" />
+              </div>
+              <div>
+                <div style={styles.lbl}>Wi-Fi SSID</div>
+                <input style={styles.inp} value={form.wifi_ssid} onChange={e => setForm(f => ({ ...f, wifi_ssid: e.target.value }))} placeholder="Network name" />
+              </div>
+              <div>
+                <div style={styles.lbl}>Wi-Fi Password</div>
+                <input style={styles.inp} value={form.wifi_password} onChange={e => setForm(f => ({ ...f, wifi_password: e.target.value }))} placeholder="Password" />
+              </div>
+            </div>
+            <div style={{ marginTop: 14 }}>
+              <button type="submit" style={styles.btnPrimary} disabled={saving}>{saving ? 'Saving…' : 'Add Unit'}</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {units.length === 0 && !showAdd && (
+        <div style={{ ...styles.card, textAlign: 'center', padding: 40 }}>
+          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#94a3b8', marginBottom: 12 }}>No units assigned to this contract yet.</div>
+          <button style={styles.btnPrimary} onClick={() => setShowAdd(true)}>+ Add First Unit</button>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+        {units.map(unit => (
+          <div
+            key={unit.id}
+            onClick={() => setSelectedUnit(unit)}
+            style={{
+              ...styles.card,
+              cursor: 'pointer',
+              marginBottom: 0,
+              transition: 'box-shadow 0.18s, border-color 0.18s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(0,191,166,0.12)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(0,191,166,0.4)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 4px rgba(11,37,64,0.05)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8ecf0' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 600, fontSize: 13, color: '#0B2540', flex: 1, marginRight: 8 }}>
+                {unit.address || '(no address)'}
+              </div>
+              <div style={{
+                fontSize: 10,
+                fontFamily: 'IBM Plex Mono',
+                padding: '3px 8px',
+                borderRadius: 10,
+                background: unit.status === 'active' ? 'rgba(0,191,166,0.12)' : 'rgba(148,163,184,0.15)',
+                color: unit.status === 'active' ? '#00BFA6' : '#94a3b8',
+                border: `1px solid ${unit.status === 'active' ? 'rgba(0,191,166,0.3)' : '#e8ecf0'}`,
+                whiteSpace: 'nowrap' as const,
+                flexShrink: 0,
+              }}>
+                {unit.status === 'active' ? '● Active' : '○ Inactive'}
+              </div>
+            </div>
+            {unit.guest_name && (
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#334155', marginBottom: 4 }}>
+                👤 {unit.guest_name}
+              </div>
+            )}
+            {unit.guest_contact && (
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8' }}>
+                {unit.guest_contact}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Unit Detail View ───────────────────────────────────────
+interface UnitLease {
+  id: string
+  unit_id: string
+  type: 'landlord' | 'client'
+  file_url?: string
+  lease_start?: string
+  lease_end?: string
+  terms?: string
+  created_at: string
+}
+
+function UnitDetail({
+  unit: initialUnit,
+  contractId,
+  onBack,
+  showToast,
+}: {
+  unit: ContractUnit
+  contractId: string
+  onBack: () => void
+  showToast: (msg: string, t?: string) => void
+}) {
+  const [unit, setUnit] = useState(initialUnit)
+  const [leases, setLeases] = useState<UnitLease[]>([])
+  const [editMode, setEditMode] = useState(false)
+  const [form, setForm] = useState({
+    address: unit.address || '',
+    wifi_ssid: unit.wifi_ssid || '',
+    wifi_password: unit.wifi_password || '',
+    guest_name: unit.guest_name || '',
+    guest_contact: unit.guest_contact || '',
+  })
+  const [changingStaff, setChangingStaff] = useState(false)
+  const [staffForm, setStaffForm] = useState({ guest_name: '', guest_contact: '' })
+  const [uploadForm, setUploadForm] = useState<{ type: 'landlord' | 'client'; file: File | null; lease_start: string; lease_end: string; terms: string }>({ type: 'landlord', file: null, lease_start: '', lease_end: '', terms: '' })
+  const [uploading, setUploading] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const loadLeases = async () => {
+    const headers = await getAuthHeader()
+    const res = await fetch(`/api/units/${unit.id}/leases`, { headers })
+    if (res.ok) setLeases(await res.json())
+  }
+
+  useEffect(() => { loadLeases() }, [unit.id])
+
+  const handleSave = async () => {
+    setSaving(true)
+    const headers = await getAuthHeader()
+    const res = await fetch(`/api/units/${unit.id}`, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+    if (res.ok) {
+      const updated = await res.json()
+      setUnit(u => ({ ...u, ...updated }))
+      setEditMode(false)
+      showToast('Unit updated')
+    } else showToast('Error saving', 'error')
+    setSaving(false)
+  }
+
+  const handleDeactivate = async () => {
+    const headers = await getAuthHeader()
+    const newStatus = unit.status === 'active' ? 'inactive' : 'active'
+    const res = await fetch(`/api/units/${unit.id}`, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
+    if (res.ok) {
+      setUnit(u => ({ ...u, status: newStatus }))
+      showToast(`Unit ${newStatus}`)
+    }
+  }
+
+  const handleChangeStaff = async () => {
+    const headers = await getAuthHeader()
+    const res = await fetch(`/api/units/${unit.id}`, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ guest_name: staffForm.guest_name, guest_contact: staffForm.guest_contact }),
+    })
+    if (res.ok) {
+      const updated = await res.json()
+      setUnit(u => ({ ...u, ...updated }))
+      setChangingStaff(false)
+      setStaffForm({ guest_name: '', guest_contact: '' })
+      showToast('Staff updated')
+    }
+  }
+
+  const handleLeaseUpload = async (leaseType: 'landlord' | 'client') => {
+    if (!uploadForm.file) { showToast('Please select a file', 'error'); return }
+    setUploading(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      // Upload file to Supabase storage
+      const fileExt = uploadForm.file.name.split('.').pop()
+      const filePath = `${unit.id}/${leaseType}-${Date.now()}.${fileExt}`
+      const { error: uploadError } = await supabase.storage
+        .from('leases')
+        .upload(filePath, uploadForm.file, { upsert: true })
+
+      let fileUrl = ''
+      if (uploadError) {
+        // Fallback: store without file
+        fileUrl = ''
+        showToast('File upload failed — saving metadata only', 'error')
+      } else {
+        const { data: { publicUrl } } = supabase.storage.from('leases').getPublicUrl(filePath)
+        fileUrl = publicUrl
+      }
+
+      const headers = await getAuthHeader()
+      const res = await fetch(`/api/units/${unit.id}/leases`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: leaseType,
+          file_url: fileUrl,
+          lease_start: uploadForm.lease_start || null,
+          lease_end: uploadForm.lease_end || null,
+          terms: uploadForm.terms || null,
+        }),
+      })
+      if (res.ok) {
+        showToast(`${leaseType === 'landlord' ? 'Landlord' : 'Client'} lease uploaded`)
+        setUploadForm({ type: 'landlord', file: null, lease_start: '', lease_end: '', terms: '' })
+        loadLeases()
+      }
+    } catch (err) {
+      showToast('Upload error', 'error')
+    }
+    setUploading(false)
+  }
+
+  const isActive = unit.status === 'active'
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <button style={{ ...styles.btnGhost, padding: '7px 14px', fontSize: 11 }} onClick={onBack}>← Back to Units</button>
+        <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: '#0B2540', flex: 1 }}>
+          {unit.address || '(no address)'}
+        </div>
+        <div style={{
+          fontSize: 11,
+          fontFamily: 'IBM Plex Mono',
+          padding: '4px 12px',
+          borderRadius: 12,
+          background: isActive ? 'rgba(0,191,166,0.12)' : 'rgba(148,163,184,0.15)',
+          color: isActive ? '#00BFA6' : '#94a3b8',
+          border: `1px solid ${isActive ? 'rgba(0,191,166,0.3)' : '#e8ecf0'}`,
+        }}>
+          {isActive ? '● Active' : '○ Inactive'}
+        </div>
+      </div>
+
+      {/* Unit fields */}
+      <div style={styles.card}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div style={styles.sectionTitle}>Unit Details</div>
+          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => setEditMode(!editMode)}>
+            {editMode ? 'Cancel' : '✎ Edit'}
+          </button>
+        </div>
+        {editMode ? (
+          <div>
+            <div style={styles.grid2}>
+              <div>
+                <div style={styles.lbl}>Address</div>
+                <input style={styles.inp} value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+              </div>
+              <div>
+                <div style={styles.lbl}>Guest Name</div>
+                <input style={styles.inp} value={form.guest_name} onChange={e => setForm(f => ({ ...f, guest_name: e.target.value }))} />
+              </div>
+              <div>
+                <div style={styles.lbl}>Guest Contact</div>
+                <input style={styles.inp} value={form.guest_contact} onChange={e => setForm(f => ({ ...f, guest_contact: e.target.value }))} />
+              </div>
+              <div>
+                <div style={styles.lbl}>Wi-Fi SSID</div>
+                <input style={styles.inp} value={form.wifi_ssid} onChange={e => setForm(f => ({ ...f, wifi_ssid: e.target.value }))} />
+              </div>
+              <div>
+                <div style={styles.lbl}>Wi-Fi Password</div>
+                <input style={styles.inp} value={form.wifi_password} onChange={e => setForm(f => ({ ...f, wifi_password: e.target.value }))} />
+              </div>
+            </div>
+            <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
+              <button style={styles.btnPrimary} onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</button>
+            </div>
+          </div>
+        ) : (
+          <div style={styles.grid2}>
+            <div>
+              <div style={styles.lbl}>Address</div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155' }}>{unit.address || '—'}</div>
+            </div>
+            <div>
+              <div style={styles.lbl}>Guest</div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155' }}>{unit.guest_name || '—'}</div>
+              {unit.guest_contact && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8' }}>{unit.guest_contact}</div>}
+            </div>
+            <div>
+              <div style={styles.lbl}>Wi-Fi</div>
+              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155' }}>{unit.wifi_ssid || '—'}</div>
+              {unit.wifi_password && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8' }}>pw: {unit.wifi_password}</div>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' as const }}>
+        <button
+          style={{ ...styles.btnGhost, fontSize: 11, padding: '7px 14px' }}
+          onClick={() => { setChangingStaff(!changingStaff); setStaffForm({ guest_name: unit.guest_name || '', guest_contact: unit.guest_contact || '' }) }}
+        >
+          👤 Change Staff
+        </button>
+        <button
+          style={{
+            ...styles.btnGhost,
+            fontSize: 11,
+            padding: '7px 14px',
+            color: isActive ? '#e25858' : '#00BFA6',
+            borderColor: isActive ? '#fcdada' : 'rgba(0,191,166,0.3)',
+          }}
+          onClick={handleDeactivate}
+        >
+          {isActive ? '⊘ Deactivate Unit' : '✓ Activate Unit'}
+        </button>
+      </div>
+
+      {changingStaff && (
+        <div style={{ ...styles.card, marginBottom: 16, background: '#fffbf5', border: '1px solid rgba(196,121,58,0.3)' }}>
+          <div style={styles.sectionTitle}>Change Staff</div>
+          <div style={styles.grid2}>
+            <div>
+              <div style={styles.lbl}>New Guest Name</div>
+              <input style={styles.inp} value={staffForm.guest_name} onChange={e => setStaffForm(f => ({ ...f, guest_name: e.target.value }))} placeholder="Occupant name" />
+            </div>
+            <div>
+              <div style={styles.lbl}>New Guest Contact</div>
+              <input style={styles.inp} value={staffForm.guest_contact} onChange={e => setStaffForm(f => ({ ...f, guest_contact: e.target.value }))} placeholder="Phone or email" />
+            </div>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <button style={styles.btnPrimary} onClick={handleChangeStaff}>Update Staff</button>
+          </div>
+        </div>
+      )}
+
+      {/* Lease upload sections */}
+      {(['landlord', 'client'] as const).map(leaseType => {
+        const typeLeases = leases.filter(l => l.type === leaseType)
+        return (
+          <div key={leaseType} style={{ ...styles.card, marginBottom: 14 }}>
+            <div style={styles.sectionTitle}>
+              {leaseType === 'landlord' ? '🏠 Landlord Lease' : '🤝 Client Lease'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+              <div>
+                <div style={styles.lbl}>Lease Start</div>
+                <input type="date" style={styles.inp} value={uploadForm.type === leaseType ? uploadForm.lease_start : ''} onChange={e => setUploadForm(f => ({ ...f, type: leaseType, lease_start: e.target.value }))} />
+              </div>
+              <div>
+                <div style={styles.lbl}>Lease End</div>
+                <input type="date" style={styles.inp} value={uploadForm.type === leaseType ? uploadForm.lease_end : ''} onChange={e => setUploadForm(f => ({ ...f, type: leaseType, lease_end: e.target.value }))} />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={styles.lbl}>Terms / Notes</div>
+                <textarea style={styles.textarea} rows={2} value={uploadForm.type === leaseType ? uploadForm.terms : ''} onChange={e => setUploadForm(f => ({ ...f, type: leaseType, terms: e.target.value }))} placeholder="Key lease terms…" />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={styles.lbl}>Lease File (PDF)</div>
+                <input type="file" accept=".pdf,.doc,.docx" style={{ fontFamily: 'IBM Plex Mono', fontSize: 11 }} onChange={e => setUploadForm(f => ({ ...f, type: leaseType, file: e.target.files?.[0] || null }))} />
+              </div>
+            </div>
+            <button
+              style={{ ...styles.btnPrimary, fontSize: 11 }}
+              onClick={() => handleLeaseUpload(leaseType)}
+              disabled={uploading}
+            >
+              {uploading ? 'Uploading…' : `Upload ${leaseType === 'landlord' ? 'Landlord' : 'Client'} Lease`}
+            </button>
+
+            {typeLeases.length > 0 && (
+              <div style={{ marginTop: 14 }}>
+                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+                  Uploaded Leases
+                </div>
+                {typeLeases.map(lease => (
+                  <div key={lease.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f1f4f8', fontSize: 12 }}>
+                    <div>
+                      {lease.lease_start && <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#334155' }}>{lease.lease_start} → {lease.lease_end}</span>}
+                      {lease.terms && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{lease.terms}</div>}
+                    </div>
+                    {lease.file_url && (
+                      <a href={lease.file_url} target="_blank" rel="noreferrer" style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#00BFA6', textDecoration: 'none' }}>
+                        ↗ View
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── TAB: Audit Trail ───────────────────────────────────────
 function AuditTab({ contract: c }: { contract: Contract }) {
   const logs = [...((c as any).audit_logs || [])].reverse()
@@ -765,6 +1244,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
     { key: 'request',  label: 'Request' },
     { key: 'quote',    label: '✦ Quote' },
     { key: 'contract', label: '📋 Contract' },
+    { key: 'units',    label: '🏠 Units' },
     { key: 'audit',    label: 'Audit Trail' },
   ]
   const [tab, setTab] = useState('request')
@@ -867,6 +1347,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {tab === 'request'  && <RequestTab  contract={c} />}
       {tab === 'quote'    && <QuoteTab    contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
+      {tab === 'units'    && <UnitsTab    contract={c} showToast={showToast} />}
       {tab === 'audit'    && <AuditTab    contract={c} />}
     </div>
   )
