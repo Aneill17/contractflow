@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERS — Executive Services Package</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B2540;--teal:#00BFA6;--tf:rgba(0,191,166,0.08);--white:#fff;--off:#f8f9fb;--gl:#e8ecf0;--gm:#94a3b8;--gd:#475569;--text:#334155;--gold:#B8960C;--gf:rgba(184,150,12,0.08);}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:#F0F3F7;color:var(--text);line-height:1.6;}
+  header{background:var(--navy);padding:20px 48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+  .lb{background:white;border-radius:10px;padding:8px 14px;}
+  .lb img{height:46px;display:block;}
+  .hr{text-align:right;}
+  .hr .tag{font-family:'League Spartan',sans-serif;color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+  .hr .sub{color:rgba(255,255,255,0.35);font-size:12px;font-style:italic;margin-top:3px;}
+  .hero{background:var(--navy);padding:52px 48px 60px;text-align:center;border-bottom:1px solid rgba(0,191,166,0.2);}
+  .chip{display:inline-block;background:rgba(0,191,166,0.15);border:1px solid rgba(0,191,166,0.4);color:var(--teal);font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:5px 18px;border-radius:20px;margin-bottom:22px;}
+  .hero h1{font-family:'League Spartan',sans-serif;font-size:clamp(36px,5vw,58px);font-weight:800;color:white;letter-spacing:-1.5px;line-height:1;margin-bottom:14px;}
+  .hero h1 span{color:var(--teal);}
+  .hero p{color:rgba(255,255,255,0.5);font-size:15px;font-style:italic;max-width:560px;margin:0 auto;}
+  main{max-width:1040px;margin:0 auto;padding:52px 32px 100px;}
+  .sec{margin-bottom:60px;}
+  .sh{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:2px solid rgba(0,191,166,0.2);}
+  .sn{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);background:var(--tf);border:1px solid rgba(0,191,166,0.3);padding:4px 12px;border-radius:12px;}
+  .st{font-family:'League Spartan',sans-serif;font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--gl);border-radius:12px;overflow:hidden;margin:24px 0;border:1px solid var(--gl);}
+  .card{background:white;border-radius:14px;padding:26px;border-top:4px solid var(--teal);box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  .card.gold{border-top-color:var(--gold);}
+  .card.dark{background:var(--navy);border-top-color:var(--teal);}
+  .card.green{background:#0D3B2A;border-top-color:#00BFA6;}
+  .clabel{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .ct{color:var(--teal);}
+  .cg{color:var(--gold);}
+  .cw{color:rgba(255,255,255,0.5);}
+  .ctitle{font-family:'League Spartan',sans-serif;font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .ctitle.w{color:white;}
+  .cbody{font-size:13px;color:var(--gd);line-height:1.65;}
+  .cbody.w{color:rgba(255,255,255,0.7);}
+  .cbody strong{color:var(--navy);}
+  .cbody span{color:var(--teal);font-weight:700;}
+  .items{display:flex;flex-direction:column;gap:7px;margin:12px 0;}
+  .item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text);line-height:1.5;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:7px;}
+  .dot.g{background:var(--gold);}
+  .pb{background:var(--off);border-radius:10px;padding:14px 18px;margin-top:14px;}
+  .pl{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gm);margin-bottom:5px;}
+  .pm{font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:var(--navy);}
+  .pm span{font-size:14px;color:var(--gm);font-weight:400;}
+  .pr{font-size:12px;color:var(--gd);margin-top:4px;}
+  .badge{display:inline-block;font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:12px;margin-bottom:12px;}
+  .bt{background:var(--tf);color:var(--teal);border:1px solid rgba(0,191,166,0.3);}
+  .bg2{background:var(--gf);color:var(--gold);border:1px solid rgba(184,150,12,0.3);}
+  .t4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .t4-item .tlbl{font-size:11px;color:var(--gm);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .t4-item .tval{font-family:'League Spartan',sans-serif;font-size:18px;font-weight:800;color:var(--navy);}
+  .g4-item{background:white;padding:20px 14px;text-align:center;}
+  .g4-num{font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:var(--navy);line-height:1;margin-bottom:4px;}
+  .g4-num span{color:var(--teal);}
+  .g4-lbl{font-size:11px;color:var(--gm);text-transform:uppercase;letter-spacing:1px;line-height:1.3;}
+  .g4-sub{font-size:10px;color:var(--gm);margin-top:3px;font-style:italic;}
+  .onum{font-family:'League Spartan',sans-serif;font-size:22px;font-weight:800;color:var(--teal);margin-bottom:6px;}
+  .pq{background:var(--navy);border-radius:14px;padding:28px 36px;margin:28px 0;position:relative;}
+  .pq::before{content:'\201C';font-size:80px;color:var(--teal);opacity:0.15;position:absolute;top:-12px;left:18px;line-height:1;font-family:Georgia,serif;}
+  .pq p{font-size:15px;color:white;line-height:1.7;font-style:italic;position:relative;z-index:1;margin-bottom:10px;}
+  .pq .at{font-family:'League Spartan',sans-serif;font-size:10px;color:var(--teal);font-style:normal;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;position:relative;z-index:1;}
+  .mbar{background:var(--navy);border-radius:12px;padding:20px 26px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;margin:20px 0;}
+  .mnum{font-family:'League Spartan',sans-serif;font-size:30px;font-weight:800;color:white;}
+  .mnum span{color:var(--teal);}
+  .mlbl{font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+  table.ct{width:100%;border-collapse:collapse;margin:20px 0;background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  table.ct th{background:var(--navy);color:white;font-family:'League Spartan',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 14px;text-align:left;}
+  table.ct td{padding:11px 14px;font-size:13px;color:var(--text);border-bottom:1px solid var(--gl);}
+  table.ct tr:last-child td{border-bottom:none;}
+  table.ct .sr td{background:rgba(0,191,166,0.06);font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;}
+  table.ct .mr td{background:rgba(0,191,166,0.04);font-weight:700;color:var(--navy);}
+  .lo{color:#007A3D;font-weight:600;}
+  .hi{color:#C0392B;font-weight:600;}
+  table.mkt{width:100%;border-collapse:collapse;margin:20px 0;background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  table.mkt th{background:var(--navy);color:white;font-family:'League Spartan',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 12px;text-align:left;}
+  table.mkt td{padding:11px 12px;font-size:12px;color:var(--text);border-bottom:1px solid var(--gl);vertical-align:top;}
+  table.mkt tr:last-child td{border-bottom:none;}
+  table.mkt .ers td{background:rgba(0,191,166,0.07);font-weight:700;}
+  .cn{font-weight:700;color:var(--navy);}
+  .gb{display:inline-block;font-family:'League Spartan',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:7px;}
+  .gw{background:#FEF3C7;color:#92400E;}
+  .gs{background:rgba(0,191,166,0.15);color:var(--teal);}
+  .pipe{display:flex;gap:0;margin:20px 0;overflow-x:auto;}
+  .ps{flex:1;min-width:110px;background:white;padding:16px 12px;position:relative;border-right:1px solid var(--gl);}
+  .ps:first-child{border-radius:12px 0 0 12px;}
+  .ps:last-child{border-radius:0 12px 12px 0;border-right:none;}
+  .ps::after{content:'→';position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--teal);font-size:13px;font-weight:700;z-index:2;}
+  .ps:last-child::after{display:none;}
+  .psn{font-family:'League Spartan',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:5px;}
+  .pst{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:800;color:var(--navy);margin-bottom:3px;}
+  .psd{font-size:10.5px;color:var(--gd);line-height:1.4;}
+  .ad{background:white;border-radius:12px;padding:20px;border-left:4px solid var(--teal);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+  .ad.gd{border-left-color:var(--gold);}
+  .ac{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:6px;}
+  .ac.gd{color:var(--gold);}
+  .at2{font-family:'League Spartan',sans-serif;font-size:14px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .ad-body{font-size:13px;color:var(--gd);line-height:1.6;}
+  .ad-cta{font-size:11px;color:var(--teal);font-weight:700;margin-top:7px;}
+  footer{background:var(--navy);padding:26px 48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.06);}
+  .fl{background:white;border-radius:10px;padding:7px 12px;}
+  .fl img{height:38px;display:block;}
+  .fr{text-align:right;}
+  .fr p{font-family:'League Spartan',sans-serif;color:rgba(255,255,255,0.4);font-size:12px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="lb"><img src="ers-logo.png" alt="Elias Range Stays"></div>
+  <div class="hr">
+    <div class="tag">Executive Services Division</div>
+    <div class="sub">Business Model + Market Analysis · April 2026</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="chip">Confidential · Meeting Prep</div>
+  <h1>Executive Services<br><span>Business Model & Market</span></h1>
+  <p>Two services. One market. Sub-lease luxury units + white-glove relocation — high margin, low overhead, long-term B2B scale.</p>
+</div>
+
+<main>
+
+<!-- 01 BUSINESS MODEL -->
+<div class="sec">
+  <div class="sh"><div class="sn">01</div><div class="st">The Business Model</div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="clabel ct">What We're Doing</div>
+      <div class="ctitle">Package, Sub-lease & Concierge</div>
+      <div class="cbody">ERS sources premium Vancouver units, furnishes them with Janet's procurement, and sub-leases to executives with full white-glove management. We charge what the market will bear and keep the spread.<br><br><strong>The core play:</strong> we sit between the building and the executive. The building gets a reliable commercial tenant. The executive gets a frictionless home. We capture 50% of the spread.</div>
+    </div>
+    <div class="card gold">
+      <div class="clabel cg">Why It Works</div>
+      <div class="ctitle">High Margin. Low Risk. Scalable.</div>
+      <div class="cbody"><strong>No capital risk:</strong> We lease, not own. Lock in the unit, mark up, manage the client.<br><br><strong>50% target margin:</strong> Market supports it. Executives carry company relocation budgets of $50k–$100k.<br><br><strong>Recurring revenue:</strong> 3–12 month stays = $18k–$90k+ per placement.<br><br><strong>B2B scale path:</strong> One corporate HR partnership = 5–20 clients/year. 10 accounts = 50–200 placements annually.</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card dark">
+      <div class="clabel cw">Short-Term Play</div>
+      <div class="ctitle w">High Cash Flow</div>
+      <div class="cbody w">Sub-lease 3–5 units in Yaletown / Coal Harbour. Each generates <span>$1,200–$2,400/month net</span>. 5 units = $6k–$12k/month passive on top of relocation revenue. Fast to build, low overhead, proven demand.</div>
+    </div>
+    <div class="card green">
+      <div class="clabel cw">Long-Term Play</div>
+      <div class="ctitle w">High-Volume B2B Rentals</div>
+      <div class="cbody w">Become the <span>preferred executive housing provider</span> for Vancouver's major employers — Amazon, Microsoft, KPMG, health authorities, mining HQs. One corporate account = 5–20 placements/year. Scale through relationships, not ads.</div>
+    </div>
+  </div>
+  <div class="pq">
+    <p>The margin isn't from the unit — it's from the service layer. Anyone can rent a Yaletown condo. Nobody is packaging the furniture, concierge, move-in, setup, and ongoing management into one seamless product an executive buys with a single call.</p>
+    <div class="at">ERS Executive Services · Core Value Proposition</div>
+  </div>
+</div>
+
+<!-- 02 TWO SERVICES -->
+<div class="sec">
+  <div class="sh"><div class="sn">02</div><div class="st">The Two Services</div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="badge bt">Service 01</div>
+      <div class="ctitle">Executive Package Rental</div>
+      <div style="font-size:13px;color:var(--gm);font-style:italic;margin-bottom:14px;">ERS holds the lease. We furnish it. They move in.</div>
+      <div class="items">
+        <div class="item"><div class="dot"></div>ERS sources and sub-leases the unit (Yaletown, Coal Harbour, downtown)</div>
+        <div class="item"><div class="dot"></div>Full furniture package — Janet sourced, premium spec ($6–$10k)</div>
+        <div class="item"><div class="dot"></div>All utilities, internet, and services set up and managed</div>
+        <div class="item"><div class="dot"></div>White-glove move-in + ongoing concierge support</div>
+        <div class="item"><div class="dot"></div>Move-out and furniture recovery managed</div>
+        <div class="item"><div class="dot"></div>3-month minimum (premium rate) or 6–12 months (standard)</div>
+      </div>
+      <div class="pb">
+        <div class="pl">Client Rate — Yaletown / Coal Harbour</div>
+        <div class="pm">$200–$250 <span>/ night</span></div>
+        <div class="pr">~$6,000–$7,500/month · Premium 3-month: $245–$275/night · 50%+ margin target</div>
+      </div>
+    </div>
+    <div class="card gold">
+      <div class="badge bg2">Service 02</div>
+      <div class="ctitle">Executive Relocation</div>
+      <div style="font-size:13px;color:var(--gm);font-style:italic;margin-bottom:14px;">They sign the lease. We do everything else.</div>
+      <div class="items">
+        <div class="item"><div class="dot g"></div>Full unit search, shortlist, and lease setup (they sign)</div>
+        <div class="item"><div class="dot g"></div>Furniture sourcing, procurement, and full installation</div>
+        <div class="item"><div class="dot g"></div>Utility setup, move-in coordination, walk-through</div>
+        <div class="item"><div class="dot g"></div>Neighbourhood orientation + concierge access</div>
+        <div class="item"><div class="dot g"></div>End-of-lease furniture buyback or removal option</div>
+        <div class="item"><div class="dot g"></div>Optional ongoing retainer: $500–$1,500/month</div>
+      </div>
+      <div class="pb">
+        <div class="pl">Client Rate — One-Time Setup Fee</div>
+        <div class="pm">$28,000–$48,000</div>
+        <div class="pr">Essential $28–32k · Executive $35–42k · White Glove $42–48k · 48–60% margin</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="ct">
+    <thead><tr><th>Cost Item</th><th>Cost to ERS</th><th>Revenue</th><th>Margin</th></tr></thead>
+    <tbody>
+      <tr class="sr"><td colspan="4">Service 01 — Rental (per unit/month, Yaletown 1BR)</td></tr>
+      <tr><td>Unit lease + utilities + internet + insurance</td><td class="hi">$3,600–$4,700</td><td rowspan="4" style="vertical-align:middle;text-align:center;font-family:'League Spartan',sans-serif;font-size:20px;font-weight:800;color:var(--navy);">$6,000–$7,500<br><span style="font-size:11px;color:var(--gm);font-weight:400;">$200–$250/night</span></td><td rowspan="4" style="vertical-align:middle;text-align:center;"><span style="font-family:'League Spartan',sans-serif;font-size:18px;font-weight:800;color:var(--teal);">$1,200–$2,400</span><br><span style="font-size:11px;color:var(--gm);">18–36% per unit</span><br><span style="font-size:11px;color:var(--teal);font-weight:700;">50% at 3+ units</span></td></tr>
+      <tr><td>Furniture amortization ($8k ÷ 36 mo)</td><td>$222</td></tr>
+      <tr><td>Cleaning + concierge management</td><td>$500–$800</td></tr>
+      <tr><td>Move-in/out + misc buffer (amortized)</td><td>$230–$400</td></tr>
+      <tr class="sr"><td colspan="4">Service 02 — Relocation (per placement)</td></tr>
+      <tr><td>Furniture + delivery + installation</td><td class="hi">$6,800–$11,500</td><td rowspan="3" style="vertical-align:middle;text-align:center;font-family:'League Spartan',sans-serif;font-size:20px;font-weight:800;color:var(--navy);">$28,000–$48,000<br><span style="font-size:11px;color:var(--gm);font-weight:400;">tiered by scope</span></td><td rowspan="3" style="vertical-align:middle;text-align:center;"><span style="font-family:'League Spartan',sans-serif;font-size:18px;font-weight:800;color:var(--gold);">$14,000–$24,000</span><br><span style="font-size:11px;color:var(--gm);">48–60% margin</span><br><span style="font-size:11px;color:var(--gold);font-weight:700;">Best margin</span></td></tr>
+      <tr><td>Labour: search, setup, coordination, support</td><td>$1,600–$4,400</td></tr>
+      <tr><td>ERS overhead + profit allocation</td><td>$1,800–$4,000</td></tr>
+      <tr class="mr"><td><strong>Total Cost — Relocation</strong></td><td><strong>$10,200–$19,900</strong></td><td><strong>Midpoint ~$38,000</strong></td><td><strong>~50% avg</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="mbar">
+    <div><div class="mnum">50<span>%</span></div><div class="mlbl">Target Average Margin</div></div>
+    <div><div class="mnum">28<span>%</span></div><div class="mlbl">Floor (conservative)</div></div>
+    <div><div class="mnum">60<span>%+</span></div><div class="mlbl">White Glove Ceiling</div></div>
+  </div>
+</div>
+
+<!-- 03 PRICE ANALYSIS -->
+<div class="sec">
+  <div class="sh"><div class="sn">03</div><div class="st">Competitive Price Analysis</div></div>
+  <p style="font-size:13px;color:var(--gm);margin-bottom:20px;font-style:italic;">What competitors are charging — nightly, monthly, and relocation. All Vancouver market, 2025.</p>
+  <table class="mkt">
+    <thead><tr><th>Company</th><th>Nightly</th><th>Monthly</th><th>Relocation Fee</th><th>What's Included</th><th>ERS Advantage</th></tr></thead>
+    <tbody>
+      <tr><td><span class="cn">Corporate Stays</span></td><td>$100–$200</td><td>$3,000–$6,000</td><td>Basic move mgmt — no white glove</td><td>Furnished suite only</td><td><span class="gb gw">Mid-market, no concierge</span></td></tr>
+      <tr><td><span class="cn">Premiere Suites</span></td><td>$120–$200</td><td>$3,600–$6,000</td><td>Volume corporate relocation</td><td>Furnished, some mgmt</td><td><span class="gb gw">National = impersonal</span></td></tr>
+      <tr><td><span class="cn">Nest Host</span></td><td>est. $130–$180</td><td>est. $3,900–$5,400</td><td>None</td><td>Keys only</td><td><span class="gb gw">No service layer</span></td></tr>
+      <tr><td><span class="cn">Unique Accommodations</span></td><td>est. $130–$170</td><td>$3,900–$8,500</td><td>None listed</td><td>Furnished, pro managed</td><td><span class="gb gw">No relocation service</span></td></tr>
+      <tr><td><span class="cn">Vancouver Furnished Living</span></td><td>est. $150–$250</td><td>est. $4,500–$7,500</td><td>None</td><td>Boutique luxury</td><td><span class="gb gw">Property-focused</span></td></tr>
+      <tr><td><span class="cn">Essential Concierge</span></td><td>N/A</td><td>N/A</td><td>$3,000–$8,000 — search only</td><td>Finding the unit only</td><td><span class="gb gw">No furniture, no housing</span></td></tr>
+      <tr><td><span class="cn">BGRS / Crown / Graebel</span></td><td>N/A</td><td>N/A</td><td>$8,000–$25,000 — move mgmt only</td><td>Move only, no setup</td><td><span class="gb gw">No local presence</span></td></tr>
+      <tr><td><span class="cn">Metro Van avg (liv.rent Apr 2025)</span></td><td>~$83/night avg</td><td>$2,491 furnished 1BR</td><td>—</td><td>Market baseline</td><td>ERS is 2.5–3× above avg — premium</td></tr>
+      <tr class="ers"><td><span class="cn">⭐ ERS Executive Services</span></td><td>$200–$275</td><td>$6,000–$8,250</td><td>$28,000–$48,000 all-in</td><td>Unit + furniture + concierge + move-in + ongoing</td><td><span class="gb gs">Only true end-to-end white glove</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 04 MARKET SIZE -->
+<div class="sec">
+  <div class="sh"><div class="sn">04</div><div class="st">Market Size — How Big Is This?</div></div>
+
+  <div class="g4">
+    <div class="g4-item"><div class="g4-num">$12.5<span>B</span></div><div class="g4-lbl">Global furnished housing market</div><div class="g4-sub">2024, 6%+ CAGR</div></div>
+    <div class="g4-item"><div class="g4-num">$25<span>B</span></div><div class="g4-lbl">Global relocation industry</div><div class="g4-sub">Annual, North America-led</div></div>
+    <div class="g4-item"><div class="g4-num">$2,491</div><div class="g4-lbl">Metro Van avg furnished 1BR/mo</div><div class="g4-sub">ERS charges 2.5× this — justified</div></div>
+    <div class="g4-item"><div class="g4-num">5,000<span>+</span></div><div class="g4-lbl">Est. exec-level moves to Van/year</div><div class="g4-sub">Based on employer footprint data</div></div>
+  </div>
+
+  <div class="g3">
+    <div class="card"><div class="onum">1,000+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Amazon — The Post, Vancouver</div><div class="cbody">Moved 1,000+ employees into 1.1M sq ft at The Post in 2023–2024, still expanding. Senior hires = direct ERS clients. One Amazon HR relationship = dozens of placements per year.</div></div>
+    <div class="card"><div class="onum">3,000+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Vancouver Tech Hub</div><div class="cbody">Microsoft, Apple, EA, Hootsuite, Slack, Sony Imageworks — all major Vancouver offices. Senior-level hiring and relocations across this ecosystem = 3,000+ executive-level moves annually.</div></div>
+    <div class="card"><div class="onum">500+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Finance, Legal & Professional</div><div class="cbody">Fasken, McCarthy Tétrault, KPMG, Deloitte, Scotiabank, TD. Senior partners, VPs, and C-suite moves to Vancouver's Bay Street North = hundreds of high-value placements annually.</div></div>
+    <div class="card"><div class="onum">200+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Mining & Resource Sector</div><div class="cbody">Teck, First Quantum, Seabridge, Barrick — Vancouver is Canada's mining capital. Senior executives rotating to HQ from project sites need a premium city base.</div></div>
+    <div class="card"><div class="onum">300+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Healthcare Leadership</div><div class="cbody">VCH, Fraser Health, Interior Health bring in VP-level clinical and administrative leaders regularly. Already warm to ERS through the workforce housing side.</div></div>
+    <div class="card"><div class="onum">400+</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">International Executives</div><div class="cbody">Vancouver is Canada's Asia-Pacific gateway. Inbound executives from tech, finance, and real estate — highest willingness to pay, often with $50k–$100k+ company relocation budgets.</div></div>
+  </div>
+
+  <div class="card" style="margin:20px 0;">
+    <div class="clabel ct" style="margin-bottom:16px;">Best Time to Capture — Seasonal Peaks</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+      <div style="text-align:center;padding:14px;background:var(--off);border-radius:10px;"><div style="font-family:'League Spartan',sans-serif;font-size:15px;font-weight:800;color:var(--navy);">Jan–Mar</div><div style="font-size:12px;color:var(--gd);margin-top:5px;line-height:1.4;">New year hires, Q1 relocations, post-bonus moves.</div></div>
+      <div style="text-align:center;padding:14px;background:rgba(0,191,166,0.08);border-radius:10px;border:2px solid rgba(0,191,166,0.3);"><div style="font-family:'League Spartan',sans-serif;font-size:15px;font-weight:800;color:var(--teal);">Apr–Jun ⭐</div><div style="font-size:12px;color:var(--gd);margin-top:5px;line-height:1.4;">Peak season. Families move before school ends. Highest demand.</div></div>
+      <div style="text-align:center;padding:14px;background:rgba(0,191,166,0.08);border-radius:10px;border:2px solid rgba(0,191,166,0.3);"><div style="font-family:'League Spartan',sans-serif;font-size:15px;font-weight:800;color:var(--teal);">Aug–Sep ⭐</div><div style="font-size:12px;color:var(--gd);margin-top:5px;line-height:1.4;">Back-to-work moves, Q3 starts, school-year relocations complete.</div></div>
+      <div style="text-align:center;padding:14px;background:var(--off);border-radius:10px;"><div style="font-family:'League Spartan',sans-serif;font-size:15px;font-weight:800;color:var(--navy);">Oct–Dec</div><div style="font-size:12px;color:var(--gd);margin-top:5px;line-height:1.4;">Slower. Good for 6–12 month lease conversions. International inbound.</div></div>
+    </div>
+  </div>
+
+  <div style="background:var(--navy);border-radius:14px;padding:24px 28px;margin:20px 0;">
+    <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:14px;">Year 1 Revenue Target — Realistic Market Capture</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;margin-bottom:16px;">
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:24px;font-weight:800;color:white;">5</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Sub-lease units</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:24px;font-weight:800;color:white;">12<span style="color:var(--teal);">+</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Relocations/year</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:24px;font-weight:800;color:white;">$576<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Rental revenue</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:24px;font-weight:800;color:white;">$456<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Relocation revenue</div></div>
+    </div>
+    <div style="padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);text-align:center;">
+      <div style="font-family:'League Spartan',sans-serif;font-size:20px;font-weight:800;color:white;">Year 1 Target: <span style="color:var(--teal);">~$1,032,000 total revenue</span></div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;">5 units × $6,720/mo × 12 + 12 relocations × $38,000 avg</div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 CLIENT PROFILE -->
+<div class="sec">
+  <div class="sh"><div class="sn">05</div><div class="st">Client Profile</div></div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="t4">
+      <div class="t4-item"><div class="tlbl">Income</div><div class="tval">$150k–$1M+</div></div>
+      <div class="t4-item"><div class="tlbl">Decision Driver</div><div class="tval">Time & Quality</div></div>
+      <div class="t4-item"><div class="tlbl">Typical Stay</div><div class="tval">3–12 months</div></div>
+      <div class="t4-item"><div class="tlbl">Often Has</div><div class="tval">Corp reloc budget</div></div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">💻</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Tech Executive</div><div class="cbody">VP/Director for Amazon, Microsoft, Apple, Hootsuite. Company carries $50k–$100k reloc budget. Wants focus on new role from day one.</div></div>
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">🏦</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Finance / Legal</div><div class="cbody">Investment banker, senior partner, PE. High income, zero spare time. Will pay 25% premium for certainty.</div></div>
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">⚕️</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Healthcare Leader</div><div class="cbody">CMO, hospital admin, senior physician. Often institution-funded. Already warm to ERS from workforce housing.</div></div>
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">⛏️</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Mining / Resource</div><div class="cbody">Senior leader rotating between Vancouver HQ and project sites. Needs a premium city base. Values simplicity.</div></div>
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">🏛️</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">Government / Crown</div><div class="cbody">Deputy Ministers, Crown executives. Have relocation packages. Need quality that reflects their position.</div></div>
+    <div class="card"><div style="font-size:20px;margin-bottom:8px;">🌏</div><div style="font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;">International</div><div class="cbody">Asia-Pacific executive landing in Vancouver. Highest willingness to pay. Unfamiliar city — needs a trusted local partner.</div></div>
+  </div>
+</div>
+
+<!-- 06 MARKETING + PIPELINE -->
+<div class="sec">
+  <div class="sh"><div class="sn">06</div><div class="st">Marketing Plan + Pipeline</div></div>
+  <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gm);margin-bottom:12px;">Client Pipeline Flow</div>
+  <div class="pipe">
+    <div class="ps"><div class="psn">01</div><div class="pst">Awareness</div><div class="psd">LinkedIn, Google, referral, or corporate partner</div></div>
+    <div class="ps"><div class="psn">02</div><div class="pst">Landing Page</div><div class="psd">Premium microsite, "Book a Consultation" CTA</div></div>
+    <div class="ps"><div class="psn">03</div><div class="pst">Intake Call</div><div class="psd">15-min qual: budget, timeline, spec</div></div>
+    <div class="ps"><div class="psn">04</div><div class="pst">Proposal</div><div class="psd">Custom package PDF, 24hr turnaround</div></div>
+    <div class="ps"><div class="psn">05</div><div class="pst">Sign + Pay</div><div class="psd">Agreement + deposit via ContractFlow</div></div>
+    <div class="ps"><div class="psn">06</div><div class="pst">Deliver</div><div class="psd">Unit found, furnished, client moves in</div></div>
+    <div class="ps"><div class="psn">07</div><div class="pst">Retain + Refer</div><div class="psd">Concierge retainer, referrals, repeat</div></div>
+  </div>
+  <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gm);margin:24px 0 12px;">Ad Channels + Growth</div>
+  <div class="g2">
+    <div class="ad"><div class="ac">LinkedIn Ads</div><div class="at2">Senior Executives Relocating to Vancouver</div><div class="ad-body">VP/Director/C-Suite targeting + location change signals. Sponsored posts + InMail. "Moving to Vancouver? We handle everything." → intake call form.</div><div class="ad-cta">Budget: $500–$1,500/mo · Best B2B channel</div></div>
+    <div class="ad"><div class="ac">Google Search Ads</div><div class="at2">High-Intent Search Keywords</div><div class="ad-body">"executive relocation Vancouver", "luxury furnished rental Yaletown", "corporate housing Vancouver". Strong intent → dedicated landing page.</div><div class="ad-cta">Budget: $800–$2,000/mo · Best for relocation</div></div>
+    <div class="ad gd"><div class="ac gd">Corporate HR Partnerships ⭐ Start Here</div><div class="at2">Amazon, Microsoft, KPMG, Fasken, Health Authorities</div><div class="ad-body">Become the preferred executive housing provider for Vancouver's major employers. One HR account = 5–20 clients/year. Commission or referral fee model.</div><div class="ad-cta">Cost: $0 · Highest LTV · Priority channel</div></div>
+    <div class="ad gd"><div class="ac gd">Relocation Company Partnerships ⭐</div><div class="at2">BGRS, Crown Relocations, Graebel</div><div class="ad-body">Get on global relocation firms' preferred vendor list = passive deal flow. They need a local Vancouver housing partner. Reach out with service brief + pricing deck.</div><div class="ad-cta">Cost: $0 · High volume · Passive pipeline</div></div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="fl"><img src="ers-logo.png" alt="ERS"></div>
+  <div class="fr">
+    <p style="color:rgba(255,255,255,0.55);margin-bottom:3px;">Elias Range Stays · Executive Services Division</p>
+    <p>Confidential · Meeting Prep · April 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>
