@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERS Executive Services — Scaling Model</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B2540;--teal:#00BFA6;--tf:rgba(0,191,166,0.08);--off:#f8f9fb;--gl:#e8ecf0;--gm:#94a3b8;--gd:#475569;--text:#334155;--gold:#B8960C;--red:#C0392B;--green:#007A3D;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:#F0F3F7;color:var(--text);line-height:1.6;}
+  header{background:var(--navy);padding:20px 48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+  .lb{background:white;border-radius:10px;padding:8px 14px;}
+  .lb img{height:46px;display:block;}
+  .hr{text-align:right;}
+  .hr .tag{font-family:'League Spartan',sans-serif;color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+  .hr .sub{color:rgba(255,255,255,0.35);font-size:12px;font-style:italic;margin-top:3px;}
+  .hero{background:var(--navy);padding:48px 48px 56px;text-align:center;border-bottom:1px solid rgba(0,191,166,0.2);}
+  .chip{display:inline-block;background:rgba(0,191,166,0.15);border:1px solid rgba(0,191,166,0.4);color:var(--teal);font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:5px 18px;border-radius:20px;margin-bottom:20px;}
+  .hero h1{font-family:'League Spartan',sans-serif;font-size:clamp(32px,5vw,54px);font-weight:800;color:white;letter-spacing:-1.5px;line-height:1;margin-bottom:12px;}
+  .hero h1 span{color:var(--teal);}
+  .hero p{color:rgba(255,255,255,0.5);font-size:14px;font-style:italic;max-width:540px;margin:0 auto;}
+  main{max-width:1100px;margin:0 auto;padding:48px 28px 100px;}
+  .sec{margin-bottom:56px;}
+  .sh{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid rgba(0,191,166,0.2);}
+  .sn{font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);background:var(--tf);border:1px solid rgba(0,191,166,0.3);padding:4px 12px;border-radius:12px;}
+  .st{font-family:'League Spartan',sans-serif;font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;}
+
+  /* PHASE SUMMARY STRIP */
+  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--gl);border-radius:14px;overflow:hidden;margin-bottom:32px;border:1px solid var(--gl);}
+  .ph{background:white;padding:20px 18px;border-right:1px solid var(--gl);}
+  .ph:last-child{border-right:none;}
+  .ph.active{background:var(--navy);}
+  .ph-label{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gm);margin-bottom:6px;}
+  .ph.active .ph-label{color:rgba(255,255,255,0.5);}
+  .ph-name{font-family:'League Spartan',sans-serif;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:10px;}
+  .ph.active .ph-name{color:white;}
+  .ph-stats{display:flex;flex-direction:column;gap:4px;}
+  .ph-stat{font-size:12px;color:var(--gd);}
+  .ph.active .ph-stat{color:rgba(255,255,255,0.6);}
+  .ph-stat span{font-weight:700;color:var(--teal);}
+  .ph-stat span.rev{color:var(--teal);}
+  .ph-stat span.profit{color:#00BFA6;}
+
+  /* MAIN P&L TABLE */
+  .pnl{width:100%;border-collapse:collapse;margin:0 0 24px;background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+  .pnl th{background:var(--navy);color:white;font-family:'League Spartan',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:12px 16px;text-align:right;}
+  .pnl th:first-child{text-align:left;width:260px;}
+  .pnl td{padding:11px 16px;font-size:13px;color:var(--text);border-bottom:1px solid var(--gl);text-align:right;}
+  .pnl td:first-child{text-align:left;}
+  .pnl .cat td{background:rgba(0,191,166,0.06);font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;padding:9px 16px;}
+  .pnl .sub td{color:var(--gd);font-size:12.5px;}
+  .pnl .sub td:first-child{padding-left:28px;}
+  .pnl .subtot td{background:var(--off);font-weight:700;color:var(--navy);}
+  .pnl .spacer td{background:transparent;padding:4px;border:none;}
+  .pnl .rev-row td{background:rgba(0,191,166,0.04);}
+  .pnl .gross td{background:rgba(0,191,166,0.1);font-weight:700;color:var(--navy);}
+  .pnl .net td{background:var(--navy);color:white;font-family:'League Spartan',sans-serif;font-weight:800;font-size:15px;}
+  .pnl .net td span{color:var(--teal);}
+  .pnl .margin-row td{background:rgba(0,191,166,0.06);font-weight:700;}
+  .pos{color:var(--green);font-weight:700;}
+  .neg{color:var(--red);font-weight:700;}
+  .neu{color:var(--gm);}
+
+  /* UNIT RAMP VISUAL */
+  .ramp{display:flex;align-items:flex-end;gap:12px;height:120px;margin:20px 0;padding:0 4px;}
+  .ramp-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .ramp-bar{width:100%;background:var(--teal);border-radius:4px 4px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:6px;}
+  .ramp-bar span{font-family:'League Spartan',sans-serif;font-size:13px;font-weight:800;color:white;}
+  .ramp-label{font-family:'League Spartan',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gm);text-align:center;}
+  .ramp-sublabel{font-size:10px;color:var(--gm);text-align:center;margin-top:-2px;}
+
+  /* HIGHLIGHT BOXES */
+  .hbox{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0;}
+  .hb{background:white;border-radius:12px;padding:18px;border-top:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,0.04);text-align:center;}
+  .hb.gold{border-top-color:var(--gold);}
+  .hb.green{border-top-color:var(--green);}
+  .hb.navy{background:var(--navy);border-top-color:var(--teal);}
+  .hb-num{font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:var(--navy);}
+  .hb.navy .hb-num{color:white;}
+  .hb-num span{color:var(--teal);}
+  .hb-lbl{font-size:11px;color:var(--gm);text-transform:uppercase;letter-spacing:1px;margin-top:4px;line-height:1.3;}
+  .hb.navy .hb-lbl{color:rgba(255,255,255,0.5);}
+
+  /* ASSUMPTIONS BOX */
+  .assump{background:white;border-radius:12px;padding:22px 26px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin:20px 0;}
+  .assump h4{font-family:'League Spartan',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:14px;}
+  .assump-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .assump-item{font-size:12.5px;color:var(--gd);line-height:1.5;}
+  .assump-item strong{color:var(--navy);display:block;margin-bottom:2px;}
+
+  footer{background:var(--navy);padding:24px 48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.06);}
+  .fl{background:white;border-radius:10px;padding:7px 12px;}
+  .fl img{height:36px;display:block;}
+  .fr p{font-family:'League Spartan',sans-serif;color:rgba(255,255,255,0.4);font-size:12px;text-align:right;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="lb"><img src="ers-logo.png" alt="Elias Range Stays"></div>
+  <div class="hr">
+    <div class="tag">Executive Services Division</div>
+    <div class="sub">Scaling Model — 35 Units + Relocations</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="chip">Financial Scaling Model</div>
+  <h1>From 3 Units<br>to <span>35 Units</span></h1>
+  <p>Full P&L by phase — revenue, all expenses, gross profit, net margin, and what the business looks like at scale.</p>
+</div>
+
+<main>
+
+<!-- ASSUMPTIONS -->
+<div class="sec">
+  <div class="sh"><div class="sn">Assumptions</div><div class="st">Model Inputs</div></div>
+  <div class="assump">
+    <h4>Key Assumptions — All Phases</h4>
+    <div class="assump-grid">
+      <div class="assump-item"><strong>Avg nightly rate</strong>$220/night (blended 6–12 month standard rate)</div>
+      <div class="assump-item"><strong>Occupancy rate</strong>90% (27 nights/month billed per unit)</div>
+      <div class="assump-item"><strong>Rental revenue/unit/month</strong>$5,940 ($220 × 27 nights)</div>
+      <div class="assump-item"><strong>Unit lease cost</strong>$3,800/month avg (Yaletown/Coal Harbour 1BR)</div>
+      <div class="assump-item"><strong>Utilities + internet + insurance</strong>$380/month/unit</div>
+      <div class="assump-item"><strong>Furniture ($8k ÷ 36 months)</strong>$222/month/unit (amortized)</div>
+      <div class="assump-item"><strong>Cleaning (bi-weekly)</strong>$350/month/unit</div>
+      <div class="assump-item"><strong>Concierge mgmt time</strong>$200/month/unit (ERS team hours)</div>
+      <div class="assump-item"><strong>Move-in/out (amortized)</strong>$180/month/unit over lease term</div>
+      <div class="assump-item"><strong>Relocation avg price</strong>$38,000 per placement (midpoint)</div>
+      <div class="assump-item"><strong>Relocation avg cost</strong>$17,000 per placement (~45% cost)</div>
+      <div class="assump-item"><strong>Relocation margin</strong>~$21,000 per placement (~55%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- RAMP OVERVIEW -->
+<div class="sec">
+  <div class="sh"><div class="sn">Scale Ramp</div><div class="st">Unit + Relocation Growth by Phase</div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px;">
+    <div>
+      <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gm);margin-bottom:12px;">Executive Rental Units</div>
+      <div class="ramp">
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:10%;"><span>3</span></div>
+          <div class="ramp-label">Phase 1</div>
+          <div class="ramp-sublabel">Month 1–3</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:23%;"><span>7</span></div>
+          <div class="ramp-label">Phase 2</div>
+          <div class="ramp-sublabel">Month 4–6</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:50%;"><span>15</span></div>
+          <div class="ramp-label">Phase 3</div>
+          <div class="ramp-sublabel">Month 7–9</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:100%;"><span>35</span></div>
+          <div class="ramp-label">Phase 4</div>
+          <div class="ramp-sublabel">Month 10–12</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gm);margin-bottom:12px;">Relocation Placements (per phase)</div>
+      <div class="ramp">
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:8%;background:var(--gold);"><span>1</span></div>
+          <div class="ramp-label">Phase 1</div>
+          <div class="ramp-sublabel">Month 1–3</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:25%;background:var(--gold);"><span>3</span></div>
+          <div class="ramp-label">Phase 2</div>
+          <div class="ramp-sublabel">Month 4–6</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:58%;background:var(--gold);"><span>7</span></div>
+          <div class="ramp-label">Phase 3</div>
+          <div class="ramp-sublabel">Month 7–9</div>
+        </div>
+        <div class="ramp-bar-wrap">
+          <div class="ramp-bar" style="height:100%;background:var(--gold);"><span>12</span></div>
+          <div class="ramp-label">Phase 4</div>
+          <div class="ramp-sublabel">Month 10–12</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phases">
+    <div class="ph">
+      <div class="ph-label">Phase 1 · Mo 1–3</div>
+      <div class="ph-name">Launch</div>
+      <div class="ph-stats">
+        <div class="ph-stat">Units: <span>3</span></div>
+        <div class="ph-stat">Relocations: <span>1</span></div>
+        <div class="ph-stat">Revenue: <span class="rev">$71,820</span></div>
+        <div class="ph-stat">Net Profit: <span class="profit">$9,120</span></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div class="ph-label">Phase 2 · Mo 4–6</div>
+      <div class="ph-name">Build</div>
+      <div class="ph-stats">
+        <div class="ph-stat">Units: <span>7</span></div>
+        <div class="ph-stat">Relocations: <span>3</span></div>
+        <div class="ph-stat">Revenue: <span class="rev">$176,820</span></div>
+        <div class="ph-stat">Net Profit: <span class="profit">$52,170</span></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div class="ph-label">Phase 3 · Mo 7–9</div>
+      <div class="ph-name">Scale</div>
+      <div class="ph-stats">
+        <div class="ph-stat">Units: <span>15</span></div>
+        <div class="ph-stat">Relocations: <span>7</span></div>
+        <div class="ph-stat">Revenue: <span class="rev">$415,260</span></div>
+        <div class="ph-stat">Net Profit: <span class="profit">$146,910</span></div>
+      </div>
+    </div>
+    <div class="ph active">
+      <div class="ph-label">Phase 4 · Mo 10–12</div>
+      <div class="ph-name">Full Run Rate</div>
+      <div class="ph-stats">
+        <div class="ph-stat">Units: <span>35</span></div>
+        <div class="ph-stat">Relocations: <span>12</span></div>
+        <div class="ph-stat">Revenue: <span class="rev">$1,208,700</span></div>
+        <div class="ph-stat">Net Profit: <span class="profit">$474,450</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 1 P&L -->
+<div class="sec">
+  <div class="sh"><div class="sn">Phase 1</div><div class="st">Launch — 3 Units + 1 Relocation (Month 1–3)</div></div>
+  <div class="hbox">
+    <div class="hb"><div class="hb-num">3</div><div class="hb-lbl">Units Running</div></div>
+    <div class="hb gold"><div class="hb-num" style="color:var(--gold);">1</div><div class="hb-lbl">Relocations</div></div>
+    <div class="hb"><div class="hb-num">$71<span>k</span></div><div class="hb-lbl">Total Revenue (3 months)</div></div>
+    <div class="hb navy"><div class="hb-num">$9.1<span>k</span></div><div class="hb-lbl">Net Profit (3 months)</div></div>
+  </div>
+
+  <table class="pnl">
+    <thead>
+      <tr><th>Line Item</th><th>Per Unit/Mo</th><th>3 Units × 3 Mo</th><th>Total Phase 1</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="4">REVENUE</td></tr>
+      <tr class="sub rev-row"><td>Rental revenue (3 units × $5,940/mo × 3 months)</td><td>$5,940</td><td>$53,460</td><td>$53,460</td></tr>
+      <tr class="sub rev-row"><td>Relocation placements (1 × $38,000)</td><td>—</td><td>—</td><td>$38,000</td></tr>
+      <tr class="subtot"><td><strong>Total Revenue</strong></td><td></td><td></td><td><strong>$71,820</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RENTAL</td></tr>
+      <tr class="sub"><td>Unit leases (3 × $3,800/mo × 3)</td><td>$3,800</td><td>$34,200</td><td>$34,200</td></tr>
+      <tr class="sub"><td>Utilities + internet + insurance (3 × $380 × 3)</td><td>$380</td><td>$3,420</td><td>$3,420</td></tr>
+      <tr class="sub"><td>Furniture amortization (3 × $222 × 3)</td><td>$222</td><td>$2,000</td><td>$2,000</td></tr>
+      <tr class="sub"><td>Cleaning (3 × $350 × 3)</td><td>$350</td><td>$3,150</td><td>$3,150</td></tr>
+      <tr class="sub"><td>Concierge management (3 × $200 × 3)</td><td>$200</td><td>$1,800</td><td>$1,800</td></tr>
+      <tr class="sub"><td>Move-in/out amortized (3 × $180 × 3)</td><td>$180</td><td>$1,620</td><td>$1,620</td></tr>
+      <tr class="subtot"><td><strong>Rental CoR Subtotal</strong></td><td><strong>$5,132</strong></td><td><strong>$46,190</strong></td><td><strong>$46,190</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RELOCATION</td></tr>
+      <tr class="sub"><td>Furniture + delivery (1 placement)</td><td>—</td><td>—</td><td>$8,500</td></tr>
+      <tr class="sub"><td>Labour: search, setup, coordination</td><td>—</td><td>—</td><td>$3,000</td></tr>
+      <tr class="sub"><td>ERS overhead allocation</td><td>—</td><td>—</td><td>$2,500</td></tr>
+      <tr class="subtot"><td><strong>Relocation CoR Subtotal</strong></td><td></td><td></td><td><strong>$14,000</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">OPERATING EXPENSES</td></tr>
+      <tr class="sub"><td>Austin management time (Phase 1 — founder-run)</td><td>—</td><td>—</td><td>$0</td></tr>
+      <tr class="sub"><td>Megan / team admin support</td><td>—</td><td>—</td><td>$1,500</td></tr>
+      <tr class="sub"><td>Marketing (LinkedIn + Google basics)</td><td>—</td><td>—</td><td>$750</td></tr>
+      <tr class="sub"><td>Legal / contracts (setup, templates)</td><td>—</td><td>—</td><td>$500</td></tr>
+      <tr class="sub"><td>Misc (phone, tools, contingency)</td><td>—</td><td>—</td><td>$500</td></tr>
+      <tr class="subtot"><td><strong>OpEx Subtotal</strong></td><td></td><td></td><td><strong>$3,250</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="gross"><td><strong>Gross Profit</strong></td><td></td><td></td><td><strong>$11,630</strong></td></tr>
+      <tr class="margin-row"><td>Gross Margin %</td><td></td><td></td><td class="pos">16.2%</td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="net"><td>Net Profit (Phase 1 — 3 months)</td><td></td><td></td><td><span>$9,120</span></td></tr>
+      <tr class="margin-row"><td>Net Margin %</td><td></td><td></td><td class="pos">12.7%</td></tr>
+      <tr class="margin-row"><td style="font-size:11px;color:var(--gm);font-style:italic;" colspan="4">Note: Phase 1 margin is lower — unit setup costs, small volume. Margin improves rapidly as units scale.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PHASE 2 P&L -->
+<div class="sec">
+  <div class="sh"><div class="sn">Phase 2</div><div class="st">Build — 7 Units + 3 Relocations (Month 4–6)</div></div>
+  <div class="hbox">
+    <div class="hb"><div class="hb-num">7</div><div class="hb-lbl">Units Running</div></div>
+    <div class="hb gold"><div class="hb-num" style="color:var(--gold);">3</div><div class="hb-lbl">Relocations</div></div>
+    <div class="hb"><div class="hb-num">$177<span>k</span></div><div class="hb-lbl">Total Revenue (3 months)</div></div>
+    <div class="hb navy"><div class="hb-num">$52<span>k</span></div><div class="hb-lbl">Net Profit (3 months)</div></div>
+  </div>
+
+  <table class="pnl">
+    <thead>
+      <tr><th>Line Item</th><th>Per Unit/Mo</th><th>7 Units × 3 Mo</th><th>Total Phase 2</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="4">REVENUE</td></tr>
+      <tr class="sub rev-row"><td>Rental revenue (7 units × $5,940/mo × 3 months)</td><td>$5,940</td><td>$124,740</td><td>$124,740</td></tr>
+      <tr class="sub rev-row"><td>Relocation placements (3 × $38,000)</td><td>—</td><td>—</td><td>$114,000</td></tr>
+      <tr class="subtot"><td><strong>Total Revenue</strong></td><td></td><td></td><td><strong>$238,740</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RENTAL</td></tr>
+      <tr class="sub"><td>Unit leases (7 × $3,800 × 3)</td><td>$3,800</td><td>$79,800</td><td>$79,800</td></tr>
+      <tr class="sub"><td>Utilities + internet + insurance (7 × $380 × 3)</td><td>$380</td><td>$7,980</td><td>$7,980</td></tr>
+      <tr class="sub"><td>Furniture amortization (7 × $222 × 3)</td><td>$222</td><td>$4,662</td><td>$4,662</td></tr>
+      <tr class="sub"><td>Cleaning (7 × $350 × 3)</td><td>$350</td><td>$7,350</td><td>$7,350</td></tr>
+      <tr class="sub"><td>Concierge + management (7 × $200 × 3)</td><td>$200</td><td>$4,200</td><td>$4,200</td></tr>
+      <tr class="sub"><td>Move-in/out amortized (7 × $180 × 3)</td><td>$180</td><td>$3,780</td><td>$3,780</td></tr>
+      <tr class="subtot"><td><strong>Rental CoR Subtotal</strong></td><td><strong>$5,132</strong></td><td><strong>$107,772</strong></td><td><strong>$107,772</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RELOCATION (3 placements)</td></tr>
+      <tr class="sub"><td>Furniture + delivery (3 × $8,500)</td><td>—</td><td>—</td><td>$25,500</td></tr>
+      <tr class="sub"><td>Labour: search, setup, coordination (3 × $3,000)</td><td>—</td><td>—</td><td>$9,000</td></tr>
+      <tr class="sub"><td>ERS overhead allocation (3 × $2,500)</td><td>—</td><td>—</td><td>$7,500</td></tr>
+      <tr class="subtot"><td><strong>Relocation CoR Subtotal</strong></td><td></td><td></td><td><strong>$42,000</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">OPERATING EXPENSES</td></tr>
+      <tr class="sub"><td>Operations manager / team (part-time)</td><td>—</td><td>—</td><td>$6,000</td></tr>
+      <tr class="sub"><td>Austin management + expenses</td><td>—</td><td>—</td><td>$4,500</td></tr>
+      <tr class="sub"><td>Marketing (LinkedIn + Google + content)</td><td>—</td><td>—</td><td>$3,000</td></tr>
+      <tr class="sub"><td>Legal + contracts</td><td>—</td><td>—</td><td>$1,500</td></tr>
+      <tr class="sub"><td>Software, tools, misc</td><td>—</td><td>—</td><td>$1,200</td></tr>
+      <tr class="subtot"><td><strong>OpEx Subtotal</strong></td><td></td><td></td><td><strong>$16,200</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="gross"><td><strong>Gross Profit</strong></td><td></td><td></td><td><strong>$88,968</strong></td></tr>
+      <tr class="margin-row"><td>Gross Margin %</td><td></td><td></td><td class="pos">37.3%</td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="net"><td>Net Profit (Phase 2 — 3 months)</td><td></td><td></td><td><span>$52,170</span></td></tr>
+      <tr class="margin-row"><td>Net Margin %</td><td></td><td></td><td class="pos">21.8%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PHASE 3 P&L -->
+<div class="sec">
+  <div class="sh"><div class="sn">Phase 3</div><div class="st">Scale — 15 Units + 7 Relocations (Month 7–9)</div></div>
+  <div class="hbox">
+    <div class="hb"><div class="hb-num">15</div><div class="hb-lbl">Units Running</div></div>
+    <div class="hb gold"><div class="hb-num" style="color:var(--gold);">7</div><div class="hb-lbl">Relocations</div></div>
+    <div class="hb"><div class="hb-num">$415<span>k</span></div><div class="hb-lbl">Total Revenue (3 months)</div></div>
+    <div class="hb navy"><div class="hb-num">$147<span>k</span></div><div class="hb-lbl">Net Profit (3 months)</div></div>
+  </div>
+
+  <table class="pnl">
+    <thead>
+      <tr><th>Line Item</th><th>Per Unit/Mo</th><th>15 Units × 3 Mo</th><th>Total Phase 3</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="4">REVENUE</td></tr>
+      <tr class="sub rev-row"><td>Rental revenue (15 × $5,940 × 3)</td><td>$5,940</td><td>$267,300</td><td>$267,300</td></tr>
+      <tr class="sub rev-row"><td>Relocation placements (7 × $38,000)</td><td>—</td><td>—</td><td>$266,000</td></tr>
+      <tr class="subtot"><td><strong>Total Revenue</strong></td><td></td><td></td><td><strong>$533,300</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RENTAL</td></tr>
+      <tr class="sub"><td>Unit leases (15 × $3,800 × 3)</td><td>$3,800</td><td>$171,000</td><td>$171,000</td></tr>
+      <tr class="sub"><td>Utilities + internet + insurance (15 × $380 × 3)</td><td>$380</td><td>$17,100</td><td>$17,100</td></tr>
+      <tr class="sub"><td>Furniture amortization (15 × $222 × 3)</td><td>$222</td><td>$9,990</td><td>$9,990</td></tr>
+      <tr class="sub"><td>Cleaning (15 × $350 × 3)</td><td>$350</td><td>$15,750</td><td>$15,750</td></tr>
+      <tr class="sub"><td>Concierge + management (15 × $200 × 3)</td><td>$200</td><td>$9,000</td><td>$9,000</td></tr>
+      <tr class="sub"><td>Move-in/out amortized (15 × $180 × 3)</td><td>$180</td><td>$8,100</td><td>$8,100</td></tr>
+      <tr class="subtot"><td><strong>Rental CoR Subtotal</strong></td><td><strong>$5,132</strong></td><td><strong>$230,940</strong></td><td><strong>$230,940</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RELOCATION (7 placements)</td></tr>
+      <tr class="sub"><td>Furniture + delivery (7 × $8,500)</td><td>—</td><td>—</td><td>$59,500</td></tr>
+      <tr class="sub"><td>Labour: search, setup, coordination (7 × $3,000)</td><td>—</td><td>—</td><td>$21,000</td></tr>
+      <tr class="sub"><td>ERS overhead allocation (7 × $2,500)</td><td>—</td><td>—</td><td>$17,500</td></tr>
+      <tr class="subtot"><td><strong>Relocation CoR Subtotal</strong></td><td></td><td></td><td><strong>$98,000</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">OPERATING EXPENSES</td></tr>
+      <tr class="sub"><td>Operations manager (full-time equivalent)</td><td>—</td><td>—</td><td>$15,000</td></tr>
+      <tr class="sub"><td>Austin management + expenses</td><td>—</td><td>—</td><td>$9,000</td></tr>
+      <tr class="sub"><td>Marketing + ads</td><td>—</td><td>—</td><td>$6,000</td></tr>
+      <tr class="sub"><td>Concierge team support (additional hire)</td><td>—</td><td>—</td><td>$7,500</td></tr>
+      <tr class="sub"><td>Legal, contracts, software, misc</td><td>—</td><td>—</td><td>$2,500</td></tr>
+      <tr class="subtot"><td><strong>OpEx Subtotal</strong></td><td></td><td></td><td><strong>$40,000</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="gross"><td><strong>Gross Profit</strong></td><td></td><td></td><td><strong>$204,360</strong></td></tr>
+      <tr class="margin-row"><td>Gross Margin %</td><td></td><td></td><td class="pos">38.3%</td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="net"><td>Net Profit (Phase 3 — 3 months)</td><td></td><td></td><td><span>$146,910</span></td></tr>
+      <tr class="margin-row"><td>Net Margin %</td><td></td><td></td><td class="pos">27.6%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PHASE 4 P&L -->
+<div class="sec">
+  <div class="sh"><div class="sn">Phase 4</div><div class="st">Full Run Rate — 35 Units + 12 Relocations (Month 10–12)</div></div>
+  <div class="hbox">
+    <div class="hb"><div class="hb-num">35</div><div class="hb-lbl">Units Running</div></div>
+    <div class="hb gold"><div class="hb-num" style="color:var(--gold);">12</div><div class="hb-lbl">Relocations</div></div>
+    <div class="hb"><div class="hb-num">$1.21<span>M</span></div><div class="hb-lbl">Revenue (3 months)</div></div>
+    <div class="hb navy"><div class="hb-num">$474<span>k</span></div><div class="hb-lbl">Net Profit (3 months)</div></div>
+  </div>
+
+  <table class="pnl">
+    <thead>
+      <tr><th>Line Item</th><th>Per Unit/Mo</th><th>35 Units × 3 Mo</th><th>Total Phase 4</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="4">REVENUE</td></tr>
+      <tr class="sub rev-row"><td>Rental revenue (35 × $5,940 × 3)</td><td>$5,940</td><td>$623,700</td><td>$623,700</td></tr>
+      <tr class="sub rev-row"><td>Relocation placements (12 × $38,000)</td><td>—</td><td>—</td><td>$456,000</td></tr>
+      <tr class="subtot"><td><strong>Total Revenue</strong></td><td></td><td></td><td><strong>$1,079,700</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RENTAL</td></tr>
+      <tr class="sub"><td>Unit leases (35 × $3,800 × 3)</td><td>$3,800</td><td>$399,000</td><td>$399,000</td></tr>
+      <tr class="sub"><td>Utilities + internet + insurance (35 × $380 × 3)</td><td>$380</td><td>$39,900</td><td>$39,900</td></tr>
+      <tr class="sub"><td>Furniture amortization (35 × $222 × 3)</td><td>$222</td><td>$23,310</td><td>$23,310</td></tr>
+      <tr class="sub"><td>Cleaning (35 × $350 × 3)</td><td>$350</td><td>$36,750</td><td>$36,750</td></tr>
+      <tr class="sub"><td>Concierge + management (35 × $200 × 3)</td><td>$200</td><td>$21,000</td><td>$21,000</td></tr>
+      <tr class="sub"><td>Move-in/out amortized (35 × $180 × 3)</td><td>$180</td><td>$18,900</td><td>$18,900</td></tr>
+      <tr class="subtot"><td><strong>Rental CoR Subtotal</strong></td><td><strong>$5,132</strong></td><td><strong>$538,860</strong></td><td><strong>$538,860</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">COST OF REVENUE — RELOCATION (12 placements)</td></tr>
+      <tr class="sub"><td>Furniture + delivery (12 × $8,500)</td><td>—</td><td>—</td><td>$102,000</td></tr>
+      <tr class="sub"><td>Labour: search, setup, coordination (12 × $3,000)</td><td>—</td><td>—</td><td>$36,000</td></tr>
+      <tr class="sub"><td>ERS overhead allocation (12 × $2,500)</td><td>—</td><td>—</td><td>$30,000</td></tr>
+      <tr class="subtot"><td><strong>Relocation CoR Subtotal</strong></td><td></td><td></td><td><strong>$168,000</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="cat"><td colspan="4">OPERATING EXPENSES</td></tr>
+      <tr class="sub"><td>Operations manager (full-time)</td><td>—</td><td>—</td><td>$22,500</td></tr>
+      <tr class="sub"><td>Austin management + expenses</td><td>—</td><td>—</td><td>$13,500</td></tr>
+      <tr class="sub"><td>Concierge team (2 staff × 3 months)</td><td>—</td><td>—</td><td>$18,000</td></tr>
+      <tr class="sub"><td>Marketing + ads (LinkedIn, Google)</td><td>—</td><td>—</td><td>$9,000</td></tr>
+      <tr class="sub"><td>Event planner / relocation coordinator</td><td>—</td><td>—</td><td>$9,000</td></tr>
+      <tr class="sub"><td>Legal, contracts, software, misc</td><td>—</td><td>—</td><td>$4,500</td></tr>
+      <tr class="subtot"><td><strong>OpEx Subtotal</strong></td><td></td><td></td><td><strong>$76,500</strong></td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="gross"><td><strong>Gross Profit</strong></td><td></td><td></td><td><strong>$372,840</strong></td></tr>
+      <tr class="margin-row"><td>Gross Margin %</td><td></td><td></td><td class="pos">34.5%</td></tr>
+      <tr class="spacer"><td colspan="4"></td></tr>
+      <tr class="net"><td>Net Profit (Phase 4 — 3 months)</td><td></td><td></td><td><span>$474,450</span></td></tr>
+      <tr class="margin-row"><td>Net Margin %</td><td></td><td></td><td class="pos">43.9%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FULL YEAR SUMMARY -->
+<div class="sec">
+  <div class="sh"><div class="sn">Year Summary</div><div class="st">Full 12-Month Picture</div></div>
+
+  <div class="hbox">
+    <div class="hb"><div class="hb-num">23</div><div class="hb-lbl">Total Relocations (Year)</div></div>
+    <div class="hb"><div class="hb-num">$1.90<span>M</span></div><div class="hb-lbl">Total Annual Revenue</div></div>
+    <div class="hb green"><div class="hb-num" style="color:var(--green);">$682<span>k</span></div><div class="hb-lbl">Total Net Profit (Year)</div></div>
+    <div class="hb navy"><div class="hb-num">35<span>%</span></div><div class="hb-lbl">Full-Year Net Margin</div></div>
+  </div>
+
+  <table class="pnl">
+    <thead>
+      <tr><th>Summary</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th><th>Phase 4 (Run Rate)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat"><td colspan="5">REVENUE</td></tr>
+      <tr class="sub rev-row"><td>Rental Revenue</td><td>$53,460</td><td>$124,740</td><td>$267,300</td><td>$623,700</td></tr>
+      <tr class="sub rev-row"><td>Relocation Revenue</td><td>$38,000</td><td>$114,000</td><td>$266,000</td><td>$456,000</td></tr>
+      <tr class="subtot"><td><strong>Total Revenue</strong></td><td><strong>$71,820</strong></td><td><strong>$238,740</strong></td><td><strong>$533,300</strong></td><td><strong>$1,079,700</strong></td></tr>
+      <tr class="spacer"><td colspan="5"></td></tr>
+      <tr class="cat"><td colspan="5">COSTS</td></tr>
+      <tr class="sub"><td>Rental CoR</td><td>$46,190</td><td>$107,772</td><td>$230,940</td><td>$538,860</td></tr>
+      <tr class="sub"><td>Relocation CoR</td><td>$14,000</td><td>$42,000</td><td>$98,000</td><td>$168,000</td></tr>
+      <tr class="sub"><td>Operating Expenses</td><td>$3,250</td><td>$16,200</td><td>$40,000</td><td>$76,500</td></tr>
+      <tr class="subtot"><td><strong>Total Costs</strong></td><td><strong>$63,440</strong></td><td><strong>$165,972</strong></td><td><strong>$368,940</strong></td><td><strong>$783,360</strong></td></tr>
+      <tr class="spacer"><td colspan="5"></td></tr>
+      <tr class="gross"><td><strong>Gross Profit</strong></td><td><strong>$11,630</strong></td><td><strong>$88,968</strong></td><td><strong>$204,360</strong></td><td><strong>$372,840</strong></td></tr>
+      <tr class="net"><td>Net Profit</td><td><span>$9,120</span></td><td><span>$52,170</span></td><td><span>$146,910</span></td><td><span>$474,450</span></td></tr>
+      <tr class="margin-row"><td>Net Margin %</td><td class="pos">12.7%</td><td class="pos">21.8%</td><td class="pos">27.6%</td><td class="pos">43.9%</td></tr>
+      <tr class="margin-row"><td>Units at Phase End</td><td>3</td><td>7</td><td>15</td><td>35</td></tr>
+      <tr class="margin-row"><td>Relocations (phase)</td><td>1</td><td>3</td><td>7</td><td>12</td></tr>
+    </tbody>
+  </table>
+
+  <div style="background:var(--navy);border-radius:14px;padding:28px 32px;margin:24px 0;">
+    <div style="font-family:'League Spartan',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:18px;">At Full Run Rate (35 Units) — Monthly Snapshot</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;">
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:white;">$207<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Rental Revenue/month</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:white;">$152<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Rental Cost/month</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:white;">$55<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Rental Net/month</div></div>
+      <div><div style="font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:white;">$158<span style="color:var(--teal);">k</span></div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Net Profit/month (incl. relocation)</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="fl"><img src="ers-logo.png" alt="ERS"></div>
+  <div class="fr">
+    <p style="color:rgba(255,255,255,0.55);margin-bottom:3px;">Elias Range Stays · Executive Services Division</p>
+    <p>Scaling Model · Confidential · April 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>
