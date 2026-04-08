@@ -226,7 +226,28 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [lineItems, setLineItems] = useState<{ description: string; amount: number }[]>(c.quote_line_items || [])
   const [saving, setSaving] = useState(false)
   const [sending, setSending] = useState(false)
+  const [sendingPdf, setSendingPdf] = useState(false)
   const isQuoteSent = c.stage >= 1
+
+  const downloadQuote = () => {
+    window.open(`/api/contracts/${c.id}/quote-pdf`, '_blank')
+  }
+
+  const sendQuotePdf = async (sendToClient = true) => {
+    setSendingPdf(true)
+    const authHeader = await getAuthHeader()
+    const res = await fetch(`/api/contracts/${c.id}/quote-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader },
+      body: JSON.stringify({ send_to_client: sendToClient }),
+    })
+    if (res.ok) {
+      showToast(sendToClient ? `Quote sent to ${c.contact_email}` : 'Quote sent to your email')
+    } else {
+      showToast('Failed to send quote PDF', 'error')
+    }
+    setSendingPdf(false)
+  }
 
   const baseTotal = c.units * pricePerUnit * months
   const lineItemsTotal = lineItems.reduce((s, li) => s + (li.amount || 0), 0)
@@ -401,8 +422,17 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
         <button style={styles.btnGhost} onClick={saveQuote} disabled={saving}>{saving ? 'Saving...' : 'Save Draft'}</button>
+        <button style={styles.btnGhost} onClick={downloadQuote} title="Preview quote in browser — print or save as PDF from there">
+          ⬇ Download Quote
+        </button>
+        <button style={{ ...styles.btnGhost, borderColor: 'rgba(0,191,166,0.4)', color: '#00BFA6' }} onClick={() => sendQuotePdf(false)} disabled={sendingPdf}>
+          {sendingPdf ? 'Sending...' : '✉ Send to Me'}
+        </button>
+        <button style={{ ...styles.btnGhost, borderColor: 'rgba(0,191,166,0.4)', color: '#00BFA6' }} onClick={() => sendQuotePdf(true)} disabled={sendingPdf || !pricePerUnit}>
+          {sendingPdf ? 'Sending...' : '✉ Email Quote to Client'}
+        </button>
         <button style={styles.btnPrimary} onClick={sendQuote} disabled={sending || !pricePerUnit}>
           {sending ? 'Sending...' : isQuoteSent ? 'Resend Quote →' : 'Send Quote to Client →'}
         </button>
