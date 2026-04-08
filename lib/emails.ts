@@ -3,6 +3,7 @@ import { Contract, calcTotal, formatDate } from './types'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
+const AUSTIN = 'austin@eliasrangestays.ca'
 // Hardcoded production URL — avoids all Vercel env var / build-time substitution issues
 const APP_URL = process.env.NODE_ENV === 'production'
   ? 'https://contractflow-omega.vercel.app'
@@ -24,6 +25,7 @@ export async function sendQuoteEmail(contract: Contract, occupants: { name: stri
   await resend.emails.send({
     from: FROM,
     to: contract.contact_email,
+    cc: [AUSTIN],
     subject: `Your Housing Quote is Ready — ${contract.reference}`,
     html: `
       <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
@@ -72,6 +74,7 @@ export async function sendQuoteReminderEmail(contract: Contract) {
   await resend.emails.send({
     from: FROM,
     to: contract.contact_email,
+    cc: [AUSTIN],
     subject: `Reminder: Your Housing Quote Awaits Approval — ${contract.reference}`,
     html: `
       <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
