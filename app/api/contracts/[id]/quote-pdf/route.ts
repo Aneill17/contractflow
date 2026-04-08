@@ -160,8 +160,26 @@ function buildQuoteHTML(contract: any): string {
     </div>` : ''}
   </div>
 
+  <!-- Request Details -->
+  <div class="section">
+    <div class="section-title">Original Request Details</div>
+    <table class="summary-table">
+      ${contract.num_staff ? `<tr><td class="label">Number of Staff</td><td class="val">${contract.num_staff}</td></tr>` : ''}
+      ${contract.work_site_address ? `<tr><td class="label">Work Site Address</td><td class="val">${contract.work_site_address}</td></tr>` : ''}
+      ${contract.current_housing_rate ? `<tr><td class="label">Current Housing Rate</td><td class="val">${formatCurrency(contract.current_housing_rate)} / night</td></tr>` : ''}
+      ${contract.current_housing_location ? `<tr><td class="label">Current Housing Provider</td><td class="val">${contract.current_housing_location}</td></tr>` : ''}
+      ${(contract.current_housing_rate && contract.units && months) ? `<tr><td class="label">Current Monthly Cost (est.)</td><td class="val">${formatCurrency(contract.current_housing_rate * 30 * contract.units)}</td></tr>` : ''}
+      ${(contract.current_housing_rate && contract.units && months) ? `<tr><td class="label" style="color:#007A3D;">Estimated Savings with ERS</td><td class="val" style="color:#007A3D;font-weight:600;">${formatCurrency((contract.current_housing_rate * 30 * contract.units * months) - (contract.price_per_unit * contract.units * months))} over ${months} month${months !== 1 ? 's' : ''}</td></tr>` : ''}
+    </table>
+  </div>
+
+  ${contract.notes ? `<div class="section">
+    <div class="section-title">Client Notes</div>
+    <div class="notes-box">${contract.notes}</div>
+  </div>` : ''}
+
   ${contract.quote_notes ? `<div class="section">
-    <div class="section-title">Notes</div>
+    <div class="section-title">ERS Notes</div>
     <div class="notes-box">${contract.quote_notes}</div>
   </div>` : ''}
 
