@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../BobZimmer-Docs/shared.css">
+<title>NH Lease Rate Schedule — Elias Range Stays</title>
+<style>
+  .watermark { text-align:center; font-size:7pt; color:#aaa; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:6pt; }
+  .section-bar { background:#2c5f3a; color:#fff; padding:5pt 10pt; margin:14pt 0 8pt; font-size:8pt; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; border-radius:2pt; }
+  .section-bar.navy { background:#1d3d6e; }
+  .total-row td { background:#2c5f3a !important; color:#fff !important; font-weight:700; font-size:10pt; }
+  .base-row td { background:#eef2f8 !important; color:#1d3d6e !important; font-weight:600; }
+  .service-row td { background:#f7f5f0 !important; }
+  .subtotal-row td { background:#e6f2ea !important; font-weight:700; color:#1a3d22 !important; }
+  .flat-rate-row td { background:#1d3d6e !important; color:#fff !important; font-weight:700; font-size:10.5pt; }
+  .savings-row td { background:#fdf3d4 !important; color:#5a3a00 !important; font-weight:600; }
+  .four-col { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8pt; margin:8pt 0; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10pt; margin:10pt 0; }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12pt; margin:10pt 0; }
+  .kpi { text-align:center; padding:10pt; border-radius:3pt; border:0.75pt solid; }
+  .kpi.green { background:#e6f2ea; border-color:#b8d4be; }
+  .kpi.navy { background:#1d3d6e; border-color:#1d3d6e; }
+  .kpi.gold { background:#fdf3d4; border-color:#e8c870; }
+  .kpi.flat { background:#2c5f3a; border-color:#2c5f3a; }
+  .kpi .kpi-num { font-family:'Playfair Display',serif; font-size:18pt; font-weight:700; line-height:1; display:block; }
+  .kpi.green .kpi-num { color:#2c5f3a; }
+  .kpi.navy .kpi-num { color:#a8c9b0; }
+  .kpi.gold .kpi-num { color:#b8860b; }
+  .kpi.flat .kpi-num { color:#fff; }
+  .kpi .kpi-lbl { font-size:6.5pt; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; margin-top:3pt; display:block; }
+  .kpi.green .kpi-lbl { color:#2c5f3a; }
+  .kpi.navy .kpi-lbl { color:rgba(255,255,255,0.65); }
+  .kpi.gold .kpi-lbl { color:#b8860b; }
+  .kpi.flat .kpi-lbl { color:rgba(255,255,255,0.75); }
+  .unit-card { border:1.5pt solid var(--bc); border-radius:4pt; overflow:hidden; margin-bottom:12pt; }
+  .unit-card-header { padding:8pt 12pt; color:#fff; }
+  .unit-card-header h3 { font-family:'Playfair Display',serif; font-size:12pt; font-weight:700; margin-bottom:1pt; }
+  .unit-card-header .uh-sub { font-size:7.5pt; opacity:0.8; }
+  .unit-card table { margin:0; }
+  .unit-card td, .unit-card th { font-size:9pt; }
+  .green-flag { background:#e6f2ea; border:0.75pt solid #b8d4be; border-radius:3pt; padding:6pt 10pt; margin:6pt 0; font-size:8.5pt; color:#1a3d22; }
+  .navy-flag { background:#eef2f8; border:0.75pt solid #c0d0e8; border-radius:3pt; padding:6pt 10pt; margin:6pt 0; font-size:8.5pt; color:#1d2a4a; }
+  .signature-block { border:1pt solid #ddddd4; border-radius:4pt; padding:14pt 16pt; margin-top:14pt; }
+  .sig-row { display:grid; grid-template-columns:1fr 1fr; gap:20pt; margin-top:10pt; }
+  .sig-line { border-top:0.75pt solid #333; padding-top:4pt; font-size:8pt; color:#4a4a40; margin-top:24pt; }
+  .page-break { page-break-before:always; }
+  .incl-badge { display:inline-block; background:#e6f2ea; border:0.5pt solid #b8d4be; border-radius:2pt; padding:1pt 4pt; font-size:6.5pt; font-weight:700; color:#2c5f3a; text-transform:uppercase; letter-spacing:0.08em; }
+  .rate-badge { display:inline-block; background:#1d3d6e; color:#fff; border-radius:2pt; padding:1pt 5pt; font-size:8pt; font-weight:700; }
+</style>
+</head>
+<body>
+
+<div class="doc-footer">
+  <span class="footer-left">Elias Range Stays — Northern Health Lease Rate Schedule</span>
+  <span class="footer-right">Dawson Creek Healthcare Housing Hub · March 2026</span>
+</div>
+
+<div class="watermark">Prepared for Northern Health — Rate Transparency Schedule — March 2026</div>
+
+<div class="doc-header">
+  <div class="brand-block">
+    <div class="brand-name">Elias Range Stays</div>
+    <div class="brand-sub">Healthcare Workforce Housing — Dawson Creek, BC</div>
+  </div>
+  <div class="doc-meta">
+    <div class="doc-type">Northern Health Lease Schedule</div>
+    Rate Transparency &amp; Service Breakdown<br>
+    Dawson Creek Hub · March 2026
+  </div>
+</div>
+
+<div class="title-block">
+  <div class="eyebrow">Master Lease Framework · Rate Transparency</div>
+  <h1>Lease Rate Schedule &amp; Service Breakdown<br>for Northern Health</h1>
+  <p class="subtitle">This document provides complete transparency on how the all-inclusive flat monthly rate for each unit type is composed. All services are bundled into one invoice to Northern Health — no separate billing, no surprises, no per-worker expense tracking required.</p>
+</div>
+
+<!-- OVERVIEW KPIs -->
+<div class="four-col">
+  <div class="kpi flat"><span class="kpi-num">$4,200</span><span class="kpi-lbl">Studio/1-Bed — Flat Monthly Rate</span></div>
+  <div class="kpi flat"><span class="kpi-num">$5,200</span><span class="kpi-lbl">2-Bedroom Type A — Flat Monthly Rate</span></div>
+  <div class="kpi flat"><span class="kpi-num">$5,500</span><span class="kpi-lbl">2-Bedroom Type B — Flat Monthly Rate</span></div>
+  <div class="kpi gold"><span class="kpi-num">30%</span><span class="kpi-lbl">Below hotel equivalent — NH saves $414K/yr</span></div>
+</div>
+
+<div class="green-flag"><strong>One Invoice. Everything Included.</strong> Northern Health receives a single monthly invoice covering base rent, all utilities, furnishings, housekeeping, consumables, guest services, 24/7 management, and maintenance. No individual staff expense claims. No hotel booking logistics. No utility accounts.</div>
+
+<!-- SECTION: WHAT IS INCLUDED -->
+<div class="section-bar">What Is Included in Every Unit — All Types</div>
+
+<table>
+  <thead><tr><th>Service Category</th><th>What's Included</th><th style="text-align:center">Billed Separately?</th></tr></thead>
+  <tbody>
+    <tr class="base-row"><td>🏠 Base Rent</td><td>Exclusive use of fully furnished unit — bedroom(s), full kitchen, living area, bathroom(s)</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>⚡ Utilities</td><td>Natural gas / heat, electricity, water &amp; sewer, high-speed internet (200 Mbps+)</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🛋️ Furnishings &amp; Equipment</td><td>All furniture, appliances (fridge, stove, microwave, washer/dryer), bed &amp; linens, cookware, dining set</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🧹 Housekeeping</td><td>Weekly unit clean; linen change bi-weekly; common area cleaning daily. Move-in/out deep clean.</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🧴 Consumables &amp; Stocking</td><td>Initial stocking: toiletries, paper products, kitchen essentials, coffee/tea. Monthly restocking of staples.</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🛎️ Guest Services</td><td>24/7 on-call support line; check-in/out coordination; local orientation package; mail handling</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🔧 Maintenance</td><td>All routine and reactive maintenance; appliance repair/replacement; building systems</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>📋 Property Management</td><td>Lease administration, unit inspections, reporting to Northern Health, vacancy management</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr><td>🏢 Building Common Areas</td><td>Lobby, laundry facilities, bike storage, outdoor areas — maintained and insured</td><td style="text-align:center"><span class="incl-badge">Included</span></td></tr>
+    <tr class="savings-row"><td>🅿️ Parking (optional)</td><td>Covered parking stall — available per vehicle if required</td><td style="text-align:center">+$150/stall/mo</td></tr>
+    <tr class="savings-row"><td>🍽️ Meal Plan (optional)</td><td>Catered meal service — breakfast &amp; dinner. Available if partnered with local provider.</td><td style="text-align:center">Quote on request</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION: UNIT TYPE BREAKDOWNS -->
+<div class="section-bar">Rate Breakdown by Unit Type — Cost Component Detail</div>
+
+<p style="font-size:8.5pt;color:#4a4a40;margin-bottom:10pt;">Each flat monthly rate is composed of eight cost components, priced per unit type based on size, usage, and service intensity. The total of all components equals the flat rate charged to Northern Health. This breakdown is provided for transparency — Northern Health is invoiced the flat rate only.</p>
+
+<!-- STUDIO / 1-BED -->
+<div class="unit-card" style="--bc:#1d3d6e;">
+  <div class="unit-card-header" style="background:#1d3d6e;">
+    <h3>Studio / 1-Bedroom Unit &nbsp;·&nbsp; <span class="rate-badge" style="background:rgba(255,255,255,0.2)">$4,200 / month</span></h3>
+    <div class="uh-sub">16 units · 56m² average · 92% target occupancy · Suitable for single occupant / locum physician / travel nurse</div>
+  </div>
+  <table>
+    <thead><tr><th>Cost Component</th><th>Monthly Cost</th><th>% of Rate</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr class="base-row"><td>🏠 Base Rent</td><td>$2,500</td><td>59.5%</td><td>Unit occupancy, building ownership costs, mortgage service allocation</td></tr>
+      <tr class="service-row"><td>⚡ Utilities</td><td>$400</td><td>9.5%</td><td>Heat, hydro, water, high-speed internet — all usage included</td></tr>
+      <tr class="service-row"><td>🛋️ Furnishings Reserve</td><td>$200</td><td>4.8%</td><td>Amortized replacement of furniture, appliances, linens, cookware</td></tr>
+      <tr class="service-row"><td>🧹 Housekeeping</td><td>$250</td><td>6.0%</td><td>Weekly clean, bi-weekly linen change, move-in/out deep clean</td></tr>
+      <tr class="service-row"><td>🧴 Consumables &amp; Stocking</td><td>$150</td><td>3.6%</td><td>Monthly restocking: toiletries, paper products, kitchen staples</td></tr>
+      <tr class="service-row"><td>📋 Property Management</td><td>$350</td><td>8.3%</td><td>Administration, reporting, NH liaison, vacancy management (8% mgmt fee)</td></tr>
+      <tr class="service-row"><td>🛎️ Guest Services</td><td>$200</td><td>4.8%</td><td>24/7 on-call, check-in/out, orientation, mail, local support</td></tr>
+      <tr class="service-row"><td>🔧 Maintenance</td><td>$150</td><td>3.6%</td><td>Routine and reactive maintenance, repairs, building systems</td></tr>
+      <tr class="flat-rate-row"><td>FLAT MONTHLY RATE TO NORTHERN HEALTH</td><td>$4,200</td><td>100%</td><td>Single invoice — all components included</td></tr>
+      <tr class="savings-row"><td>Hotel equivalent (2-night avg × 30 days)</td><td>$6,000</td><td>—</td><td>Northern Health saves $1,800/unit/month · 30% savings</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 2-BED TYPE A -->
+<div class="unit-card" style="--bc:#2c5f3a;">
+  <div class="unit-card-header" style="background:#2c5f3a;">
+    <h3>2-Bedroom Unit — Type A &nbsp;·&nbsp; <span class="rate-badge" style="background:rgba(255,255,255,0.2)">$5,200 / month</span></h3>
+    <div class="uh-sub">8 units · 68m² average · 90% target occupancy · Suitable for permanent hire or couple / family placement</div>
+  </div>
+  <table>
+    <thead><tr><th>Cost Component</th><th>Monthly Cost</th><th>% of Rate</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr class="base-row"><td>🏠 Base Rent</td><td>$3,200</td><td>61.5%</td><td>Unit occupancy, building ownership costs, mortgage service allocation</td></tr>
+      <tr class="service-row"><td>⚡ Utilities</td><td>$500</td><td>9.6%</td><td>Heat, hydro, water, internet — higher usage for 2-bed unit</td></tr>
+      <tr class="service-row"><td>🛋️ Furnishings Reserve</td><td>$250</td><td>4.8%</td><td>2-bed furnishing package — additional bedroom set, larger kitchen/dining</td></tr>
+      <tr class="service-row"><td>🧹 Housekeeping</td><td>$350</td><td>6.7%</td><td>Weekly clean, bi-weekly linen change (2 bedrooms), move-in/out clean</td></tr>
+      <tr class="service-row"><td>🧴 Consumables &amp; Stocking</td><td>$200</td><td>3.8%</td><td>Monthly restocking — higher volume for larger unit / more occupants</td></tr>
+      <tr class="service-row"><td>📋 Property Management</td><td>$400</td><td>7.7%</td><td>Administration, reporting, NH liaison (8% mgmt fee on higher rate)</td></tr>
+      <tr class="service-row"><td>🛎️ Guest Services</td><td>$150</td><td>2.9%</td><td>24/7 on-call, check-in/out, orientation, mail, local support</td></tr>
+      <tr class="service-row"><td>🔧 Maintenance</td><td>$150</td><td>2.9%</td><td>Routine and reactive maintenance — same rate regardless of unit size</td></tr>
+      <tr class="flat-rate-row"><td>FLAT MONTHLY RATE TO NORTHERN HEALTH</td><td>$5,200</td><td>100%</td><td>Single invoice — all components included</td></tr>
+      <tr class="savings-row"><td>Hotel equivalent (2 rooms × $3,300/room)</td><td>$6,600</td><td>—</td><td>Northern Health saves $1,400/unit/month · 21% savings</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 2-BED TYPE B -->
+<div class="unit-card" style="--bc:#b8860b;">
+  <div class="unit-card-header" style="background:#b8860b;">
+    <h3>2-Bedroom Unit — Type B &nbsp;·&nbsp; <span class="rate-badge" style="background:rgba(255,255,255,0.2)">$5,500 / month</span></h3>
+    <div class="uh-sub">8 units · 74m² average · 90% target occupancy · Larger floor plan — suitable for physician + family, extended placement</div>
+  </div>
+  <table>
+    <thead><tr><th>Cost Component</th><th>Monthly Cost</th><th>% of Rate</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr class="base-row"><td>🏠 Base Rent</td><td>$3,400</td><td>61.8%</td><td>Unit occupancy, building ownership costs, mortgage service allocation</td></tr>
+      <tr class="service-row"><td>⚡ Utilities</td><td>$525</td><td>9.5%</td><td>Heat, hydro, water, internet — larger unit, higher northern heating demand</td></tr>
+      <tr class="service-row"><td>🛋️ Furnishings Reserve</td><td>$275</td><td>5.0%</td><td>Larger 2-bed furnishing package — additional sq footage, full appliance set</td></tr>
+      <tr class="service-row"><td>🧹 Housekeeping</td><td>$375</td><td>6.8%</td><td>Weekly clean, bi-weekly linen change (2 bedrooms, larger area), move-in/out</td></tr>
+      <tr class="service-row"><td>🧴 Consumables &amp; Stocking</td><td>$200</td><td>3.6%</td><td>Monthly restocking — household staples, toiletries, kitchen essentials</td></tr>
+      <tr class="service-row"><td>📋 Property Management</td><td>$425</td><td>7.7%</td><td>Administration, reporting, NH liaison (8% mgmt fee on higher rate)</td></tr>
+      <tr class="service-row"><td>🛎️ Guest Services</td><td>$150</td><td>2.7%</td><td>24/7 on-call, check-in/out, orientation, mail, local support</td></tr>
+      <tr class="service-row"><td>🔧 Maintenance</td><td>$150</td><td>2.7%</td><td>Routine and reactive maintenance — consistent across unit types</td></tr>
+      <tr class="flat-rate-row"><td>FLAT MONTHLY RATE TO NORTHERN HEALTH</td><td>$5,500</td><td>100%</td><td>Single invoice — all components included</td></tr>
+      <tr class="savings-row"><td>Hotel equivalent (2 rooms + sitting area)</td><td>$7,200</td><td>—</td><td>Northern Health saves $1,700/unit/month · 24% savings</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECTION: FULL LEASE SUMMARY -->
+<div class="section-bar navy">Full Lease Summary — All 32 Units + Commercial</div>
+
+<table>
+  <thead><tr><th>Unit Type</th><th style="text-align:center">Count</th><th>Flat Rate/Mo</th><th>Occ.</th><th>Annual Revenue</th><th>NH Monthly Saving<br>vs. Hotel</th></tr></thead>
+  <tbody>
+    <tr><td>Studio / 1-Bedroom</td><td style="text-align:center">16</td><td>$4,200</td><td>92%</td><td>$741,888</td><td>$1,800/unit</td></tr>
+    <tr><td>2-Bedroom Type A</td><td style="text-align:center">8</td><td>$5,200</td><td>90%</td><td>$449,280</td><td>$1,400/unit</td></tr>
+    <tr><td>2-Bedroom Type B</td><td style="text-align:center">8</td><td>$5,500</td><td>90%</td><td>$475,200</td><td>$1,700/unit</td></tr>
+    <tr class="subtotal-row"><td>Residential Subtotal</td><td style="text-align:center">32</td><td>$4,800 blended avg</td><td>91%</td><td>$1,666,368</td><td>$414,720/yr total</td></tr>
+    <tr><td>Café — Ground Floor (59m²)</td><td style="text-align:center">1</td><td>$2,200</td><td>100%</td><td>$26,400</td><td>—</td></tr>
+    <tr><td>Community Hall (180m²)</td><td style="text-align:center">1</td><td>$3,500</td><td>100%</td><td>$42,000</td><td>—</td></tr>
+    <tr><td>Childcare / YMCA BC (264m²)</td><td style="text-align:center">1</td><td>$4,800</td><td>100%</td><td>$57,600</td><td>—</td></tr>
+    <tr class="total-row"><td>TOTAL GROSS ANNUAL REVENUE</td><td style="text-align:center">35</td><td>—</td><td>—</td><td>$1,792,368</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION: NH VALUE PROPOSITION -->
+<div class="section-bar">The Northern Health Value Proposition</div>
+
+<div class="three-col">
+  <div class="kpi green">
+    <span class="kpi-num">$414,720</span>
+    <span class="kpi-lbl">NH annual savings vs. hotel across all 32 units</span>
+  </div>
+  <div class="kpi navy">
+    <span class="kpi-num">1 Invoice</span>
+    <span class="kpi-lbl">Monthly — to NH directly. No per-worker expense management.</span>
+  </div>
+  <div class="kpi gold">
+    <span class="kpi-num">24/7</span>
+    <span class="kpi-lbl">Support — dedicated line for all staff housing issues</span>
+  </div>
+</div>
+
+<table style="margin-top:10pt;">
+  <thead><tr><th>What Northern Health Gets</th><th>What Northern Health No Longer Has to Do</th></tr></thead>
+  <tbody>
+    <tr><td>Purpose-built, fully furnished units ready for day-1 occupancy</td><td>Book hotel rooms one at a time across multiple platforms</td></tr>
+    <tr><td>All utilities, internet, housekeeping, consumables included</td><td>Process individual expense claims from staff for hotel and incidentals</td></tr>
+    <tr><td>24/7 management — issues resolved without NH involvement</td><td>Handle housing complaints, maintenance calls, or shortages</td></tr>
+    <tr><td>Flexible mix of short-stay (locum) and longer-term (permanent) units</td><td>Manage separate short-stay and long-stay accommodation contracts</td></tr>
+    <tr><td>YMCA BC on-site — community, wellness, childcare for staff</td><td>Separately source childcare and community supports for staff</td></tr>
+    <tr><td>Single invoice — one line item in the NH budget</td><td>Track spend across multiple hotels, landlords, and individuals</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION: BILLING TERMS -->
+<div class="section-bar">Billing &amp; Lease Terms</div>
+
+<table>
+  <thead><tr><th>Term</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Invoice recipient</td><td>Northern Health — single consolidated monthly invoice</td></tr>
+    <tr><td>Invoice frequency</td><td>Monthly — issued on the 1st, due on the 15th</td></tr>
+    <tr><td>Occupancy billing basis</td><td>Per unit per month — regardless of number of individual occupants in that unit</td></tr>
+    <tr><td>Unoccupied unit billing</td><td>No charge for units vacant &gt;7 consecutive days — NH notifies ERS in advance</td></tr>
+    <tr><td>Minimum lease term (master lease)</td><td>12 months — with renewal options at agreed rates</td></tr>
+    <tr><td>Rate escalation</td><td>Annual CPI adjustment — capped at 3% per annum</td></tr>
+    <tr><td>Unit mix flexibility</td><td>NH may adjust unit type allocation with 30-day notice subject to availability</td></tr>
+    <tr><td>Optional add-ons</td><td>Covered parking: +$150/stall/month · Additional housekeeping: quoted on request</td></tr>
+    <tr><td>Linen &amp; towel service</td><td>Included — ERS manages laundry service for all furnished units</td></tr>
+    <tr><td>Damage policy</td><td>Normal wear and tear covered by ERS. Intentional damage billed to NH at cost.</td></tr>
+  </tbody>
+</table>
+
+<!-- SIGNATURE BLOCK -->
+<div class="section-bar navy">Agreement — Rate Schedule Acknowledgement</div>
+
+<div class="signature-block">
+  <p style="font-size:9pt;color:#2a2a22;margin-bottom:8pt;">This Rate Transparency Schedule forms part of the Master Lease Agreement between Elias Range Stays and Northern Health for the Dawson Creek Healthcare Housing Hub. The flat monthly rates above represent the complete all-inclusive charge — no additional costs will be invoiced to Northern Health beyond those listed as optional add-ons.</p>
+
+  <div class="sig-row">
+    <div>
+      <div class="sig-line">Signature — Elias Range Stays</div>
+      <div style="font-size:8pt;color:#4a4a40;margin-top:6pt;">
+        Austin Neill — Managing Partner<br>
+        Elias Range Development Corporation<br>
+        austin@eliasrangestays.ca · (250) 719-8085
+      </div>
+    </div>
+    <div>
+      <div class="sig-line">Signature — Northern Health</div>
+      <div style="font-size:8pt;color:#4a4a40;margin-top:6pt;">
+        Name: ___________________________<br>
+        Title: ____________________________<br>
+        Date: ____________________________
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14pt;font-size:7.5pt;color:#6b6b60;border-top:0.75pt solid #ddddd4;padding-top:8pt;">
+    <strong>Elias Range Stays</strong> · Elias Range Development Corporation · Dawson Creek, BC · eliasrangestays.ca<br>
+    This schedule is subject to the full terms of the Master Lease Agreement. Rates effective from date of building occupancy (estimated 2028).
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../BobZimmer-Docs/shared.css">
+<title>Development Proforma — LVCU Submission</title>
+<style>
+  .watermark { text-align:center; font-size:7pt; color:#aaa; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:6pt; }
+  .cover-block { text-align:center; padding:20pt 0 16pt; border-bottom:2pt solid #1d3d6e; margin-bottom:16pt; }
+  .cover-block .cb-project { font-family:'Playfair Display',serif; font-size:20pt; color:#1a1a18; line-height:1.2; margin-bottom:4pt; }
+  .cover-block .cb-sub { font-size:10pt; color:#4a4a40; margin-bottom:10pt; }
+  .cover-block .cb-meta { font-size:8.5pt; color:#6b6b60; line-height:1.8; }
+  .section-bar { background:#1d3d6e; color:#fff; padding:5pt 10pt; margin:14pt 0 8pt; font-size:8pt; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; border-radius:2pt; }
+  .total-row td { background:#1d3d6e !important; color:#fff !important; font-weight:700; font-size:10pt; }
+  .subtotal-row td { background:#eef2f8 !important; font-weight:700; color:#1d3d6e !important; }
+  .green-row td { background:#e6f2ea !important; font-weight:700; color:#1a3d22 !important; }
+  .gold-row td { background:#fdf3d4 !important; font-weight:700; color:#5a3a00 !important; }
+  .yellow-row td { background:#fffbf0 !important; color:#5a4a00 !important; }
+  .highlight-row td { background:#f0f4ff !important; font-weight:600; color:#1d3d6e !important; }
+  .target-row td { background:#2c5f3a !important; color:#fff !important; font-weight:700; }
+  .four-col { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8pt; margin:8pt 0; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8pt; margin:8pt 0; }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10pt; margin:8pt 0; }
+  .kpi { background:#f7f5f0; border:0.75pt solid #ddddd4; border-radius:3pt; padding:8pt 10pt; text-align:center; }
+  .kpi.blue { background:#eef2f8; border-color:#c0d0e8; }
+  .kpi.green { background:#e6f2ea; border-color:#b8d4be; }
+  .kpi.gold { background:#fdf3d4; border-color:#e8c870; }
+  .kpi.navy { background:#1d3d6e; border-color:#1d3d6e; }
+  .kpi .kpi-num { font-family:'Playfair Display',serif; font-size:16pt; font-weight:700; line-height:1; color:#1d3d6e; }
+  .kpi.green .kpi-num { color:#2c5f3a; }
+  .kpi.gold .kpi-num { color:#b8860b; }
+  .kpi.navy .kpi-num { color:#a8c9b0; }
+  .kpi .kpi-lbl { font-size:6.5pt; color:#6b6b60; margin-top:3pt; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; line-height:1.4; }
+  .kpi.navy .kpi-lbl { color:rgba(255,255,255,0.6); }
+  .flag { background:#fff3cd; border:0.75pt solid #ffc107; border-radius:3pt; padding:6pt 10pt; margin:6pt 0; font-size:8pt; color:#5a4a00; }
+  .green-flag { background:#e6f2ea; border:0.75pt solid #b8d4be; border-radius:3pt; padding:6pt 10pt; margin:6pt 0; font-size:8pt; color:#1a3d22; }
+  .navy-flag { background:#eef2f8; border:0.75pt solid #c0d0e8; border-radius:3pt; padding:6pt 10pt; margin:6pt 0; font-size:8pt; color:#1d2a4a; }
+  .page-break { page-break-before:always; }
+  .unit-badge { display:inline-block; background:#1d3d6e; color:#fff; font-size:7pt; font-weight:700; padding:1pt 5pt; border-radius:2pt; margin-right:3pt; }
+  table { font-size:9pt; }
+  th { font-size:7pt; }
+  td { font-size:9pt; }
+
+  @page {
+    size: letter;
+    margin: 15mm 15mm 22mm 15mm;
+  }
+  @media print {
+    body { padding-bottom: 0; }
+    table { page-break-inside: avoid; }
+    .section-bar { page-break-after: avoid; }
+    .flag, .green-flag, .navy-flag { page-break-inside: avoid; }
+    .two-col, .three-col, .four-col { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    .kpi { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-footer">
+  <span class="footer-left">Elias Range Development Corporation — Development Proforma</span>
+  <span class="footer-right">Confidential — For Lakeview Credit Union · March 2026</span>
+</div>
+<div style="padding-bottom:24pt;"></div>
+
+<div class="watermark">Strictly Confidential — Prepared for Lakeview Credit Union — March 2026</div>
+
+<!-- COVER -->
+<div class="doc-header">
+  <div class="brand-block">
+    <div class="brand-name">Elias Range Stays</div>
+    <div class="brand-sub">Elias Range Development Corporation</div>
+  </div>
+  <div class="doc-meta">
+    <div class="doc-type">Development Proforma</div>
+    LVCU Construction Financing Submission<br>
+    March 2026
+  </div>
+</div>
+
+<div class="cover-block">
+  <div class="cb-project">Dawson Creek Healthcare Housing &amp;<br>Community Hub — Phase 1</div>
+  <div class="cb-sub">10620 10th Street (and adjacent parcels), Dawson Creek, British Columbia</div>
+  <div class="cb-meta">
+    Developer: Elias Range Development Corporation &nbsp;·&nbsp; Architect: BOS Studio Architecture Ltd.<br>
+    32 Residential Units + 3 Commercial Spaces &nbsp;·&nbsp; 3,461 m² GFA &nbsp;·&nbsp; 5-Storey Mixed Use<br>
+    Partners: Northern Health &nbsp;·&nbsp; City of Dawson Creek &nbsp;·&nbsp; YMCA BC<br>
+    Federal Application: NRCan Off Site Construction Challenge (OSCC) Phase 1 &amp; 2 — Submitted
+  </div>
+</div>
+
+<!-- EXECUTIVE SUMMARY KPIs -->
+<div class="section-bar">Executive Summary — Key Metrics</div>
+
+<div class="four-col">
+  <div class="kpi navy"><div class="kpi-num">$15,196,000</div><div class="kpi-lbl">Total Project Cost</div></div>
+  <div class="kpi gold"><div class="kpi-num">$18,011,000</div><div class="kpi-lbl">Completed Value @ 7.25% Cap</div></div>
+  <div class="kpi green"><div class="kpi-num">$1,305,808</div><div class="kpi-lbl">Year 1 Net Operating Income</div></div>
+  <div class="kpi blue"><div class="kpi-num">$2,815,000</div><div class="kpi-lbl">Gross Development Profit @ 7.25%</div></div>
+</div>
+<div class="four-col">
+  <div class="kpi blue"><div class="kpi-num">$9,877,400</div><div class="kpi-lbl">LVCU Construction Mortgage Requested</div></div>
+  <div class="kpi green"><div class="kpi-num">1.374×</div><div class="kpi-lbl">Year 1 DSCR</div></div>
+  <div class="kpi green"><div class="kpi-num">$355,372</div><div class="kpi-lbl">Year 1 Net Cash Flow</div></div>
+  <div class="kpi blue"><div class="kpi-num">32 Units</div><div class="kpi-lbl">Residential + 3 Commercial</div></div>
+</div>
+
+<!-- SECTION 1: PROJECT DESCRIPTION -->
+<div class="section-bar">Section 1 — Project Description</div>
+
+<table>
+  <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Project name</td><td>Dawson Creek Healthcare Housing &amp; Community Hub — Phase 1</td></tr>
+    <tr><td>Address</td><td>10620 10th Street (and adjacent parcels), Dawson Creek, BC V1G</td></tr>
+    <tr><td>Developer</td><td>Elias Range Development Corporation — Austin James Neill, Managing Partner</td></tr>
+    <tr><td>Architect</td><td>BOS Studio Architecture Ltd. — Squamish, BC (AIBC-E003566)</td></tr>
+    <tr><td>Building type</td><td>5-storey mixed-use — residential over community/commercial ground floor</td></tr>
+    <tr><td>Gross floor area</td><td>3,461 m² (±37,255 sf)</td></tr>
+    <tr><td>Net lettable residential</td><td>2,134 m² — 32 fully furnished purpose-built rental units</td></tr>
+    <tr><td>Net lettable commercial</td><td>503 m² — café, community hall, childcare/YMCA</td></tr>
+    <tr><td>Unit mix</td><td>16 × Studio/1-Bed (50%) &nbsp;·&nbsp; 8 × 2-Bed Type A (25%) &nbsp;·&nbsp; 8 × 2-Bed Type B (25%)</td></tr>
+    <tr><td>Primary tenant</td><td>Northern Health — healthcare professionals, locum physicians, travel nurses</td></tr>
+    <tr><td>Community partners</td><td>Northern Health &nbsp;·&nbsp; City of Dawson Creek &nbsp;·&nbsp; YMCA BC (childcare operator)</td></tr>
+    <tr><td>Distance to hospital</td><td>&lt;1 km — walking distance to Dawson Creek &amp; District Hospital</td></tr>
+    <tr><td>Construction method</td><td>Modular / offsite — factory-built, northern-ready, NRCan OSCC aligned</td></tr>
+    <tr><td>Target DP submission</td><td>Q1 2026</td></tr>
+    <tr><td>Target construction start</td><td>2027</td></tr>
+    <tr><td>Target completion</td><td>2028</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 2: DEVELOPMENT BUDGET -->
+<div class="section-bar">Section 2 — Development Budget (Reconciled to LVCU Term Sheet)</div>
+
+<table>
+  <thead><tr><th>Budget Category</th><th>Amount (CAD)</th><th>% of Total</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Land — 10620 10th St &amp; adjacent parcels</td><td>$600,000</td><td>3.9%</td><td>Owned by Elias Range Development Corp. — contributed as equity</td></tr>
+    <tr><td>Construction Costs — Modular Build</td><td>$12,500,000</td><td>82.3%</td><td>Factory-built modular units; on-site assembly — per ERS construction estimate. Excludes FF&amp;E and fitout (post-construction operational costs funded separately).</td></tr>
+    <tr><td>Soft Costs — Architecture &amp; Engineering</td><td>$550,000</td><td>3.6%</td><td>BOS Studio Architecture; structural, mechanical, electrical engineering</td></tr>
+    <tr><td>Soft Costs — Permits, Legal, Survey (0.5%)</td><td>$75,980</td><td>0.5%</td><td>DP, BP, geo-tech, environmental Phase 1, land survey, legal</td></tr>
+    <tr><td>Soft Costs — Development Management (1.5%)</td><td>$227,940</td><td>1.5%</td><td>Project management oversight, QS coordination, owner reporting</td></tr>
+    <tr><td>Interest Reserve (LVCU holdback)</td><td>$834,640</td><td>5.5%</td><td>Per LVCU Discussion Paper — restricted account, drawn monthly</td></tr>
+    <tr><td>LVCU Application Fees (1.0% of $9,877,400)</td><td>$98,774</td><td>0.6%</td><td>$12,500 upfront non-refundable + $37,500 on drawdown + $1,000 review</td></tr>
+    <tr><td>Contingency (2.0%)</td><td>$308,666</td><td>2.0%</td><td>Construction and soft cost contingency buffer</td></tr>
+    <tr class="total-row"><td>TOTAL PROJECT COST</td><td>$15,196,000</td><td>100%</td><td>Matches LVCU Discussion Paper — confirmed by QS condition precedent</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 3: CAPITAL STACK -->
+<div class="section-bar">Section 3 — Capital Stack</div>
+
+<table>
+  <thead><tr><th>Funding Source</th><th>Amount</th><th>%</th><th>Type</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Shareholder / Investor Equity (Fulmer &amp; Co. VC raise)</td><td>$5,318,600</td><td>33.0%</td><td>Equity — ~33% project stake; injected before LVCU advances</td><td>In progress</td></tr>
+    <tr class="highlight-row"><td>LVCU Direct ($5,000,000) + Syndication ($4,877,400)</td><td>$9,877,400</td><td>67.0%</td><td>Construction mortgage — Prime+2% (8.45%), 24-month, interest only</td><td>Discussion Paper issued</td></tr>
+    <tr class="total-row"><td>TOTAL — Private + Debt</td><td>$15,196,000</td><td>100%</td><td colspan="2">Fully covers project cost (excl. FF&amp;E and childcare fitout — funded separately)</td></tr>
+  </tbody>
+</table>
+
+<div class="two-col" style="margin-top:8pt;">
+  <div>
+    <div class="green-flag"><strong>Grant Applications (supplementary — not in primary stack):</strong><br>
+    NRCan OSCC Phase 1: $180,000 (submitted March 2026)<br>
+    NRCan OSCC Phase 2: $10,000,000 (to be submitted)<br>
+    South Peace Mackenzie Trust: $250,000 (application in progress)<br>
+    If awarded, grant funds reduce LVCU requirement and improve DSCR.</div>
+  </div>
+  <div>
+    <div class="navy-flag"><strong>LVCU Key Condition:</strong> All $5,318,600 equity must be injected into the project before LVCU advances any draws. Developer's land equity ($600,000) is already in the project. Balance of $4,718,600 from investor raise (Fulmer &amp; Co.).</div>
+    <div class="green-flag"><strong>Construction Cost Note:</strong> The $12,500,000 construction figure is Elias Range's working estimate for the modular build and on-site assembly. FF&amp;E (furnishings, $320,000) and childcare centre fitout ($130,000) are post-construction operational costs funded separately — from operating cash flow, Northern Health tenant improvement allowance, and YMCA BC operator contribution respectively. These are not included in the LVCU facility. The Quantity Surveyor condition precedent will confirm the construction figure prior to first LVCU draw.</div>
+  </div>
+</div>
+
+<!-- SECTION 4: LVCU TERM SHEET SUMMARY -->
+<div class="section-bar">Section 4 — LVCU Discussion Paper Terms (October 2024)</div>
+
+<table>
+  <thead><tr><th>Term</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Mortgage type</td><td>Commercial Credit Master Construction Mortgage</td></tr>
+    <tr><td>Total amount</td><td>$9,877,400 (LVCU $5,000,000 + Syndication $4,877,400)</td></tr>
+    <tr><td>LTV basis</td><td>65% of total construction cost OR "as complete" appraisal — whichever is lesser</td></tr>
+    <tr><td>Interest rate</td><td>LVCU Prime + 2.00% = 8.45% per annum (at Prime of 6.45%)</td></tr>
+    <tr><td>Term</td><td>24 months — construction period</td></tr>
+    <tr><td>Repayment during construction</td><td>Interest only — monthly</td></tr>
+    <tr><td>Interest holdback</td><td>$834,640 — held in restricted account; drawn monthly</td></tr>
+    <tr><td>Application fees</td><td>$50,000 total: $12,500 upfront (non-refundable) + $37,500 on drawdown + $1,000 review</td></tr>
+    <tr><td>Advance basis</td><td>Progressive draws — value in place. Min $100,000/draw. Max monthly frequency.</td></tr>
+    <tr><td>Takeout financing</td><td>LVCU to be given first opportunity for permanent financing post-construction</td></tr>
+    <tr><td>LVCU contact</td><td>Suzanne Bull, Director Commercial Credit Risk — (250) 784-3253</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 5: REVENUE MODEL -->
+<div class="section-bar">Section 5 — Revenue Model (Year 1 Stabilized)</div>
+
+<p style="font-size:8.5pt;color:#4a4a40;margin-bottom:8pt;">Residential rates are based on Northern Health master lease framework discussions at $4,200–$5,500/month for fully furnished, all-inclusive, professionally managed units. Rates are 20–30% below equivalent hotel costs in Dawson Creek ($5,400–$6,600/month hotel equivalent), providing documented cost savings to Northern Health and a clear procurement justification. Commercial rates reflect net lease basis for anchor tenants.</p>
+
+<table>
+  <thead><tr><th>Unit Type</th><th>Count</th><th>Rate/Month</th><th>Occupancy</th><th>Annual Revenue</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="unit-badge">STUDIO</span>Studio / 1-Bedroom — 56m² avg</td>
+      <td style="text-align:center">16</td><td>$4,200</td><td>92%</td><td>$741,888</td>
+    </tr>
+    <tr>
+      <td><span class="unit-badge">2-BED A</span>2-Bedroom Type A — 68m² avg</td>
+      <td style="text-align:center">8</td><td>$5,200</td><td>90%</td><td>$449,280</td>
+    </tr>
+    <tr>
+      <td><span class="unit-badge">2-BED B</span>2-Bedroom Type B — 74m² avg</td>
+      <td style="text-align:center">8</td><td>$5,500</td><td>90%</td><td>$475,200</td>
+    </tr>
+    <tr class="subtotal-row"><td>Residential Subtotal</td><td style="text-align:center">32</td><td>—</td><td>91% blended</td><td>$1,666,368</td></tr>
+    <tr><td>Café — 59m² (ground floor)</td><td style="text-align:center">1</td><td>$2,200</td><td>100%</td><td>$26,400</td></tr>
+    <tr><td>Community Hall — 180m²</td><td style="text-align:center">1</td><td>$3,500</td><td>100%</td><td>$42,000</td></tr>
+    <tr><td>Childcare / YMCA BC — 264m²</td><td style="text-align:center">1</td><td>$4,800</td><td>100%</td><td>$57,600</td></tr>
+    <tr class="subtotal-row"><td>Commercial Subtotal</td><td style="text-align:center">3</td><td>—</td><td>100%</td><td>$126,000</td></tr>
+    <tr class="total-row"><td>GROSS EFFECTIVE REVENUE (Year 1)</td><td style="text-align:center">35</td><td>—</td><td>—</td><td>$1,792,368</td></tr>
+  </tbody>
+</table>
+
+<div class="green-flag"><strong>NH Savings Context:</strong> At an average residential rate of $4,800/month, Northern Health saves an estimated $414,720/year versus current hotel accommodation costs — providing a clear procurement rationale and making this a cost-reduction initiative for the health authority, not simply a housing expense.</div>
+
+<!-- SECTION 6: OPERATING EXPENSES -->
+<div class="section-bar">Section 6 — Operating Expenses (Year 1)</div>
+
+<table>
+  <thead><tr><th>Expense Category</th><th>Annual Amount</th><th>Basis</th></tr></thead>
+  <tbody>
+    <tr><td>Property Management (8% of gross revenue)</td><td>$143,389</td><td>Industry standard for professionally managed residential</td></tr>
+    <tr><td>Utilities — included in tenant rate (32 units)</td><td>$76,800</td><td>$200/unit/month — heat, hydro, water, internet</td></tr>
+    <tr><td>Insurance — building and liability</td><td>$42,000</td><td>Full replacement value coverage per LVCU requirement</td></tr>
+    <tr><td>Property taxes (estimated)</td><td>$38,000</td><td>City of Dawson Creek — to be confirmed with assessment</td></tr>
+    <tr><td>Maintenance and repairs</td><td>$45,000</td><td>Preventive + reactive; modular construction reduces year-1 cost</td></tr>
+    <tr><td>Landscaping and snow removal</td><td>$12,000</td><td>Northern climate — year-round requirement</td></tr>
+    <tr><td>Administration and accounting</td><td>$18,000</td><td>Bookkeeping, reporting, compliance</td></tr>
+    <tr><td>Furnishing reserve ($150/unit/month)</td><td>$57,600</td><td>Replacement reserve for furnished units — standard workforce housing</td></tr>
+    <tr><td>Vacancy and bad debt reserve (3%)</td><td>$53,771</td><td>Conservative — institutional tenancy reduces actual risk</td></tr>
+    <tr class="total-row"><td>TOTAL OPERATING EXPENSES</td><td>$486,560</td><td>Operating Expense Ratio: 27.1%</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 7: NOI & DEBT SERVICE -->
+<div class="section-bar">Section 7 — Net Operating Income &amp; Debt Service Coverage</div>
+
+<table>
+  <thead><tr><th>Line Item</th><th>Amount</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Gross Effective Revenue (Year 1)</td><td>$1,792,368</td><td></td></tr>
+    <tr><td>Total Operating Expenses</td><td>($486,560)</td><td></td></tr>
+    <tr class="green-row"><td>NET OPERATING INCOME (NOI)</td><td>$1,305,808</td><td>27.1% expense ratio</td></tr>
+    <tr><td>Annual Debt Service — LVCU $9,877,400 @ 8.45%, 25yr</td><td>($950,436)</td><td>Post-construction permanent financing basis</td></tr>
+    <tr class="target-row"><td>NET CASH FLOW (Pre-Tax, Year 1)</td><td>$355,372</td><td></td></tr>
+    <tr class="gold-row"><td>DEBT SERVICE COVERAGE RATIO (DSCR)</td><td>1.374×</td><td>Exceeds standard 1.20× minimum requirement ✓</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 8: VALUATION -->
+<div class="section-bar">Section 8 — Completed Valuation &amp; Development Profit</div>
+
+<table>
+  <thead><tr><th>Cap Rate</th><th>Implied Completed Value</th><th>vs. Project Cost $15,196,000</th><th>Basis</th></tr></thead>
+  <tbody>
+    <tr class="yellow-row"><td>6.50%</td><td>$20,089,000</td><td style="color:#2c5f3a;font-weight:600;">+$4,893,000</td><td>Major urban rate — not applicable here</td></tr>
+    <tr class="green-row"><td>7.00%</td><td>$18,654,000</td><td style="color:#2c5f3a;font-weight:600;">+$3,458,000</td><td>Strong institutional tenancy argument</td></tr>
+    <tr class="target-row"><td>7.25% ★ Base Case</td><td>$18,011,000</td><td>+$2,815,000</td><td>Institutional tenancy premium — recommended defensible rate</td></tr>
+    <tr class="green-row"><td>7.50%</td><td>$17,411,000</td><td style="color:#2c5f3a;font-weight:600;">+$2,215,000</td><td>Conservative northern market rate</td></tr>
+    <tr class="yellow-row"><td>8.00%</td><td>$16,323,000</td><td style="color:#b8860b;font-weight:600;">+$1,127,000</td><td>Stressed scenario — still above cost</td></tr>
+  </tbody>
+</table>
+
+<div class="navy-flag"><strong>Cap Rate Rationale — 7.25%:</strong> Standard Dawson Creek commercial cap rates are 7.5–9.0%. A downward adjustment to 7.25% is justified on the basis of: (1) institutional-grade tenancy with Northern Health as anchor, (2) federal OSCC grant backing reducing project risk, (3) purpose-built nature of the asset with a defined long-term demand base, and (4) City of Dawson Creek formal endorsement reducing regulatory risk. This rate will be supported by the "as complete" appraisal required as a condition precedent by LVCU.</div>
+
+<div class="page-break"></div>
+
+<!-- SECTION 9: 5-YEAR PROJECTIONS -->
+<div class="section-bar">Section 9 — Five-Year Financial Projections</div>
+
+<table>
+  <thead><tr><th>Year</th><th>Gross Revenue</th><th>OpEx</th><th>NOI</th><th>Debt Service</th><th>Net Cash Flow</th><th>DSCR</th><th>Value @ 7.25%</th></tr></thead>
+  <tbody>
+    <tr class="highlight-row"><td>Year 1</td><td>$1,792,368</td><td>$486,560</td><td>$1,305,808</td><td>$950,436</td><td>$355,372</td><td>1.374×</td><td>$18,011,000</td></tr>
+    <tr><td>Year 2</td><td>$1,819,254</td><td>$493,859</td><td>$1,325,395</td><td>$950,436</td><td>$374,959</td><td>1.395×</td><td>$18,281,000</td></tr>
+    <tr><td>Year 3</td><td>$1,846,542</td><td>$501,267</td><td>$1,345,276</td><td>$950,436</td><td>$394,840</td><td>1.415×</td><td>$18,555,000</td></tr>
+    <tr><td>Year 4</td><td>$1,874,240</td><td>$508,786</td><td>$1,365,455</td><td>$950,436</td><td>$415,019</td><td>1.437×</td><td>$18,834,000</td></tr>
+    <tr class="green-row"><td>Year 5</td><td>$1,902,354</td><td>$516,418</td><td>$1,385,937</td><td>$950,436</td><td>$435,501</td><td>1.458×</td><td>$19,116,000</td></tr>
+  </tbody>
+</table>
+<p style="font-size:7.5pt;color:#6b6b60;margin-top:3pt;">Assumptions: 1.5% annual revenue growth; operating expense ratio held constant at 27.1%; debt service fixed at post-construction permanent financing amount.</p>
+
+<!-- SECTION 10: SENSITIVITY ANALYSIS -->
+<div class="section-bar">Section 10 — Sensitivity Analysis</div>
+
+<table>
+  <thead><tr><th>Scenario</th><th>Revenue Change</th><th>NOI</th><th>DSCR</th><th>Net Cash Flow</th></tr></thead>
+  <tbody>
+    <tr class="green-row"><td>Base Case (91% occ, $4,800 avg rate)</td><td>—</td><td>$1,305,808</td><td>1.374×</td><td>$355,372</td></tr>
+    <tr><td>Conservative (85% occ, $4,500 avg rate)</td><td>−11.4%</td><td>$1,157,002</td><td>1.217×</td><td>$206,566</td></tr>
+    <tr><td>Downside (80% occ, $4,200 avg rate)</td><td>−19.7%</td><td>$1,047,820</td><td>1.102×</td><td>$97,384</td></tr>
+    <tr class="yellow-row"><td>Stress (75% occ, $3,800 avg rate)</td><td>−30.2%</td><td>$910,867</td><td>0.958×</td><td>−$39,569</td></tr>
+    <tr class="green-row"><td>Upside (95% occ, $5,000 avg rate)</td><td>+9.4%</td><td>$1,428,348</td><td>1.503×</td><td>$477,912</td></tr>
+  </tbody>
+</table>
+
+<div class="green-flag"><strong>Sensitivity Note:</strong> At conservative occupancy (85%) and reduced rates ($4,500 avg), DSCR remains at 1.217× — comfortably above the 1.20× threshold. Only the stress scenario (75% occupancy + $3,800 rates) produces a DSCR below 1.0×. Given Northern Health's formal endorsement and documented zero vacancy in Dawson Creek since 2008, a stress scenario of this depth would require simultaneous occupancy and rate deterioration that is not consistent with the market evidence.</div>
+
+<!-- SECTION 11: CMHC REFINANCING PATH -->
+<div class="section-bar">Section 11 — Post-Construction Refinancing Path (CMHC MLI Select)</div>
+
+<div class="prose">
+<p>Upon stabilization (typically 12 months post-completion), the project qualifies for CMHC MLI Select insured financing — BC's most favourable permanent mortgage product for purpose-built rental housing. Key advantages:</p>
+</div>
+
+<table>
+  <thead><tr><th>Feature</th><th>Conventional (LVCU)</th><th>CMHC MLI Select</th></tr></thead>
+  <tbody>
+    <tr><td>Amortization</td><td>25 years</td><td>Up to 50 years</td></tr>
+    <tr><td>LTV ratio</td><td>65%</td><td>Up to 95%</td></tr>
+    <tr><td>Interest rate</td><td>Prime + 2% (8.45%)</td><td>Significantly below conventional (~4.5–5.5% insured)</td></tr>
+    <tr><td>Annual debt service (est., on $9.9M)</td><td>$950,436</td><td>~$490,000–$560,000</td></tr>
+    <tr class="green-row"><td>Improvement in annual cash flow</td><td>—</td><td>+$390,000–$460,000/year</td></tr>
+    <tr class="green-row"><td>DSCR improvement</td><td>1.374×</td><td>~2.3×–2.7×</td></tr>
+  </tbody>
+</table>
+
+<div class="green-flag"><strong>CMHC Path:</strong> Healthcare-specific, purpose-built rental in an underserved northern community is well-aligned with CMHC MLI Select criteria. Refinancing into CMHC post-stabilization is a primary long-term strategy — dramatically improving cash flow and investor returns while releasing construction equity for Phase 2 development.</div>
+
+<!-- SECTION 12: DEVELOPMENT TEAM -->
+<div class="section-bar">Section 12 — Project &amp; Delivery Team</div>
+
+<table>
+  <thead><tr><th>Role</th><th>Entity</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Developer / Sponsor</td><td>Elias Range Development Corp.</td><td>Austin James Neill — 34+ units operating, 6 BC hospitals, 4-year track record</td></tr>
+    <tr><td>Architect / Managing Consultant</td><td>BOS Studio Architecture Ltd.</td><td>AIBC registered. Serving as architect-of-record and design manager throughout</td></tr>
+    <tr><td>Healthcare Anchor Tenant</td><td>Northern Health</td><td>Formal letter of support — housing confirmed as primary recruitment barrier</td></tr>
+    <tr><td>Community Operator</td><td>YMCA BC</td><td>Childcare and community services partner — ground floor operations</td></tr>
+    <tr><td>Municipal Partner</td><td>City of Dawson Creek</td><td>Land, zoning, and infrastructure cooperation — formal letter of support</td></tr>
+    <tr><td>Federal Application</td><td>NRCan OSCC</td><td>Phase 1 submitted March 2026; Phase 2 to follow</td></tr>
+    <tr><td>Primary Lender</td><td>Lake View Credit Union</td><td>Suzanne Bull, Director Commercial Credit Risk — (250) 784-3253</td></tr>
+  </tbody>
+</table>
+
+<!-- SECTION 13: CONDITIONS PRECEDENT STATUS -->
+<div class="section-bar">Section 13 — LVCU Conditions Precedent — Status</div>
+
+<table>
+  <thead><tr><th>Condition</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Quantity Surveyor review — project budget $15,196,000 confirmed sufficient</td><td style="color:#b8860b;font-weight:600;">To be commissioned</td></tr>
+    <tr><td>QS confirmation of equity downpayment in project prior to mortgage funding</td><td style="color:#b8860b;font-weight:600;">To be confirmed (investor raise in progress)</td></tr>
+    <tr><td>Satisfactory Geo-Technical Report</td><td style="color:#b8860b;font-weight:600;">Ordered — Q1 2026</td></tr>
+    <tr><td>Satisfactory Environmental Phase 1 Report</td><td style="color:#b8860b;font-weight:600;">Ordered — Q1 2026</td></tr>
+    <tr><td>Building Permits confirmed by QS</td><td style="color:#b8860b;font-weight:600;">DP submission Q1 2026</td></tr>
+    <tr><td>Approved Plans</td><td style="color:#2c5f3a;font-weight:600;">Concept design complete — BOS Studio</td></tr>
+    <tr><td>Course of Construction Insurance</td><td style="color:#b8860b;font-weight:600;">To be arranged at construction start</td></tr>
+    <tr><td>Survey / Title Insurance</td><td style="color:#b8860b;font-weight:600;">To be ordered</td></tr>
+    <tr><td>Interest Reserve — $834,640</td><td style="color:#b8860b;font-weight:600;">Included in project budget — to be funded</td></tr>
+    <tr><td>Appraisal "As Complete"</td><td style="color:#b8860b;font-weight:600;">To be commissioned — supports 7.25% cap rate basis</td></tr>
+    <tr><td>Northern Health letter of support</td><td style="color:#2c5f3a;font-weight:600;">✓ Received — March 2026</td></tr>
+    <tr><td>City of Dawson Creek letter of support</td><td style="color:#2c5f3a;font-weight:600;">✓ Received — March 2026</td></tr>
+    <tr><td>YMCA BC partnership letter</td><td style="color:#2c5f3a;font-weight:600;">✓ Received — March 2026</td></tr>
+    <tr><td>NRCan OSCC Phase 1 application</td><td style="color:#2c5f3a;font-weight:600;">✓ Submitted — March 2026</td></tr>
+    <tr><td>Equity injection ($5,318,600) prior to advances</td><td style="color:#b8860b;font-weight:600;">Fulmer &amp; Co. VC raise — in progress</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<div class="section-label">Prepared by</div>
+<p style="font-size:9pt;color:#4a4a40;margin:0;"><strong>Austin Neill</strong> — Managing Partner, Elias Range Development Corporation<br>
+austin@eliasrangestays.ca &nbsp;·&nbsp; (250) 719-8085 &nbsp;·&nbsp; eliasrangestays.ca &nbsp;·&nbsp; Dawson Creek, BC<br>
+<span style="font-size:7.5pt;">Architect: BOS Studio Architecture Ltd. — bos.studio &nbsp;·&nbsp; AIBC-E003566<br>
+Lender Contact: Suzanne Bull, Director Commercial Credit Risk, Lake View Credit Union — (250) 784-3253</span></p>
+
+</body>
+</html>

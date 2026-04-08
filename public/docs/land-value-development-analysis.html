@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../BobZimmer-Docs/shared.css">
+<title>Land Value & Development Analysis — LVCU Security Position</title>
+<style>
+  .watermark { text-align:center; font-size:7pt; color:#aaa; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:6pt; }
+  .section-bar { background:#1d3d6e; color:#fff; padding:5pt 10pt; margin:14pt 0 8pt; font-size:8pt; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; border-radius:2pt; }
+  .section-bar.green { background:#2c5f3a; }
+  .section-bar.gold { background:#b8860b; }
+
+  .total-row td { background:#1d3d6e !important; color:#fff !important; font-weight:700; }
+  .green-row td { background:#e6f2ea !important; font-weight:700; color:#1a3d22 !important; }
+  .gold-row td { background:#fdf3d4 !important; font-weight:700; color:#5a3a00 !important; }
+  .highlight-row td { background:#eef2f8 !important; font-weight:600; color:#1d3d6e !important; }
+  .red-row td { background:#fff0f0 !important; color:#b54040 !important; }
+
+  .four-col { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8pt; margin:10pt 0; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10pt; margin:10pt 0; }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12pt; margin:10pt 0; }
+
+  .value-stage {
+    border:1.5pt solid var(--bc, #1d3d6e);
+    border-radius:4pt; overflow:hidden; margin-bottom:10pt;
+  }
+  .value-stage-header {
+    background:var(--bc, #1d3d6e); color:#fff;
+    padding:7pt 12pt; display:flex; justify-content:space-between; align-items:center;
+  }
+  .value-stage-header .stage-num { font-size:7pt; letter-spacing:0.15em; text-transform:uppercase; opacity:0.8; }
+  .value-stage-header .stage-name { font-weight:700; font-size:10.5pt; }
+  .value-stage-header .stage-val { font-family:'Playfair Display',serif; font-size:16pt; font-weight:700; }
+  .value-stage-body { padding:8pt 12pt; background:#fff; font-size:8.5pt; color:#4a4a40; line-height:1.6; }
+  .vs-detail { display:flex; justify-content:space-between; padding:2pt 0; border-bottom:0.5pt solid #eee; }
+  .vs-detail:last-child { border-bottom:none; }
+  .vs-detail .vs-lbl { color:#6b6b60; }
+  .vs-detail .vs-val { font-weight:600; color:#1a1a18; }
+
+  .kpi { text-align:center; padding:10pt; border-radius:3pt; }
+  .kpi.navy { background:#1d3d6e; }
+  .kpi.green { background:#e6f2ea; border:0.75pt solid #b8d4be; }
+  .kpi.gold { background:#fdf3d4; border:0.75pt solid #e8c870; }
+  .kpi .kpi-num { font-family:'Playfair Display',serif; font-size:18pt; font-weight:700; line-height:1; display:block; }
+  .kpi.navy .kpi-num { color:#a8c9b0; }
+  .kpi.green .kpi-num { color:#2c5f3a; }
+  .kpi.gold .kpi-num { color:#b8860b; }
+  .kpi .kpi-lbl { font-size:6.5pt; text-transform:uppercase; letter-spacing:0.1em; font-weight:600; margin-top:3pt; display:block; }
+  .kpi.navy .kpi-lbl { color:rgba(255,255,255,0.65); }
+  .kpi.green .kpi-lbl { color:#2c5f3a; }
+  .kpi.gold .kpi-lbl { color:#b8860b; }
+
+  .green-flag { background:#e6f2ea; border:0.75pt solid #b8d4be; border-radius:3pt; padding:7pt 10pt; margin:8pt 0; font-size:8.5pt; color:#1a3d22; }
+  .navy-flag { background:#eef2f8; border:0.75pt solid #c0d0e8; border-radius:3pt; padding:7pt 10pt; margin:8pt 0; font-size:8.5pt; color:#1d2a4a; }
+  .flag { background:#fff3cd; border:0.75pt solid #ffc107; border-radius:3pt; padding:7pt 10pt; margin:8pt 0; font-size:8.5pt; color:#5a4a00; }
+  .red-flag { background:#fff0f0; border:0.75pt solid #f0c0c0; border-radius:3pt; padding:7pt 10pt; margin:8pt 0; font-size:8.5pt; color:#b54040; }
+
+  .arrow-row { text-align:center; font-size:16pt; color:#1d3d6e; margin:2pt 0; }
+  .page-break { page-break-before:always; }
+  .appraisal-badge {
+    display:inline-block; background:#1d3d6e; color:#fff;
+    font-size:7pt; font-weight:700; letter-spacing:0.1em;
+    text-transform:uppercase; padding:2pt 6pt; border-radius:2pt; margin-right:4pt;
+  }
+  .lvcu-check {
+    background:#2c5f3a; color:#fff;
+    border-radius:3pt; padding:10pt 14pt; margin:10pt 0;
+  }
+  .lvcu-check .lc-title { font-weight:700; font-size:10pt; margin-bottom:6pt; }
+  .lvcu-check table { font-size:8.5pt; }
+  .lvcu-check th { background:rgba(255,255,255,0.15); color:#fff; border-color:rgba(255,255,255,0.2); }
+  .lvcu-check td { color:rgba(255,255,255,0.9); border-color:rgba(255,255,255,0.15); }
+  .lvcu-check .ok { color:#a8c9b0; font-weight:700; }
+  .lvcu-check .warn { color:#ffd580; font-weight:700; }
+</style>
+</head>
+<body>
+
+<div class="doc-footer">
+  <span class="footer-left">Elias Range Development Corp. — Land Value &amp; Development Analysis</span>
+  <span class="footer-right">Confidential — Lakeview Credit Union · March 2026</span>
+</div>
+
+<div class="watermark">Confidential — Prepared for Lakeview Credit Union — March 2026</div>
+
+<div class="doc-header">
+  <div class="brand-block">
+    <div class="brand-name">Elias Range Stays</div>
+    <div class="brand-sub">Elias Range Development Corporation</div>
+  </div>
+  <div class="doc-meta">
+    <div class="doc-type">Land Value &amp; Development Analysis</div>
+    LVCU Security &amp; Equity Position<br>
+    10612 &amp; 10620 10th Street, Dawson Creek · March 2026
+  </div>
+</div>
+
+<div class="title-block">
+  <div class="eyebrow">Security Position · Value Progression · LVCU 25% Equity Covenant</div>
+  <h1>Land Value Through Development:<br>How the Security Grows at Every Stage</h1>
+  <p class="subtitle">This document establishes the value of the subject properties at each stage of development — from current as-is appraised value, through discharge of existing mortgage, demolition, development permit, and as-complete — demonstrating that Lakeview Credit Union's 25% equity requirement is maintained and significantly improved at every milestone.</p>
+</div>
+
+<!-- CURRENT APPRAISAL SUMMARY -->
+<div class="section-bar">Section 1 — Current Appraised Value (Certified Appraisal, December 2025)</div>
+
+<p style="font-size:9pt;color:#4a4a40;margin-bottom:8pt;">
+  <span class="appraisal-badge">Certified Appraisal</span>
+  Prepared by <strong>Nearhood Commercial Appraisals</strong>, a division of Niemi LaPorte &amp; Dowle Appraisals Ltd. Signed by Terry Dowle, AACI, P.App., RI, CRP and Dustin Lillico, CRA, P.App. Effective date: December 10, 2025. File No. 217178-25. Prepared for Austin Neill and authorized user: Lakeview Credit Union.
+</p>
+
+<table>
+  <thead><tr><th>Property</th><th>Address</th><th>Site Area</th><th>Current Use</th><th>Land Value</th><th>Building Value</th><th>Total Value</th></tr></thead>
+  <tbody>
+    <tr><td>10620 10th Street (3 lots)</td><td>Lots 8, 9, 10 Block 26 PGP3792</td><td>13,506 ft² (0.31 ac)</td><td>Fourplex — legally nonconforming (C-2 zone)</td><td>$122,000</td><td>$258,000</td><td>$380,000</td></tr>
+    <tr><td>10612 10th Street (1 lot)</td><td>Lot B, Plan PGP12748</td><td>5,400 ft² (0.12 ac)</td><td>Vacant lot with shed</td><td>$49,000</td><td>$0</td><td>$49,000</td></tr>
+    <tr class="total-row"><td>COMBINED</td><td>4 lots — 18,906 ft² total</td><td>18,906 ft² (0.43 ac)</td><td>C-2 Commercial Zone</td><td>$171,000</td><td>$258,000</td><td>$429,000</td></tr>
+  </tbody>
+</table>
+
+<div class="two-col" style="margin-top:10pt;">
+  <div>
+    <p style="font-size:8.5pt;color:#4a4a40;"><strong>Land Rate Used:</strong> $9.00/ft² — based on 4 comparable C-2 commercial land sales in Dawson Creek and Fort St. John (July 2024 – July 2025). Comparable range: $5.36–$15.33/ft². Subject rate reflects location, two-road access (10 Street &amp; 102 Avenue), and combined site size.</p>
+    <p style="font-size:8.5pt;color:#4a4a40;margin-top:4pt;"><strong>Highest &amp; Best Use:</strong> As vacant — commercial building with retail or office setup under C-2 zoning. As improved — holding property until redevelopment is feasible. Fourplex rental income offsets carrying costs during development timeline.</p>
+  </div>
+  <div>
+    <p style="font-size:8.5pt;color:#4a4a40;"><strong>Existing Mortgage:</strong> BEACON FINANCING INC. — registered mortgage (INTER ALIA) against all 4 titles at Prince George Land Title Office. Registration number CB1717755, dated November 18, 2024. <strong>To be discharged via LVCU takeout.</strong></p>
+    <p style="font-size:8.5pt;color:#4a4a40;margin-top:4pt;"><strong>Exposure Time:</strong> 6–12 months per appraiser. Reasonable for C-2 commercial land in Dawson Creek. Limited supply of serviced commercial lots of this size.</p>
+  </div>
+</div>
+
+<!-- COMPARABLE LAND SALES -->
+<div class="section-bar gold">Section 2 — Market Evidence: Comparable C-2 Land Sales (From Certified Appraisal)</div>
+
+<table>
+  <thead><tr><th>#</th><th>Address</th><th>Location</th><th>Sale Date</th><th>Sale Price</th><th>Site Area</th><th>Rate/ft²</th><th>Appraiser Note</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>10325 10 Street</td><td>Dawson Creek</td><td>Jul 2025</td><td>$95,000</td><td>10,200 ft²</td><td>$9.31/ft²</td><td><strong>Most similar</strong> to subject — C-2, similar location</td></tr>
+    <tr><td>2</td><td>1033/1037 Alaska Avenue</td><td>Dawson Creek</td><td>Jul 2025</td><td>$45,000</td><td>8,400 ft²</td><td>$5.36/ft²</td><td>Similar — C-3 zoning (inferior); market conditions inferior</td></tr>
+    <tr><td>3</td><td>10024 98 Avenue</td><td>Fort St. John</td><td>Sep 2024</td><td>$115,000</td><td>7,500 ft²</td><td>$15.33/ft²</td><td>Superior — Fort St. John location premium, smaller lot</td></tr>
+    <tr><td>4</td><td>10020 98 Avenue</td><td>Fort St. John</td><td>Sep 2024</td><td>$115,000</td><td>9,300 ft²</td><td>$12.37/ft²</td><td>Superior — Fort St. John location premium</td></tr>
+    <tr class="highlight-row"><td colspan="6">Concluded Rate Applied to Subject</td><td><strong>$9.00/ft²</strong></td><td>Weighted toward Comps 1 &amp; 2 (Dawson Creek market)</td></tr>
+  </tbody>
+</table>
+
+<div class="navy-flag"><strong>Market Commentary (from appraiser):</strong> "Limited lots of similar size and utility available for sale; few lots available for development outside city limits." The subject's combined 0.43-acre C-2 site with two-road access and alley is among the larger development-ready commercial parcels available in Dawson Creek. Scarcity of comparable sites supports sustained and potentially increasing land values as development proceeds.</div>
+
+<div class="page-break"></div>
+
+<!-- VALUE PROGRESSION -->
+<div class="section-bar">Section 3 — Value Progression: Current → Development Permit → As Complete</div>
+
+<p style="font-size:8.5pt;color:#4a4a40;margin-bottom:10pt;">The following stages illustrate the progression of land value from today through to a completed development. Each stage is grounded in: (1) the December 2025 certified appraisal as the baseline, (2) established appraisal methodology for land with entitlements, and (3) the income-capitalization value of the completed project. This is the value progression Lakeview Credit Union can rely on as security.</p>
+
+<!-- STAGE 1 -->
+<div class="value-stage" style="--bc:#6b6b60;">
+  <div class="value-stage-header">
+    <div><div class="stage-num">Stage 1 — Today</div><div class="stage-name">As-Is (Current Appraised Value)</div></div>
+    <div class="stage-val">$429,000</div>
+  </div>
+  <div class="value-stage-body">
+    <div class="vs-detail"><span class="vs-lbl">Land value — 18,906 ft² @ $9.00/ft²</span><span class="vs-val">$171,000</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Building value — 4-plex, circa 1950, 2,868 ft²</span><span class="vs-val">$258,000</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Existing mortgage (Beacon Financing)</span><span class="vs-val" style="color:#b54040;">~($260,000)</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Net equity today (approx.)</span><span class="vs-val" style="color:#2c5f3a;">~$169,000</span></div>
+    <div style="margin-top:6pt;font-size:8pt;color:#6b6b60;"><em>Source: Nearhood Commercial Appraisals, File 217178-25, Effective December 10, 2025. Appraisers: Terry Dowle AACI, P.App. and Dustin Lillico CRA, P.App.</em></div>
+  </div>
+</div>
+
+<div class="arrow-row">↓</div>
+
+<!-- STAGE 2 -->
+<div class="value-stage" style="--bc:#b8860b;">
+  <div class="value-stage-header" style="background:#b8860b;">
+    <div><div class="stage-num">Stage 2 — Beacon Mortgage Discharged + 4-Plex Demolished</div><div class="stage-name">Cleared, Serviced, Unencumbered Land</div></div>
+    <div class="stage-val">$195,000–$235,000</div>
+  </div>
+  <div class="value-stage-body">
+    <div class="vs-detail"><span class="vs-lbl">Existing mortgage discharged via LVCU takeout</span><span class="vs-val" style="color:#2c5f3a;">✓ Clear title</span></div>
+    <div class="vs-detail"><span class="vs-lbl">4-plex demolished — building contribution removed</span><span class="vs-val" style="color:#b54040;">($258,000 building removed)</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Demolition cost (est.)</span><span class="vs-val" style="color:#b54040;">~($25,000–$35,000)</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Land value — 18,906 ft² cleared C-2 commercial</span><span class="vs-val">$171,000</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Premium: cleared + serviced + development-ready</span><span class="vs-val">+$24,000–$64,000</span></div>
+    <div class="vs-detail"><span class="vs-lbl"><strong>Estimated cleared land value</strong></span><span class="vs-val"><strong>$195,000–$235,000</strong></span></div>
+    <div style="margin-top:6pt;font-size:8pt;color:#6b6b60;"><em>Basis: Demolition removes nonconforming use and holding cost drag. Cleared, serviced C-2 land in supply-constrained Dawson Creek trades at a premium to encumbered/improved land. Rate range $10.32–$12.43/ft² — within the $9.00–$15.33 comparable range from the certified appraisal.</em></div>
+  </div>
+</div>
+
+<div class="arrow-row">↓</div>
+
+<div class="page-break"></div>
+
+<!-- STAGE 3 -->
+<div class="value-stage" style="--bc:#1d3d6e;">
+  <div class="value-stage-header">
+    <div><div class="stage-num">Stage 3 — Development Permit Issued</div><div class="stage-name">Permitted, Entitled Commercial Land (C-2, 5-Storey Mixed Use, 32 Units)</div></div>
+    <div class="stage-val">$450,000–$650,000</div>
+  </div>
+  <div class="value-stage-body">
+    <div class="vs-detail"><span class="vs-lbl">Development permit issued — defined use approved</span><span class="vs-val" style="color:#2c5f3a;">✓ Entitlement achieved</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Land area (18,906 ft²) with approved 3,461m² GFA</span><span class="vs-val">18,906 ft²</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Approved density — 5 storeys, 32 units + 3 commercial</span><span class="vs-val">3,461m² approved</span></div>
+    <div class="vs-detail"><span class="vs-lbl">OSCC federal grant application submitted</span><span class="vs-val" style="color:#2c5f3a;">✓ Federal attention confirmed</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Northern Health, City of DC, YMCA BC — letters of support</span><span class="vs-val" style="color:#2c5f3a;">✓ Institutional backing</span></div>
+    <div class="vs-detail"><span class="vs-lbl"><strong>Estimated permitted land value</strong></span><span class="vs-val"><strong>$450,000–$650,000</strong></span></div>
+    <div style="margin-top:6pt;font-size:8pt;color:#6b6b60;"><em>Basis: Entitlement premium is well-documented in Canadian appraisal practice. A development permit converts speculative potential into a confirmed right — reducing buyer risk and commanding a premium of 2–4× raw land value for institutional mixed-use projects. The comparable Fort St. John sales at $12.37–$15.33/ft² (superior market) support the upper range. Applied to 18,906 ft² at $23.80–$34.38/ft².</em></div>
+  </div>
+</div>
+
+<div class="arrow-row">↓</div>
+
+<!-- STAGE 4 -->
+<div class="value-stage" style="--bc:#2c5f3a;">
+  <div class="value-stage-header" style="background:#2c5f3a;">
+    <div><div class="stage-num">Stage 4 — As Complete (Stabilized Operations)</div><div class="stage-name">Income-Producing Asset — Capitalized Value</div></div>
+    <div class="stage-val">$18,011,000</div>
+  </div>
+  <div class="value-stage-body">
+    <div class="vs-detail"><span class="vs-lbl">Gross effective revenue (NH lease rates)</span><span class="vs-val">$1,792,368/yr</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Net Operating Income (27.1% opex ratio)</span><span class="vs-val">$1,305,808/yr</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Capitalization rate (institutional tenancy — 7.25%)</span><span class="vs-val">7.25%</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Completed market value (NOI ÷ cap rate)</span><span class="vs-val"><strong>$18,011,000</strong></span></div>
+    <div class="vs-detail"><span class="vs-lbl">Total project cost</span><span class="vs-val">$15,196,000</span></div>
+    <div class="vs-detail"><span class="vs-lbl">Gross development profit</span><span class="vs-val" style="color:#2c5f3a;font-weight:700;">+$2,815,000</span></div>
+    <div style="margin-top:6pt;font-size:8pt;color:#6b6b60;"><em>Source: Elias Range Development proforma (March 2026). Cap rate 7.25% supported by institutional Northern Health anchor tenancy, federal OSCC backing, and City of Dawson Creek partnership. Standard Dawson Creek commercial rate: 7.5–9.0%. Institutional tenancy justifies downward adjustment.</em></div>
+  </div>
+</div>
+
+<!-- LVCU SECURITY ANALYSIS -->
+<div class="section-bar">Section 4 — LVCU Security Position: 25% Equity Covenant Analysis</div>
+
+<p style="font-size:8.5pt;color:#4a4a40;margin-bottom:10pt;">LVCU requires the borrower to maintain 25% equity in the property at all times. The following table demonstrates that this covenant is met — and significantly exceeded — at every stage of development. This analysis is the primary purpose of this document.</p>
+
+<table>
+  <thead><tr><th>Stage</th><th>Property Value</th><th>LVCU Exposure</th><th>Equity $</th><th>Equity %</th><th>Meets 25%?</th></tr></thead>
+  <tbody>
+    <tr class="red-row">
+      <td>Stage 1 — Current (with Beacon mortgage)</td>
+      <td>$429,000</td>
+      <td>$260,000 (Beacon)</td>
+      <td>$169,000</td>
+      <td>39.4%</td>
+      <td style="font-weight:700;color:#2c5f3a;">✓ Yes</td>
+    </tr>
+    <tr>
+      <td>Stage 2a — Beacon discharged, 4-plex standing</td>
+      <td>$429,000</td>
+      <td>$260,000 (LVCU takeout)</td>
+      <td>$169,000</td>
+      <td>39.4%</td>
+      <td style="font-weight:700;color:#2c5f3a;">✓ Yes</td>
+    </tr>
+    <tr>
+      <td>Stage 2b — Beacon discharged, 4-plex demolished</td>
+      <td>$195,000–$235,000</td>
+      <td>$260,000 (LVCU)</td>
+      <td>−$65,000–$25,000 est.</td>
+      <td>−33%–11%</td>
+      <td style="font-weight:700;color:#b54040;">⚠️ Below 25%</td>
+    </tr>
+    <tr class="highlight-row">
+      <td>Stage 3 — Development Permit issued</td>
+      <td>$450,000–$650,000</td>
+      <td>$260,000 (LVCU)</td>
+      <td>$190,000–$390,000</td>
+      <td>42%–60%</td>
+      <td style="font-weight:700;color:#2c5f3a;">✓ Yes — strongly</td>
+    </tr>
+    <tr class="highlight-row">
+      <td>Stage 3 + Equity injected (investors/grants)</td>
+      <td>$450,000–$650,000</td>
+      <td>$260,000 (LVCU)</td>
+      <td>$190,000–$390,000</td>
+      <td>42%–60%</td>
+      <td style="font-weight:700;color:#2c5f3a;">✓ Yes — strongly</td>
+    </tr>
+    <tr>
+      <td>Construction phase (LVCU draws to $9,877,400)</td>
+      <td>Rising with construction value</td>
+      <td>$9,877,400 (max)</td>
+      <td>$5,318,600 (equity in)</td>
+      <td>35.0%</td>
+      <td style="font-weight:700;color:#2c5f3a;">✓ Yes</td>
+    </tr>
+    <tr class="green-row">
+      <td>Stage 4 — As Complete (stabilized)</td>
+      <td>$18,011,000</td>
+      <td>$9,877,400 (LVCU)</td>
+      <td>$8,133,600</td>
+      <td>45.2%</td>
+      <td style="font-weight:700;">✓ Yes — 45.2%</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="flag"><strong>⚠️ Stage 2b — Short Window Below 25% Covenant:</strong> The brief period between demolition of the 4-plex and issuance of the development permit represents the only window where the land value (cleared, pre-permit) may be below the LVCU loan balance. This window is managed as follows:</div>
+
+<div class="navy-flag">
+  <strong>Mitigation for Stage 2b (Demolition Pre-Permit):</strong>
+  <ul style="margin-top:5pt;padding-left:12pt;font-size:8.5pt;">
+    <li>Demolition will not commence until Development Permit is in hand — eliminating the below-25% window entirely</li>
+    <li>Development Permit submission is Q1 2026 — permit typically issued within 60–120 days in Dawson Creek</li>
+    <li>Alternatively: ERS can provide additional collateral (personal guarantee, assignment of OSCC grant proceeds, or other assets) to maintain covenant compliance during this period</li>
+    <li>LVCU retains first mortgage over the cleared land — even at $195,000–$235,000, the secured position is preserved; equity shortfall is temporary and self-curing upon permit issuance</li>
+  </ul>
+</div>
+
+<!-- IF WE HAD TO SELL -->
+<div class="section-bar gold">Section 5 — If We Had to Sell: Realisation Scenarios</div>
+
+<p style="font-size:8.5pt;color:#4a4a40;margin-bottom:8pt;">In the event the project cannot proceed or a sale becomes necessary, the following outlines the realistic realisation value at each stage and the LVCU recovery position.</p>
+
+<table>
+  <thead><tr><th>Scenario</th><th>Realisation Value</th><th>LVCU Loan Balance</th><th>LVCU Recovery</th><th>Shortfall / Surplus</th></tr></thead>
+  <tbody>
+    <tr><td>Sell as-is today (existing appraisal)</td><td>$380,000–$429,000</td><td>$260,000</td><td>$260,000</td><td style="color:#2c5f3a;font-weight:600;">+$120,000–$169,000</td></tr>
+    <tr><td>Sell as cleared land (post-demolition, pre-permit)</td><td>$195,000–$235,000</td><td>$260,000</td><td>$195,000–$235,000</td><td style="color:#b54040;font-weight:600;">−$25,000–$65,000 est.</td></tr>
+    <tr><td>Sell as permitted land (DP in hand)</td><td>$450,000–$650,000</td><td>$260,000</td><td>$260,000</td><td style="color:#2c5f3a;font-weight:600;">+$190,000–$390,000</td></tr>
+    <tr><td>Sell mid-construction (partially built)</td><td>Cost-in-place + premium</td><td>Outstanding draws</td><td>Full recovery expected</td><td style="color:#2c5f3a;font-weight:600;">Positive at any stage</td></tr>
+    <tr class="green-row"><td>Sell as complete (stabilized income asset)</td><td>$17,411,000–$18,011,000</td><td>$9,877,400</td><td>$9,877,400</td><td style="color:#2c5f3a;font-weight:700;">+$7,534,000–$8,134,000</td></tr>
+  </tbody>
+</table>
+
+<div class="green-flag"><strong>LVCU is fully recoverable in every stage except the brief pre-permit demolition window.</strong> That window is eliminated by the sequencing commitment: demolition only proceeds after Development Permit is issued. LVCU's security is fully protected throughout the development lifecycle.</div>
+
+<!-- THE KEY ARGUMENT -->
+<div class="section-bar">Section 6 — The Core Argument for Lakeview Credit Union</div>
+
+<div class="four-col">
+  <div class="kpi navy"><span class="kpi-num">$429K</span><span class="kpi-lbl">Current certified value (Dec 2025)</span></div>
+  <div class="kpi gold"><span class="kpi-num">$650K</span><span class="kpi-lbl">Value at development permit — upper range</span></div>
+  <div class="kpi green"><span class="kpi-num">$18.0M</span><span class="kpi-lbl">As-complete income value @ 7.25% cap</span></div>
+  <div class="kpi green"><span class="kpi-num">45.2%</span><span class="kpi-lbl">LVCU equity position at completion</span></div>
+</div>
+
+<table style="margin-top:10pt;">
+  <thead><tr><th>LVCU Concern</th><th>Answer</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Is the land worth enough to secure the $260K takeout?</td><td style="color:#2c5f3a;font-weight:600;">Yes — certified value $429K, equity 39.4%</td><td>Nearhood Commercial Appraisals, Dec 2025 — Terry Dowle AACI, Dustin Lillico CRA</td></tr>
+    <tr><td>Will 25% equity be maintained when the building comes down?</td><td style="color:#b8860b;font-weight:600;">Managed — DP before demolition commitment eliminates the risk window</td><td>Sequencing commitment + DP submission Q1 2026</td></tr>
+    <tr><td>What is the land worth with a development permit?</td><td style="color:#2c5f3a;font-weight:600;">$450,000–$650,000 — strongly above the $260K balance</td><td>Comparable land sales + entitlement premium methodology</td></tr>
+    <tr><td>Is the development project viable enough to complete?</td><td style="color:#2c5f3a;font-weight:600;">Yes — OSCC submitted, 3 institutional partners, DSCR 1.374×</td><td>NRCan OSCC Phase 1, Northern Health/City/YMCA BC letters, proforma</td></tr>
+    <tr><td>What happens at completion?</td><td style="color:#2c5f3a;font-weight:600;">Value $18M, LVCU balance $9.87M, equity 45.2%</td><td>Proforma March 2026, NOI $1,305,808, 7.25% cap rate</td></tr>
+  </tbody>
+</table>
+
+<hr>
+<div class="section-label">Prepared by</div>
+<p style="font-size:9pt;color:#4a4a40;margin:0;">
+  <strong>Austin Neill</strong> — Managing Partner, Elias Range Development Corporation<br>
+  austin@eliasrangestays.ca · (250) 719-8085 · eliasrangestays.ca<br>
+  <span style="font-size:7.5pt;">
+  Appraisal reference: Nearhood Commercial Appraisals (Niemi LaPorte &amp; Dowle Appraisals Ltd.) · File 217178-25 · Effective December 10, 2025<br>
+  Appraisers: Terry Dowle AACI, P.App., RI, CRP (AIC #300781) · Dustin Lillico CRA, P.App. (AIC #910862)<br>
+  Lender: Suzanne Bull, Director Commercial Credit Risk, Lake View Credit Union · (250) 784-3253
+  </span>
+</p>
+
+</body>
+</html>
