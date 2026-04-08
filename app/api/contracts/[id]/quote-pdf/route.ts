@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 import { Resend } from 'resend'
+import chromium from '@sparticuz/chromium-min'
+import puppeteer from 'puppeteer-core'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
@@ -201,7 +203,7 @@ function buildQuoteHTML(contract: any): string {
 </html>`
 }
 
-// GET — return the quote HTML (for download/preview)
+// GET — generate and return a real PDF
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServerClient()
   const { data: contract, error } = await supabase
@@ -213,10 +215,33 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   if (error || !contract) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const html = buildQuoteHTML(contract)
-  return new NextResponse(html, {
+
+  const executablePath = await chromium.executablePath(
+    'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar'
+  )
+
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless: true,
+  })
+
+  const page = await browser.newPage()
+  await page.setContent(html, { waitUntil: 'networkidle0' })
+
+  const pdf = await page.pdf({
+    format: 'Letter',
+    printBackground: true,
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  })
+
+  await browser.close()
+
+  return new NextResponse(pdf, {
     headers: {
-      'Content-Type': 'text/html',
-      'Content-Disposition': `inline; filename="Quote-${contract.reference}.html"`,
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="Quote-${contract.reference}.pdf"`,
     }
   })
 }
