@@ -9,9 +9,29 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') || '/'
+
+  const handleReset = async () => {
+    if (!email) {
+      setError('Enter your email above then click Forgot Password.')
+      return
+    }
+    setResetLoading(true)
+    setError('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://contractflow-omega.vercel.app/reset-password',
+    })
+    setResetLoading(false)
+    if (error) {
+      setError(error.message)
+    } else {
+      setResetSent(true)
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -173,6 +193,21 @@ function LoginForm() {
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
+
+            {resetSent ? (
+              <div style={{ background: 'rgba(0,191,166,0.12)', border: '1px solid rgba(0,191,166,0.4)', color: '#00BFA6', borderRadius: 8, padding: '10px 14px', fontSize: 13, textAlign: 'center' }}>
+                ✓ Reset link sent — check your email.
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleReset}
+                disabled={resetLoading}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 12, cursor: 'pointer', textAlign: 'center', textDecoration: 'underline', fontFamily: "'Segoe UI', system-ui, sans-serif", padding: '4px 0' }}
+              >
+                {resetLoading ? 'Sending...' : 'Forgot password?'}
+              </button>
+            )}
           </form>
         </div>
       </div>
