@@ -13,34 +13,13 @@ export interface AuthUser {
 }
 
 // Get authenticated user + role from request (for API routes)
-export async function getAuthUser(req: NextRequest): Promise<AuthUser | null> {
-  const authHeader = req.headers.get('Authorization')
-  const token = authHeader?.replace('Bearer ', '')
-
-  if (!token) return null
-
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false } }
-  )
-
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return null
-
-  // Get role from user_profiles
-  const serverClient = createServerClient()
-  const { data: profile } = await serverClient
-    .from('user_profiles')
-    .select('role, name')
-    .eq('id', user.id)
-    .single()
-
+// AUTH TEMPORARILY BYPASSED — returns mock owner user
+export async function getAuthUser(_req: NextRequest): Promise<AuthUser | null> {
   return {
-    id: user.id,
-    email: user.email!,
-    role: (profile?.role as UserRole) ?? 'staff',
-    name: profile?.name ?? user.email!,
+    id: 'bypass',
+    email: 'austin@eliasrangestays.ca',
+    role: 'owner',
+    name: 'Austin Neill',
   }
 }
 
