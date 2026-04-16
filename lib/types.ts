@@ -159,3 +159,60 @@ export interface ContractorMessage {
   sent_by?: string
   sent_at: string
 }
+
+// ── Phase 2/3 Types ─────────────────────────────────────────
+
+export interface UnitPhoto {
+  id: string
+  unit_id: string
+  url: string
+  is_primary: boolean
+  created_at: string
+}
+
+export interface UnitLease {
+  id: string
+  unit_id: string
+  type: 'landlord' | 'client'
+  file_url: string | null
+  lease_start: string | null
+  lease_end: string | null
+  terms: string | null
+  created_at: string
+}
+
+export interface ContractUnit {
+  id: string
+  contract_id: string | null
+  address: string | null
+  wifi_ssid: string | null
+  wifi_password: string | null
+  guest_name: string | null
+  guest_contact: string | null
+  status: string
+  notes: string | null
+  created_at: string
+  unit_photos?: UnitPhoto[]
+  unit_leases?: UnitLease[]
+}
+
+export interface ClientAccount {
+  id: string
+  user_id: string
+  company_name: string | null
+  contact_name: string | null
+  contact_email: string | null
+  created_at: string
+}
+
+export interface QuoteRequest {
+  id: string
+  client_id: string
+  units_needed: number | null
+  location: string | null
+  start_date: string | null
+  duration_months: number | null
+  notes: string | null
+  status: 'pending' | 'reviewed' | 'converted'
+  created_at: string
+}

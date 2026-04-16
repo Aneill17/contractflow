@@ -222,7 +222,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 
   const browser = await puppeteer.launch({
     args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
+    defaultViewport: (chromium as any).defaultViewport ?? null,
     executablePath,
     headless: true,
   })
@@ -238,7 +238,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 
   await browser.close()
 
-  return new NextResponse(pdf, {
+  return new NextResponse(Buffer.from(pdf), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="Quote-${contract.reference}.pdf"`,
