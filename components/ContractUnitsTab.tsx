@@ -365,7 +365,7 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
         <div style={{ padding: '14px 20px', borderBottom: '1px solid #e8ecf0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: N }}>
           <div>
             <div style={{ fontWeight: 700, color: '#fff', fontSize: 15 }}>{current.address || 'Unit Detail'}</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>{contract.company_name} · {contract.reference}</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>{contract.client_name} · {contract.reference}</div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={toggleStatus} style={{ padding: '5px 12px', borderRadius: 6, border: `1px solid ${current.status === 'active' ? '#ef444455' : T+'55'}`, background: current.status === 'active' ? 'rgba(239,68,68,.15)' : `${T}22`, color: current.status === 'active' ? '#fca5a5' : T, cursor: 'pointer', fontSize: 12 }}>
@@ -478,7 +478,7 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
               {rightTab === 'contract' && (
                 <div>
                   <div style={{ background: `${T}0a`, border: `1px solid ${T}33`, borderRadius: 10, padding: '14px 18px', marginBottom: 20 }}>
-                    <div style={{ fontWeight: 700, color: N, fontSize: 16, marginBottom: 4 }}>{contract.company_name}</div>
+                    <div style={{ fontWeight: 700, color: N, fontSize: 16, marginBottom: 4 }}>{contract.client_name}</div>
                     <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: T }}>{contract.reference}</div>
                   </div>
 
@@ -514,7 +514,7 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
                       </div>
                       <div style={{ marginBottom: 10 }}>
                         <label style={lbSt}>Phone</label>
-                        <div style={{ fontSize: 13, color: '#64748b', padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{(contract as any).contact_phone || '—'}</div>
+                        <div style={{ fontSize: 13, color: '#64748b', padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{contract.contact_phone || '—'}</div>
                       </div>
                     </div>
                   </div>
