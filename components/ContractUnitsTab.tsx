@@ -67,43 +67,59 @@ function UnitCalendar({ unit, contract }: { unit: ContractUnit; contract: Contra
 
   const fmt = (d: Date | null) => d ? `${MN[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}` : '—'
 
+  // Tooltip text for a day
+  const dayTitle = (day: number) => {
+    const d = new Date(y, m, day)
+    const parts: string[] = []
+    if (cStart && d.toDateString() === cStart.toDateString()) parts.push('Contract Start')
+    if (cEnd   && d.toDateString() === cEnd.toDateString())   parts.push('Contract End')
+    if (lStart && d.toDateString() === lStart.toDateString()) parts.push('Lease Start')
+    if (lEnd   && d.toDateString() === lEnd.toDateString())   parts.push('Lease End')
+    return parts.join(' · ')
+  }
+
   return (
-    <div>
+    <div style={{ maxWidth: 560 }}>
       {/* Nav */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontWeight: 700, color: N, fontSize: 14 }}>{MN[m]} {y}</div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => nav(-1)} style={{ padding: '3px 8px', borderRadius: 5, border: '1px solid #e8ecf0', background: '#fff', cursor: 'pointer', color: N }}>‹</button>
-          {lStart && <button onClick={() => setYm({ y: lStart.getFullYear(), m: lStart.getMonth() })} style={{ padding: '3px 8px', borderRadius: 5, border: `1px solid ${A}44`, background: `${A}10`, cursor: 'pointer', fontSize: 11, color: A }}>Lease Start</button>}
-          {cStart && <button onClick={() => setYm({ y: cStart.getFullYear(), m: cStart.getMonth() })} style={{ padding: '3px 8px', borderRadius: 5, border: `1px solid ${T}44`, background: `${T}10`, cursor: 'pointer', fontSize: 11, color: T }}>Contract Start</button>}
-          {cEnd   && <button onClick={() => setYm({ y: cEnd.getFullYear(),   m: cEnd.getMonth()   })} style={{ padding: '3px 8px', borderRadius: 5, border: '1px solid #e8ecf0', background: '#fff', cursor: 'pointer', fontSize: 11, color: '#64748b' }}>End</button>}
-          <button onClick={() => nav(1)}  style={{ padding: '3px 8px', borderRadius: 5, border: '1px solid #e8ecf0', background: '#fff', cursor: 'pointer', color: N }}>›</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontWeight: 800, color: N, fontSize: 18 }}>{MN[m]} {y}</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <button onClick={() => nav(-1)} style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid #e8ecf0', background: '#fff', cursor: 'pointer', color: N, fontSize: 16, lineHeight: 1 }}>‹</button>
+          {lStart && <button onClick={() => setYm({ y: lStart.getFullYear(), m: lStart.getMonth() })} style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${A}55`, background: `${A}15`, cursor: 'pointer', fontSize: 11, color: A, fontFamily: 'IBM Plex Mono' }}>Lease Start</button>}
+          {cStart && <button onClick={() => setYm({ y: cStart.getFullYear(), m: cStart.getMonth() })} style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${T}55`, background: `${T}15`, cursor: 'pointer', fontSize: 11, color: T, fontFamily: 'IBM Plex Mono' }}>Contract Start</button>}
+          {(cEnd || lEnd) && <button onClick={() => { const e = lEnd || cEnd!; setYm({ y: e.getFullYear(), m: e.getMonth() }) }} style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e8ecf0', background: '#f8f9fb', cursor: 'pointer', fontSize: 11, color: '#64748b', fontFamily: 'IBM Plex Mono' }}>Jump to End</button>}
+          <button onClick={() => nav(1)}  style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid #e8ecf0', background: '#fff', cursor: 'pointer', color: N, fontSize: 16, lineHeight: 1 }}>›</button>
         </div>
       </div>
 
       {/* Day headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, marginBottom: 4 }}>
-        {DN.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 10, fontFamily: 'IBM Plex Mono', color: '#94a3b8' }}>{d}</div>)}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3, marginBottom: 3 }}>
+        {DN.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontFamily: 'IBM Plex Mono', color: '#94a3b8', padding: '4px 0' }}>{d}</div>)}
       </div>
 
-      {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2 }}>
+      {/* Grid — bigger cells */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3 }}>
         {cells.map((day, i) => day
-          ? <div key={i} style={dayStyle(day)}>{day}</div>
-          : <div key={i} />
+          ? <div key={i} title={dayTitle(day)} style={{ ...dayStyle(day), minHeight: 44, fontSize: 14 }}>{day}</div>
+          : <div key={i} style={{ minHeight: 44 }} />
         )}
       </div>
 
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: 14, marginTop: 12, flexWrap: 'wrap' }}>
-        {cStart && <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#334155' }}>
-          <div style={{ width: 10, height: 10, background: T, borderRadius: 2 }} />
-          Client Contract: {fmt(cStart)} → {fmt(cEnd)}
-        </div>}
-        {lStart && <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#334155' }}>
-          <div style={{ width: 10, height: 10, background: A, borderRadius: 2 }} />
-          Landlord Lease: {fmt(lStart)} → {fmt(lEnd)}
-        </div>}
+      {/* Legend + date summary */}
+      <div style={{ marginTop: 16, padding: '12px 14px', background: '#f8f9fb', borderRadius: 8, border: '1px solid #e8ecf0' }}>
+        {cStart && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ width: 12, height: 12, background: T, borderRadius: 3, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#334155' }}><strong>Client Contract:</strong> {fmt(cStart)} → {fmt(cEnd)}</span>
+          </div>
+        )}
+        {lStart && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 12, height: 12, background: A, borderRadius: 3, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#334155' }}><strong>Landlord Lease:</strong> {fmt(lStart)} → {fmt(lEnd)}</span>
+          </div>
+        )}
+        {!cStart && !lStart && <div style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic' }}>Add lease dates on the left panel to see them on the calendar.</div>}
       </div>
     </div>
   )
@@ -477,56 +493,62 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
               {/* CONTRACT TAB */}
               {rightTab === 'contract' && (
                 <div>
-                  <div style={{ background: `${T}0a`, border: `1px solid ${T}33`, borderRadius: 10, padding: '14px 18px', marginBottom: 20 }}>
-                    <div style={{ fontWeight: 700, color: N, fontSize: 16, marginBottom: 4 }}>{contract.client_name}</div>
-                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: T }}>{contract.reference}</div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px' }}>
+                  {/* Client header banner */}
+                  <div style={{ background: N, borderRadius: 10, padding: '14px 18px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={secHdr('#334155')}>Contract Period</div>
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Start Date</label>
-                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 13, color: N, padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{formatDate(contract.start_date) || '—'}</div>
-                      </div>
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>End Date</label>
-                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 13, color: N, padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{formatDate(contract.end_date) || '—'}</div>
-                      </div>
-                      {months && <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Duration</label>
-                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 13, color: '#64748b', padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{months} months</div>
-                      </div>}
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Monthly Rate / Unit</label>
-                        <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 18, color: A, fontWeight: 700 }}>${(contract.price_per_unit || 0).toLocaleString()}</div>
-                      </div>
+                      <div style={{ fontWeight: 700, color: '#fff', fontSize: 17 }}>{contract.client_name}</div>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: T, marginTop: 3 }}>{contract.reference} · {contract.location}</div>
                     </div>
-                    <div>
-                      <div style={secHdr(T)}>Contract Manager</div>
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Name</label>
-                        <div style={{ fontSize: 13, color: N, padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{contract.contact_name || '—'}</div>
-                      </div>
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Email</label>
-                        <div style={{ fontSize: 13, color: '#64748b', padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{contract.contact_email || '—'}</div>
-                      </div>
-                      <div style={{ marginBottom: 10 }}>
-                        <label style={lbSt}>Phone</label>
-                        <div style={{ fontSize: 13, color: '#64748b', padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{contract.contact_phone || '—'}</div>
-                      </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 20, color: T, fontWeight: 800 }}>${(contract.price_per_unit || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>per unit / month</div>
                     </div>
                   </div>
 
-                  <div style={{ marginTop: 4 }}>
-                    <label style={lbSt}>Notes</label>
-                    <textarea value={f.notes} onChange={e => setF(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ ...inSt, resize: 'vertical' }} placeholder="Unit-specific contract notes…" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px', marginBottom: 16 }}>
+                    {/* Contract period */}
+                    <div>
+                      <div style={secHdr(T)}>Contract Period</div>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={lbSt}>Start</label>
+                          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 13, color: N, padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{formatDate(contract.start_date) || '—'}</div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={lbSt}>End</label>
+                          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 13, color: N, padding: '8px 10px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 6 }}>{formatDate(contract.end_date) || '—'}</div>
+                        </div>
+                      </div>
+                      {months && (
+                        <div style={{ padding: '8px 12px', background: `${T}10`, border: `1px solid ${T}33`, borderRadius: 6, fontSize: 13, color: '#065f46', fontFamily: 'IBM Plex Mono' }}>
+                          {months} months · {contract.units} unit{contract.units !== 1 ? 's' : ''} · ${((contract.price_per_unit || 0) * contract.units * months).toLocaleString()} total
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Contract manager */}
+                    <div>
+                      <div style={secHdr(A)}>Contract Manager</div>
+                      <div style={{ padding: '12px 14px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 8 }}>
+                        <div style={{ fontWeight: 600, color: N, fontSize: 14, marginBottom: 4 }}>{contract.contact_name || '—'}</div>
+                        {contract.contact_email && (
+                          <a href={`mailto:${contract.contact_email}`} style={{ display: 'block', fontSize: 12, color: T, textDecoration: 'none', marginBottom: 2 }}>✉ {contract.contact_email}</a>
+                        )}
+                        {contract.contact_phone && (
+                          <a href={`tel:${contract.contact_phone}`} style={{ display: 'block', fontSize: 12, color: '#64748b', textDecoration: 'none' }}>📞 {contract.contact_phone}</a>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
+                  {/* Unit notes */}
+                  <div>
+                    <label style={lbSt}>Unit Notes</label>
+                    <textarea value={f.notes} onChange={e => setF(p => ({ ...p, notes: e.target.value }))} rows={3} style={{ ...inSt, resize: 'vertical' }} placeholder="Unit-specific notes for this contract…" />
+                  </div>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
                     <button onClick={save} disabled={saving} style={{ padding: '8px 18px', borderRadius: 6, border: 'none', background: T, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-                      {saving ? 'Saving…' : 'Save'}
+                      {saving ? 'Saving…' : 'Save Notes'}
                     </button>
                   </div>
                 </div>
@@ -568,7 +590,17 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
 
               {/* CALENDAR TAB */}
               {rightTab === 'calendar' && (
-                <UnitCalendar unit={{ ...unit, lease_start: f.lease_start || unit.lease_start, lease_end: f.lease_end || unit.lease_end }} contract={contract} />
+                <div>
+                  <UnitCalendar
+                    unit={{ ...unit, lease_start: f.lease_start || unit.lease_start, lease_end: f.lease_end || unit.lease_end }}
+                    contract={contract}
+                  />
+                  {!f.lease_start && !unit.lease_start && (
+                    <div style={{ marginTop: 14, padding: '10px 14px', background: `${A}10`, border: `1px solid ${A}33`, borderRadius: 8, fontSize: 12, color: A }}>
+                      💡 Add lease start &amp; end dates in the Property &amp; Landlord panel to see them on this calendar.
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* PHOTOS TAB */}
