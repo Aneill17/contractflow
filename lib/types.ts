@@ -1,11 +1,12 @@
-export type Stage = 0 | 1 | 2 | 3 | 4 | 5
+export type Stage = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 // 0: Request received
 // 1: Quote Sent (awaiting client approval)
 // 2: Contract (quote approved - build & review contract internally)
 // 3: Contract Sent (sent to DocuSeal for signing)
 // 4: Signed (fully executed by both parties)
-// 5: Complete (team handoff done)
+// 5: Operational (housing active, team handed off)
+// 6: Complete (contract closed)
 
 export const STAGE_LABELS: Record<number, string> = {
   0: 'Request',
@@ -13,7 +14,8 @@ export const STAGE_LABELS: Record<number, string> = {
   2: 'Contract',
   3: 'Contract Sent',
   4: 'Signed',
-  5: 'Complete',
+  5: 'Operational',
+  6: 'Complete',
 }
 
 export const STAGE_COLORS: Record<number, string> = {
@@ -22,7 +24,8 @@ export const STAGE_COLORS: Record<number, string> = {
   2: '#C4793A',   // Contract — amber
   3: '#C4793A',   // Contract Sent — amber
   4: '#00BFA6',   // Signed — teal
-  5: '#4F87A0',   // Complete — steel blue (readable on light bg)
+  5: '#00BFA6',   // Operational — teal
+  6: '#4F87A0',   // Complete — steel blue
 }
 
 export interface Occupant {
@@ -191,6 +194,15 @@ export interface ContractUnit {
   guest_contact: string | null
   status: string
   notes: string | null
+  lease_type: string | null
+  lease_start: string | null
+  lease_end: string | null
+  landlord_name: string | null
+  landlord_email: string | null
+  landlord_phone: string | null
+  concierge_name: string | null
+  concierge_phone: string | null
+  concierge_notes: string | null
   created_at: string
   unit_photos?: UnitPhoto[]
   unit_leases?: UnitLease[]

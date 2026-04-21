@@ -40,6 +40,15 @@ export async function POST(req: NextRequest) {
       guest_name: body.guest_name || null,
       guest_contact: body.guest_contact || null,
       status: body.status || 'active',
+      lease_type: body.lease_type || 'month-to-month',
+      lease_start: body.lease_start || null,
+      lease_end: body.lease_end || null,
+      landlord_name: body.landlord_name || null,
+      landlord_email: body.landlord_email || null,
+      landlord_phone: body.landlord_phone || null,
+      concierge_name: body.concierge_name || null,
+      concierge_phone: body.concierge_phone || null,
+      concierge_notes: body.concierge_notes || null,
     }])
     .select()
     .single()

@@ -24,7 +24,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body = await req.json()
   const supabase = createServerClient()
 
-  const allowed = ['address', 'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact', 'status', 'notes']
+  const allowed = [
+    'address', 'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact', 'status', 'notes',
+    'lease_type', 'lease_start', 'lease_end',
+    'landlord_name', 'landlord_email', 'landlord_phone',
+    'concierge_name', 'concierge_phone', 'concierge_notes',
+  ]
   const patch: Record<string, unknown> = {}
   for (const f of allowed) if (f in body) patch[f] = body[f]
 

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
 import { useRole } from '@/components/UserRoleContext'
+import ContractUnitsTab from '@/components/ContractUnitsTab'
 
 // Lazy-load PDF button — browser only
 const ContractPDFButton = dynamic(() => import('./ContractPDFButton'), {
@@ -476,9 +478,14 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bothSigned, c.id])
 
+  const markOperational = async () => {
+    await onUpdate(c.id, { stage: 5 }, 'Contract marked as Operational — housing active')
+    showToast('Marked as Operational')
+  }
+
   const markComplete = async () => {
-    await onUpdate(c.id, { stage: 5 }, 'Contract marked as complete — housing active')
-    showToast('Marked as complete')
+    await onUpdate(c.id, { stage: 6 }, 'Contract marked as Complete')
+    showToast('Marked as Complete')
   }
 
   return (
@@ -491,7 +498,12 @@ function SignatureStatusPanel({ contract: c, onRefresh, showToast, onUpdate }: {
               {syncing ? '↻ Checking...' : '↻ Refresh'}
             </button>
           )}
-          {bothSigned && c.stage < 5 && (
+          {bothSigned && c.stage === 4 && (
+            <button style={{ ...styles.btnPrimary, fontSize: 11, padding: '5px 16px' }} onClick={markOperational}>
+              ✓ Mark as Operational
+            </button>
+          )}
+          {c.stage === 5 && (
             <button style={{ ...styles.btnPrimary, fontSize: 11, padding: '5px 16px' }} onClick={markComplete}>
               ✓ Mark as Complete
             </button>
@@ -1190,6 +1202,79 @@ function UnitDetail({
   )
 }
 
+// ── TAB: Documents ────────────────────────────────────────
+const authHdr = async (): Promise<Record<string, string>> => {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+}
+
+function DocumentsTab({ contract: c }: { contract: Contract }) {
+  const [docs, setDocs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const clientRef = useRef<React.RefObject<HTMLInputElement>>(null)
+  const landlordRef = useRef<React.RefObject<HTMLInputElement>>(null)
+  const clientInputRef = React.useRef<HTMLInputElement>(null)
+  const landlordInputRef = React.useRef<HTMLInputElement>(null)
+
+  const load = async () => {
+    const h = await authHdr()
+    const r = await fetch(`/api/contract-documents?contract_id=${c.id}`, { headers: h })
+    if (r.ok) setDocs(await r.json())
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [c.id])
+
+  const upload = async (file: File, type: string) => {
+    const h = await authHdr()
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('contract_id', String(c.id))
+    fd.append('type', type)
+    await fetch('/api/contract-documents', { method: 'POST', headers: h, body: fd })
+    load()
+  }
+
+  const del = async (id: string) => {
+    const h = await authHdr()
+    await fetch(`/api/contract-documents?id=${id}`, { method: 'DELETE', headers: h })
+    load()
+  }
+
+  type SectionProps = { title: string; type: string; inputRef: React.RefObject<HTMLInputElement> }
+  const Section = ({ title, type, inputRef }: SectionProps) => {
+    const sectionDocs = docs.filter(d => d.type === type)
+    return (
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 10, fontFamily: 'IBM Plex Mono', color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.08em', fontWeight: 700 }}>{title}</div>
+          <button onClick={() => inputRef.current?.click()} style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid #e8ecf0', background: '#f8f9fb', color: '#0B2540', cursor: 'pointer', fontSize: 12 }}>+ Upload</button>
+          <input ref={inputRef} type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style={{ display: 'none' }} onChange={e => { if (e.target.files?.[0]) upload(e.target.files[0], type); (e.target as HTMLInputElement).value = '' }} />
+        </div>
+        {sectionDocs.length === 0 && <div style={{ color: '#94a3b8', fontSize: 12, fontStyle: 'italic' }}>No documents uploaded yet.</div>}
+        {sectionDocs.map(doc => (
+          <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: '#f8f9fb', borderRadius: 8, border: '1px solid #e8ecf0', marginBottom: 6 }}>
+            <span style={{ flex: 1, fontSize: 13, color: '#0B2540' }}>📄 {doc.file_name}</span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>{new Date(doc.created_at).toLocaleDateString()}</span>
+            <a href={doc.file_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#00BFA6', textDecoration: 'none' }}>Download</a>
+            <button onClick={() => del(doc.id)} style={{ fontSize: 11, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ padding: 24 }}>
+      {loading ? <div style={{ color: '#94a3b8' }}>Loading…</div> : (
+        <>
+          <Section title="Client Contract" type="client_contract" inputRef={clientInputRef} />
+          <Section title="Landlord Lease Agreements" type="landlord_lease" inputRef={landlordInputRef} />
+        </>
+      )}
+    </div>
+  )
+}
+
 // ── TAB: Audit Trail ───────────────────────────────────────
 function AuditTab({ contract: c }: { contract: Contract }) {
   const logs = [...((c as any).audit_logs || [])].reverse()
@@ -1468,12 +1553,13 @@ const styles: Record<string, any> = {
 export default function ContractDetail({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const { role } = useRole()
   const TABS = [
-    { key: 'request',  label: 'Request' },
-    { key: 'quote',    label: '✦ Quote' },
-    { key: 'contract', label: '📋 Contract' },
-    { key: 'units',    label: '🏠 Units' },
-    { key: 'calendar', label: '📅 Calendar' },
-    { key: 'audit',    label: 'Audit Trail' },
+    { key: 'request',   label: 'Request' },
+    { key: 'quote',     label: '✦ Quote' },
+    { key: 'contract',  label: '📋 Contract' },
+    { key: 'documents', label: '📄 Documents' },
+    { key: 'units',     label: '🏠 Units' },
+    { key: 'calendar',  label: '📅 Calendar' },
+    { key: 'audit',     label: 'Audit Trail' },
   ]
   const [tab, setTab] = useState('request')
 
@@ -1597,7 +1683,8 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {tab === 'request'  && <RequestTab  contract={c} />}
       {tab === 'quote'    && <QuoteTab    contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
-      {tab === 'units'    && <UnitsTab    contract={c} showToast={showToast} />}
+      {tab === 'documents' && <DocumentsTab contract={c} />}
+      {tab === 'units'     && <ContractUnitsTab contract={c} showToast={showToast} />}
       {tab === 'calendar' && <ContractCalendar contract={c} />}
       {tab === 'audit'    && <AuditTab    contract={c} />}
     </div>
