@@ -203,6 +203,12 @@ export interface ContractUnit {
   concierge_name: string | null
   concierge_phone: string | null
   concierge_notes: string | null
+  landlord_additional_contact: string | null
+  guest_email: string | null
+  guest_phone: string | null
+  guest2_name: string | null
+  guest2_email: string | null
+  guest2_phone: string | null
   created_at: string
   unit_photos?: UnitPhoto[]
   unit_leases?: UnitLease[]

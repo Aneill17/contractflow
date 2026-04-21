@@ -49,6 +49,12 @@ export async function POST(req: NextRequest) {
       concierge_name: body.concierge_name || null,
       concierge_phone: body.concierge_phone || null,
       concierge_notes: body.concierge_notes || null,
+      landlord_additional_contact: body.landlord_additional_contact || null,
+      guest_email: body.guest_email || null,
+      guest_phone: body.guest_phone || null,
+      guest2_name: body.guest2_name || null,
+      guest2_email: body.guest2_email || null,
+      guest2_phone: body.guest2_phone || null,
     }])
     .select()
     .single()
