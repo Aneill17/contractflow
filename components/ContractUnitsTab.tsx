@@ -275,6 +275,8 @@ function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onD
 function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; contract: Contract; onClose: () => void; onSaved: () => void }) {
   const [f, setF] = useState({
     address: unit.address || '',
+    lease_monthly_price: String((unit as any).monthly_cost || ''),
+    damage_deposit: String((unit as any).damage_deposit || ''),
     wifi_ssid: unit.wifi_ssid || '',
     wifi_password: unit.wifi_password || '',
     guest_name: unit.guest_name || '',
@@ -432,6 +434,17 @@ function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; c
               <input type="date" value={f.lease_end} onChange={e => setF(p => ({ ...p, lease_end: e.target.value }))} style={inSt} />
             </div>
 
+            <div style={{ height: 1, background: '#e8ecf0', margin: '12px 0' }} />
+            <div style={{ height: 1, background: '#e8ecf0', margin: '12px 0' }} />
+            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Financials</div>
+            <div style={{ marginBottom: 10 }}>
+              <label style={lbSt}>Monthly Lease Price</label>
+              <input type="number" value={f.lease_monthly_price} onChange={e => setF(p => ({ ...p, lease_monthly_price: e.target.value }))} style={inSt} placeholder="e.g. 1800" />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <label style={lbSt}>Damage Deposit</label>
+              <input type="number" value={f.damage_deposit} onChange={e => setF(p => ({ ...p, damage_deposit: e.target.value }))} style={inSt} placeholder="e.g. 500" />
+            </div>
             <div style={{ height: 1, background: '#e8ecf0', margin: '12px 0' }} />
             <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Landlord</div>
 

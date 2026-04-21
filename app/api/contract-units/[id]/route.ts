@@ -24,25 +24,39 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body = await req.json()
   const supabase = createServerClient()
 
-  const allowed = [
-    'address', 'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact', 'status', 'notes',
-    'lease_type', 'lease_start', 'lease_end',
-    'landlord_name', 'landlord_email', 'landlord_phone', 'landlord_additional_contact',
+  // Always-safe base fields (exist in original units table)
+  const baseAllowed = ['address', 'status', 'notes', 'landlord_name', 'landlord_email', 'landlord_phone', 'lease_start', 'lease_end', 'damage_deposit']
+  // Extended fields added via migrations
+  const extAllowed = [
+    'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact',
+    'lease_type', 'landlord_additional_contact',
     'concierge_name', 'concierge_phone', 'concierge_notes',
     'guest_email', 'guest_phone', 'guest2_name', 'guest2_email', 'guest2_phone',
+    'lease_monthly_price',
   ]
+
   const patch: Record<string, unknown> = {}
-  for (const f of allowed) if (f in body) patch[f] = body[f]
+  for (const f of [...baseAllowed, ...extAllowed]) if (f in body) patch[f] = body[f]
+  // Map lease_monthly_price → monthly_cost (existing column)
+  if ('lease_monthly_price' in body) { patch.monthly_cost = body.lease_monthly_price ? Number(body.lease_monthly_price) : null; delete patch.lease_monthly_price }
+  if ('damage_deposit' in body) patch.damage_deposit = body.damage_deposit ? Number(body.damage_deposit) : null
 
-  const { data, error } = await supabase
-    .from('units')
-    .update(patch)
-    .eq('id', params.id)
-    .select()
-    .single()
+  // Try full patch first, fall back to base fields if schema cache error
+  let { data, error } = await supabase.from('units').update(patch).eq('id', params.id).select().single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (error && (error.message.includes('schema cache') || error.message.includes('column') || error.code === 'PGRST204')) {
+    const basePatch: Record<string, unknown> = {}
+    for (const f of baseAllowed) if (f in body) basePatch[f] = body[f]
+    const fallback = await supabase.from('units').update(basePatch).eq('id', params.id).select().single()
+    data = fallback.data; error = fallback.error
+  }
+
+  const finalResult = { data, error };
+  if (finalResult.error) return NextResponse.json({ error: finalResult.error.message }, { status: 500 });
+  const { data: finalData } = finalResult;
+
+  if (finalResult.error) return NextResponse.json({ error: finalResult.error.message }, { status: 500 })
+  return NextResponse.json(finalData)
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {

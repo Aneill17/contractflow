@@ -30,35 +30,59 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const supabase = createServerClient()
 
+  // Base fields — always exist in the units table
+  const baseInsert: Record<string, unknown> = {
+    contract_id: body.contract_id,
+    address: body.address || null,
+    status: body.status || 'active',
+    landlord_name: body.landlord_name || null,
+    landlord_email: body.landlord_email || null,
+    landlord_phone: body.landlord_phone || null,
+    lease_start: body.lease_start || null,
+    lease_end: body.lease_end || null,
+    damage_deposit: body.damage_deposit ? Number(body.damage_deposit) : null,
+    monthly_cost: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
+    notes: body.notes || null,
+  }
+
+  // Extended fields — added via migration 008+. Insert and ignore errors for missing cols.
+  const extended: Record<string, unknown> = {
+    wifi_ssid: body.wifi_ssid || null,
+    wifi_password: body.wifi_password || null,
+    guest_name: body.guest_name || null,
+    guest_contact: body.guest_contact || null,
+    lease_type: body.lease_type || 'month-to-month',
+    landlord_additional_contact: body.landlord_additional_contact || null,
+    concierge_name: body.concierge_name || null,
+    concierge_phone: body.concierge_phone || null,
+    concierge_notes: body.concierge_notes || null,
+    guest_email: body.guest_email || null,
+    guest_phone: body.guest_phone || null,
+    guest2_name: body.guest2_name || null,
+    guest2_email: body.guest2_email || null,
+    guest2_phone: body.guest2_phone || null,
+    lease_monthly_price: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
+  }
+
+  // Try with all fields first
   const { data, error } = await supabase
     .from('units')
-    .insert([{
-      contract_id: body.contract_id,
-      address: body.address || null,
-      wifi_ssid: body.wifi_ssid || null,
-      wifi_password: body.wifi_password || null,
-      guest_name: body.guest_name || null,
-      guest_contact: body.guest_contact || null,
-      status: body.status || 'active',
-      lease_type: body.lease_type || 'month-to-month',
-      lease_start: body.lease_start || null,
-      lease_end: body.lease_end || null,
-      landlord_name: body.landlord_name || null,
-      landlord_email: body.landlord_email || null,
-      landlord_phone: body.landlord_phone || null,
-      concierge_name: body.concierge_name || null,
-      concierge_phone: body.concierge_phone || null,
-      concierge_notes: body.concierge_notes || null,
-      landlord_additional_contact: body.landlord_additional_contact || null,
-      guest_email: body.guest_email || null,
-      guest_phone: body.guest_phone || null,
-      guest2_name: body.guest2_name || null,
-      guest2_email: body.guest2_email || null,
-      guest2_phone: body.guest2_phone || null,
-    }])
+    .insert([{ ...baseInsert, ...extended }])
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (!error) return NextResponse.json(data)
+
+  // If schema cache error (missing columns), fall back to base fields only
+  if (error.message.includes('schema cache') || error.message.includes('column') || error.code === 'PGRST204') {
+    const { data: data2, error: error2 } = await supabase
+      .from('units')
+      .insert([baseInsert])
+      .select()
+      .single()
+    if (error2) return NextResponse.json({ error: error2.message }, { status: 500 })
+    return NextResponse.json(data2)
+  }
+
+  return NextResponse.json({ error: error.message }, { status: 500 })
 }
