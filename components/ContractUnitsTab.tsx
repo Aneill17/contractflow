@@ -35,7 +35,7 @@ function UnitCard({ unit, onClick }: { unit: ContractUnit; onClick: () => void }
 }
 
 // ─── Add Unit Form ───────────────────────────────────────────
-function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onDone:()=>void; onCancel:()=>void }) {
+function AddUnitForm({ contractId, contract, onDone, onCancel }: { contractId: string; contract: Contract; onDone:()=>void; onCancel:()=>void }) {
   const [f, setF] = useState({
     address:'',
     // Landlord lease side
@@ -111,6 +111,15 @@ function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onD
         {/* RIGHT — Contract / Guest */}
         <div>
           {sectionTitle('🤝','Contract & Guest',A)}
+          {/* Contract dates pulled from contract — read only */}
+          <div style={{ background:`${A}0d`, border:`1px solid ${A}33`, borderRadius:6, padding:'10px 12px', marginBottom:12 }}>
+            <div style={{ fontSize:10, fontFamily:'IBM Plex Mono', color:A, fontWeight:700, letterSpacing:'.06em', marginBottom:6 }}>CONTRACT DATES</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+              <div><div style={{ fontSize:9, color:'#94a3b8', fontFamily:'IBM Plex Mono', marginBottom:2 }}>START</div><div style={{ fontSize:13, color:N, fontWeight:600 }}>{contract.start_date||'—'}</div></div>
+              <div><div style={{ fontSize:9, color:'#94a3b8', fontFamily:'IBM Plex Mono', marginBottom:2 }}>END</div><div style={{ fontSize:13, color:N, fontWeight:600 }}>{contract.end_date||'—'}</div></div>
+            </div>
+            <div style={{ fontSize:11, color:'#94a3b8', marginTop:6, fontStyle:'italic' }}>Compare with landlord lease dates on the left</div>
+          </div>
           {inp('Guest Name','guest_name')}
           {inp('Guest Contact','guest_contact','tel')}
           {inp('Contract Daily Rate ($)','contract_amount','number','105')}
@@ -132,7 +141,7 @@ function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onD
 }
 
 // ─── Unit Detail Modal ───────────────────────────────────────
-function UnitModal({ unit, onClose, onSaved }: { unit: ContractUnit; onClose:()=>void; onSaved:()=>void }) {
+function UnitModal({ unit, contract, onClose, onSaved }: { unit: ContractUnit; contract: Contract; onClose:()=>void; onSaved:()=>void }) {
   const u0 = unit as ContractUnit & { landlord_name?:string; landlord_email?:string; landlord_phone?:string; lease_start?:string; lease_end?:string; lease_monthly_price?:number; daily_rate?:number; notes?:string }
   const [f, setF] = useState({
     address: u0.address||'',
@@ -248,6 +257,14 @@ function UnitModal({ unit, onClose, onSaved }: { unit: ContractUnit; onClose:()=
                 {/* Contract / Guest */}
                 <div>
                   <div style={{ fontFamily:'IBM Plex Mono', fontSize:10, fontWeight:700, color:A, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:10, paddingBottom:6, borderBottom:`1px solid ${A}22` }}>🤝 Contract & Guest</div>
+                  <div style={{ background:`${A}0d`, border:`1px solid ${A}33`, borderRadius:6, padding:'10px 12px', marginBottom:12 }}>
+                    <div style={{ fontSize:10, fontFamily:'IBM Plex Mono', color:A, fontWeight:700, letterSpacing:'.06em', marginBottom:6 }}>CONTRACT DATES</div>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                      <div><div style={{ fontSize:9, color:'#94a3b8', fontFamily:'IBM Plex Mono', marginBottom:2 }}>START</div><div style={{ fontSize:13, color:N, fontWeight:600 }}>{contract.start_date||'—'}</div></div>
+                      <div><div style={{ fontSize:9, color:'#94a3b8', fontFamily:'IBM Plex Mono', marginBottom:2 }}>END</div><div style={{ fontSize:13, color:N, fontWeight:600 }}>{contract.end_date||'—'}</div></div>
+                    </div>
+                    <div style={{ fontSize:11, color:'#94a3b8', marginTop:4, fontStyle:'italic' }}>Compare with landlord lease dates on the left</div>
+                  </div>
                   <label style={lbSt}>Guest Name</label><input value={f.guest_name} onChange={e=>setF(p=>({...p,guest_name:e.target.value}))} style={inSt}/>
                   <label style={lbSt}>Guest Contact</label><input value={f.guest_contact} onChange={e=>setF(p=>({...p,guest_contact:e.target.value}))} style={inSt}/>
                   <label style={lbSt}>Contract Daily Rate ($)</label><input type="number" value={f.contract_amount} onChange={e=>setF(p=>({...p,contract_amount:e.target.value}))} style={inSt} placeholder="105"/>
@@ -347,7 +364,7 @@ export default function ContractUnitsTab({ contract, showToast }: { contract: Co
         <div style={{ fontWeight:700, color:N, fontSize:15 }}>Units ({total})</div>
         <button onClick={()=>setShowAdd(true)} style={{ padding:'8px 16px', borderRadius:6, border:'none', background:T, color:'#fff', cursor:'pointer', fontSize:13, fontWeight:600 }}>+ Add Unit</button>
       </div>
-      {showAdd && <AddUnitForm contractId={contract.id} onDone={()=>{ setShowAdd(false); fetch_(); showToast('Unit added') }} onCancel={()=>setShowAdd(false)} />}
+      {showAdd && <AddUnitForm contractId={contract.id} contract={contract} onDone={()=>{ setShowAdd(false); fetch_(); showToast('Unit added') }} onCancel={()=>setShowAdd(false)} />}
       {loading ? <div style={{ textAlign:'center', padding:40, color:'#94a3b8' }}>Loading…</div> :
         total===0 ? (
           <div style={{ textAlign:'center', padding:40, color:'#94a3b8', background:'#f8f9fb', borderRadius:10 }}>
@@ -360,7 +377,7 @@ export default function ContractUnitsTab({ contract, showToast }: { contract: Co
           </div>
         )
       }
-      {selected && <UnitModal unit={selected} onClose={()=>setSelected(null)} onSaved={()=>{ fetch_(); setSelected(null) }} />}
+      {selected && <UnitModal unit={selected} contract={contract} onClose={()=>setSelected(null)} onSaved={()=>{ fetch_(); setSelected(null) }} />}
     </div>
   )
 }
