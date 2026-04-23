@@ -37,7 +37,7 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
   const daysInMonth = new Date(y, m + 1, 0).getDate()
 
   // Build lease ranges from unit_leases (existing) AND from unit-level lease fields (new)
-  const leaseRanges: Array<{ s: Date; e: Date; label: string; color: string; type: string }> = []
+  const leaseRanges: Array<{ s: Date; e: Date; label: string; color: string; lease_type: string }> = []
   units.forEach(u => {
     // unit_leases from the leases table
     ;(u.unit_leases || []).forEach(l => {
@@ -81,12 +81,12 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
   }
 
   // Build unit lease summaries (combine unit_leases and unit-level fields, deduplicate)
-  const unitSummaries: Array<{ address: string; windows: Array<{ start: string; end: string; type: string }> }> = []
+  const unitSummaries: Array<{ address: string; windows: Array<{ start: string; end: string; lease_type: string }> }> = []
   units.forEach(u => {
-    const windows: Array<{ start: string; end: string; type: string }> = []
+    const windows: Array<{ start: string; end: string; lease_type: string }> = []
     // unit-level lease
     if (u.lease_start && u.lease_end) {
-      windows.push({ start: u.lease_start, end: u.lease_end, type: u.lease_type || 'month-to-month' })
+      windows.push({ start: u.lease_start, end: u.lease_end, lease_type: u.lease_type || 'month-to-month' })
     }
     // unit_leases records
     ;(u.unit_leases || []).forEach(l => {
