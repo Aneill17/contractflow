@@ -10,15 +10,21 @@ export async function GET(req: NextRequest) {
   const contractId = searchParams.get('contract_id')
 
   const supabase = createServerClient()
-  let query = supabase
+  // Try with contract_id filter; fall back to full list if schema cache missing it
+  let { data, error } = await supabase
     .from('units')
     .select('*, unit_photos(*), unit_leases(*)')
-    .not('contract_id', 'is', null)
+    .eq('contract_id', contractId || '')
     .order('created_at', { ascending: true })
 
-  if (contractId) query = query.eq('contract_id', contractId)
+  if (error && (error.message.includes('contract_id') || error.code === 'PGRST204')) {
+    // Schema cache stale — fetch all and filter in JS
+    const fallback = await supabase.from('units').select('*, unit_photos(*), unit_leases(*)').order('created_at', { ascending: true })
+    if (fallback.error) return NextResponse.json({ error: fallback.error.message }, { status: 500 })
+    const filtered = contractId ? (fallback.data ?? []).filter((u: Record<string,unknown>) => u.contract_id === contractId) : (fallback.data ?? [])
+    return NextResponse.json(filtered)
+  }
 
-  const { data, error } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data ?? [])
 }
@@ -30,9 +36,10 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const supabase = createServerClient()
 
-  // Base fields — always exist in the units table
-  const baseInsert: Record<string, unknown> = {
-    contract_id: body.contract_id,
+  const contractId = body.contract_id || null
+
+  // Step 1: Insert with only original columns (always safe)
+  const safeInsert: Record<string, unknown> = {
     address: body.address || null,
     status: body.status || 'active',
     landlord_name: body.landlord_name || null,
@@ -42,44 +49,29 @@ export async function POST(req: NextRequest) {
     lease_end: body.lease_end || null,
     damage_deposit: body.damage_deposit ? Number(body.damage_deposit) : null,
     monthly_cost: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
+    daily_rate: body.daily_rate ? Number(body.daily_rate) : null,
     notes: body.notes || null,
   }
 
-  // Extended fields — added via migration 008+. Insert and ignore errors for missing cols.
+  const { data: inserted, error: insertErr } = await supabase
+    .from('units').insert([safeInsert]).select().single()
+
+  if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 })
+
+  // Step 2: Update extended columns (contract_id, wifi, guest fields)
   const extended: Record<string, unknown> = {
+    contract_id: contractId,
     wifi_ssid: body.wifi_ssid || null,
     wifi_password: body.wifi_password || null,
     guest_name: body.guest_name || null,
     guest_contact: body.guest_contact || null,
-    lease_type: body.lease_type || 'month-to-month',
-    landlord_additional_contact: body.landlord_additional_contact || null,
-    guest_email: body.guest_email || null,
-    guest_phone: body.guest_phone || null,
-    guest2_name: body.guest2_name || null,
-    guest2_email: body.guest2_email || null,
-    guest2_phone: body.guest2_phone || null,
     lease_monthly_price: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
   }
 
-  // Try with all fields first
-  const { data, error } = await supabase
-    .from('units')
-    .insert([{ ...baseInsert, ...extended }])
-    .select()
-    .single()
+  const { data: updated, error: updateErr } = await supabase
+    .from('units').update(extended).eq('id', inserted.id).select().single()
 
-  if (!error) return NextResponse.json(data)
-
-  // If schema cache error (missing columns), fall back to base fields only
-  if (error.message.includes('schema cache') || error.message.includes('column') || error.code === 'PGRST204') {
-    const { data: data2, error: error2 } = await supabase
-      .from('units')
-      .insert([baseInsert])
-      .select()
-      .single()
-    if (error2) return NextResponse.json({ error: error2.message }, { status: 500 })
-    return NextResponse.json(data2)
-  }
-
-  return NextResponse.json({ error: error.message }, { status: 500 })
+  // Return updated if possible, otherwise return the inserted row
+  if (updateErr) return NextResponse.json(inserted)
+  return NextResponse.json(updated)
 }
