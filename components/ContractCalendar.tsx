@@ -58,7 +58,7 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
         e: new Date(u.lease_end),
         label: `${u.address || 'Unit'} (landlord)`,
         color: PURPLE,
-        type: 'landlord',
+        lease_type: 'landlord',
       })
     }
   })
