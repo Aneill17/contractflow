@@ -1143,7 +1143,7 @@ function UnitDetail({
 
       {/* Lease upload sections */}
       {(['landlord', 'client'] as const).map(leaseType => {
-        const typeLeases = leases.filter(l => l.type === leaseType)
+        const typeLeases = leases.filter(l => l.lease_type === leaseType)
         return (
           <div key={leaseType} style={{ ...styles.card, marginBottom: 14 }}>
             <div style={styles.sectionTitle}>
@@ -1416,8 +1416,8 @@ function ContractCalendar({ contract: c }: { contract: Contract }) {
                 return (
                   <div key={lease.id} style={{ marginBottom: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: lease.type === 'landlord' ? '#1B4353' : '#C4793A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                        {lease.type} lease
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: lease.lease_type === 'landlord' ? '#1B4353' : '#C4793A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        {lease.lease_type} lease
                       </div>
                       <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8' }}>
                         {fmtDate(lease.lease_start)} → {fmtDate(lease.lease_end)}
@@ -1430,7 +1430,7 @@ function ContractCalendar({ contract: c }: { contract: Contract }) {
                           left: bar.left,
                           width: bar.width,
                           height: '100%',
-                          background: lease.type === 'landlord' ? 'rgba(27,67,83,0.7)' : 'rgba(196,121,58,0.7)',
+                          background: lease.lease_type === 'landlord' ? 'rgba(27,67,83,0.7)' : 'rgba(196,121,58,0.7)',
                           borderRadius: 4,
                         }} />
                       </div>

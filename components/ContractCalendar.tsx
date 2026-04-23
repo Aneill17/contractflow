@@ -45,9 +45,9 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
         leaseRanges.push({
           s: new Date(l.lease_start),
           e: new Date(l.lease_end),
-          label: `${u.address || 'Unit'} (${l.type})`,
-          color: l.type === 'landlord' ? PURPLE : A,
-          type: l.type,
+          label: `${u.address || 'Unit'} (${l.lease_type})`,
+          color: l.lease_type === 'landlord' ? PURPLE : A,
+          type: l.lease_type,
         })
       }
     })
@@ -91,7 +91,7 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
     // unit_leases records
     ;(u.unit_leases || []).forEach(l => {
       if (l.lease_start && l.lease_end) {
-        windows.push({ start: l.lease_start, end: l.lease_end, type: l.type })
+        windows.push({ start: l.lease_start, end: l.lease_end, lease_type: l.lease_type })
       }
     })
     if (windows.length > 0) {
@@ -133,8 +133,8 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
           if (!day) return <div key={i} />
           const { isStart, isEnd, inContract, leases, isToday } = dayInfo(day)
           const isEdge = isStart || isEnd
-          const landlordLease = leases.find(l => l.type === 'landlord')
-          const clientLease = leases.find(l => l.type === 'client')
+          const landlordLease = leases.find(l => l.lease_type === 'landlord')
+          const clientLease = leases.find(l => l.lease_type === 'client')
           return (
             <div
               key={i}
@@ -213,13 +213,13 @@ export default function ContractCalendar({ contract: c }: { contract: Contract }
                 <div key={wi} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, paddingLeft: 12 }}>
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                    background: w.type === 'landlord' ? PURPLE : w.type === 'client' ? A : T,
+                    background: w.lease_type === 'landlord' ? PURPLE : w.lease_type === 'client' ? A : T,
                   }} />
                   <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#334155' }}>
                     {fmtDate(w.start)} → {fmtDate(w.end)}
                   </span>
                   <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>
-                    {w.type}
+                    {w.lease_type}
                   </span>
                 </div>
               ))}
