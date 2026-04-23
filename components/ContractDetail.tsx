@@ -887,7 +887,7 @@ function UnitsTab({ contract: c, showToast }: { contract: Contract; showToast: (
 interface UnitLease {
   id: string
   unit_id: string
-  type: 'landlord' | 'client'
+  lease_type: 'landlord' | 'client'
   file_url?: string
   lease_start?: string
   lease_end?: string
