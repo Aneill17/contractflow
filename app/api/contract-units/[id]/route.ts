@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const supabase = createServerClient()
 
   // Always-safe base fields (exist in original units table)
-  const baseAllowed = ['address', 'status', 'notes', 'landlord_name', 'landlord_email', 'landlord_phone', 'lease_start', 'lease_end', 'damage_deposit']
+  const baseAllowed = ['address', 'status', 'notes', 'landlord_name', 'landlord_email', 'landlord_phone', 'lease_start', 'lease_end', 'damage_deposit', 'daily_rate', 'monthly_cost']
   // Extended fields added via migrations
   const extAllowed = [
     'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact',

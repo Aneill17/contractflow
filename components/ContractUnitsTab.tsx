@@ -36,7 +36,16 @@ function UnitCard({ unit, onClick }: { unit: ContractUnit; onClick: () => void }
 
 // ─── Add Unit Form ───────────────────────────────────────────
 function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onDone:()=>void; onCancel:()=>void }) {
-  const [f, setF] = useState({ address:'', wifi_ssid:'', wifi_password:'', guest_name:'', guest_contact:'' })
+  const [f, setF] = useState({
+    address:'',
+    // Landlord lease side
+    landlord_name:'', landlord_email:'', landlord_phone:'',
+    lease_start:'', lease_end:'', lease_monthly_price:'',
+    // Contract/guest side
+    guest_name:'', guest_contact:'', contract_amount:'',
+    // Extras
+    wifi_ssid:'', wifi_password:'', notes:'',
+  })
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
@@ -44,26 +53,76 @@ function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onD
     if (!f.address.trim()) { setErr('Address is required'); return }
     setSaving(true)
     const h = await authHdr()
-    const res = await fetch('/api/contract-units', { method:'POST', headers:{'Content-Type':'application/json',...h}, body:JSON.stringify({ contract_id:contractId, ...f }) })
+    const res = await fetch('/api/contract-units', {
+      method:'POST',
+      headers:{'Content-Type':'application/json',...h},
+      body:JSON.stringify({
+        contract_id: contractId,
+        address: f.address,
+        landlord_name: f.landlord_name||null,
+        landlord_email: f.landlord_email||null,
+        landlord_phone: f.landlord_phone||null,
+        lease_start: f.lease_start||null,
+        lease_end: f.lease_end||null,
+        lease_monthly_price: f.lease_monthly_price ? Number(f.lease_monthly_price) : null,
+        guest_name: f.guest_name||null,
+        guest_contact: f.guest_contact||null,
+        daily_rate: f.contract_amount ? Number(f.contract_amount) : null,
+        wifi_ssid: f.wifi_ssid||null,
+        wifi_password: f.wifi_password||null,
+        notes: f.notes||null,
+        status: 'active',
+      })
+    })
     if (!res.ok) { const d=await res.json(); setErr(d.error||'Failed'); setSaving(false); return }
     onDone()
   }
 
-  const inp = (label:string, key:keyof typeof f, type='text') => (
+  const lb: React.CSSProperties = { display:'block', fontSize:10, fontFamily:'IBM Plex Mono', color:'#64748b', marginBottom:4, textTransform:'uppercase', letterSpacing:'.06em' as const }
+  const inp = (label:string, key:keyof typeof f, type='text', placeholder='') => (
     <div style={{ marginBottom:12 }}>
-      <label style={{ display:'block', fontSize:10, fontFamily:'IBM Plex Mono', color:'#64748b', marginBottom:4, textTransform:'uppercase', letterSpacing:'.06em' }}>{label}</label>
-      <input type={type} value={f[key]} onChange={e=>setF(p=>({...p,[key]:e.target.value}))} style={{ width:'100%', padding:'8px 10px', border:'1px solid #dde2e8', borderRadius:6, fontSize:13, color:N, boxSizing:'border-box' }} />
+      <label style={lb}>{label}</label>
+      <input type={type} value={f[key] as string} placeholder={placeholder} onChange={e=>setF(p=>({...p,[key]:e.target.value}))} style={{ width:'100%', padding:'8px 10px', border:'1px solid #dde2e8', borderRadius:6, fontSize:13, color:N, boxSizing:'border-box' }} />
     </div>
+  )
+  const sectionTitle = (icon:string, label:string, color=N) => (
+    <div style={{ fontFamily:'IBM Plex Mono', fontSize:10, fontWeight:700, color, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:12, paddingBottom:6, borderBottom:`1px solid ${color}22` }}>{icon} {label}</div>
   )
 
   return (
     <div style={{ background:'#f8f9fb', border:'1px solid #e8ecf0', borderRadius:10, padding:20, marginBottom:20 }}>
-      <div style={{ fontWeight:700, color:N, fontSize:14, marginBottom:14 }}>Add Unit</div>
-      {err && <div style={{ background:'#fef2f2', color:'#dc2626', padding:'8px 12px', borderRadius:6, fontSize:12, marginBottom:12 }}>{err}</div>}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 20px' }}>
-        <div>{inp('Address','address')}{inp('Guest Name','guest_name')}{inp('Guest Contact','guest_contact')}</div>
-        <div>{inp('WiFi SSID','wifi_ssid')}{inp('WiFi Password','wifi_password')}</div>
+      <div style={{ fontWeight:700, color:N, fontSize:14, marginBottom:18 }}>Add Unit</div>
+      {err && <div style={{ background:'#fef2f2', color:'#dc2626', padding:'8px 12px', borderRadius:6, fontSize:12, marginBottom:14 }}>{err}</div>}
+
+      {/* Address */}
+      {inp('Unit Address','address','text','103-1504 Scott Crescent, Squamish')}
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 28px', marginTop:4 }}>
+        {/* LEFT — Landlord Lease */}
+        <div>
+          {sectionTitle('🏠','Landlord Lease','#1B4353')}
+          {inp('Landlord Name','landlord_name')}
+          {inp('Landlord Email','landlord_email','email')}
+          {inp('Landlord Phone','landlord_phone','tel')}
+          {inp('Lease Start','lease_start','date')}
+          {inp('Lease End','lease_end','date')}
+          {inp('Monthly Lease Amount ($)','lease_monthly_price','number','2800')}
+        </div>
+        {/* RIGHT — Contract / Guest */}
+        <div>
+          {sectionTitle('🤝','Contract & Guest',A)}
+          {inp('Guest Name','guest_name')}
+          {inp('Guest Contact','guest_contact','tel')}
+          {inp('Contract Daily Rate ($)','contract_amount','number','105')}
+          {inp('WiFi SSID','wifi_ssid')}
+          {inp('WiFi Password','wifi_password')}
+          <div style={{ marginBottom:12 }}>
+            <label style={lb}>Notes</label>
+            <textarea value={f.notes} onChange={e=>setF(p=>({...p,notes:e.target.value}))} rows={2} style={{ width:'100%', padding:'8px 10px', border:'1px solid #dde2e8', borderRadius:6, fontSize:13, color:N, boxSizing:'border-box', resize:'vertical' }} />
+          </div>
+        </div>
       </div>
+
       <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:8 }}>
         <button onClick={onCancel} style={{ padding:'7px 14px', borderRadius:6, border:'1px solid #e8ecf0', background:'#fff', color:'#64748b', cursor:'pointer', fontSize:13 }}>Cancel</button>
         <button onClick={save} disabled={saving} style={{ padding:'7px 14px', borderRadius:6, border:'none', background:T, color:'#fff', cursor:'pointer', fontSize:13, fontWeight:600 }}>{saving?'Adding…':'Add Unit'}</button>
@@ -74,7 +133,14 @@ function AddUnitForm({ contractId, onDone, onCancel }: { contractId: string; onD
 
 // ─── Unit Detail Modal ───────────────────────────────────────
 function UnitModal({ unit, onClose, onSaved }: { unit: ContractUnit; onClose:()=>void; onSaved:()=>void }) {
-  const [f, setF] = useState({ address:unit.address||'', wifi_ssid:unit.wifi_ssid||'', wifi_password:unit.wifi_password||'', guest_name:unit.guest_name||'', guest_contact:unit.guest_contact||'', notes:(unit as ContractUnit & {notes?:string}).notes||'' })
+  const u0 = unit as ContractUnit & { landlord_name?:string; landlord_email?:string; landlord_phone?:string; lease_start?:string; lease_end?:string; lease_monthly_price?:number; daily_rate?:number; notes?:string }
+  const [f, setF] = useState({
+    address: u0.address||'',
+    landlord_name: u0.landlord_name||'', landlord_email: u0.landlord_email||'', landlord_phone: u0.landlord_phone||'',
+    lease_start: u0.lease_start||'', lease_end: u0.lease_end||'', lease_monthly_price: u0.lease_monthly_price?.toString()||'',
+    guest_name: u0.guest_name||'', guest_contact: u0.guest_contact||'', contract_amount: u0.daily_rate?.toString()||'',
+    wifi_ssid: u0.wifi_ssid||'', wifi_password: u0.wifi_password||'', notes: u0.notes||'',
+  })
   const [tab, setTab] = useState<'details'|'photos'|'leases'>('details')
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -93,7 +159,15 @@ function UnitModal({ unit, onClose, onSaved }: { unit: ContractUnit; onClose:()=
   const save = async () => {
     setSaving(true)
     const h = await authHdr()
-    await fetch(`/api/contract-units/${unit.id}`, { method:'PATCH', headers:{'Content-Type':'application/json',...h}, body:JSON.stringify(f) })
+    await fetch(`/api/contract-units/${unit.id}`, { method:'PATCH', headers:{'Content-Type':'application/json',...h}, body:JSON.stringify({
+      address: f.address,
+      landlord_name: f.landlord_name||null, landlord_email: f.landlord_email||null, landlord_phone: f.landlord_phone||null,
+      lease_start: f.lease_start||null, lease_end: f.lease_end||null,
+      lease_monthly_price: f.lease_monthly_price ? Number(f.lease_monthly_price) : null,
+      guest_name: f.guest_name||null, guest_contact: f.guest_contact||null,
+      daily_rate: f.contract_amount ? Number(f.contract_amount) : null,
+      wifi_ssid: f.wifi_ssid||null, wifi_password: f.wifi_password||null, notes: f.notes||null,
+    }) })
     await refresh(); setSaving(false)
   }
 
@@ -155,16 +229,32 @@ function UnitModal({ unit, onClose, onSaved }: { unit: ContractUnit; onClose:()=
         {/* Body */}
         <div style={{ flex:1, overflow:'auto', padding:24 }}>
           {tab==='details' && (
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 24px' }}>
-              <div>
-                <label style={lbSt}>Address</label><input value={f.address} onChange={e=>setF(p=>({...p,address:e.target.value}))} style={inSt}/>
-                <label style={lbSt}>Guest Name</label><input value={f.guest_name} onChange={e=>setF(p=>({...p,guest_name:e.target.value}))} style={inSt}/>
-                <label style={lbSt}>Guest Contact</label><input value={f.guest_contact} onChange={e=>setF(p=>({...p,guest_contact:e.target.value}))} style={inSt}/>
+            <div>
+              <div style={{ marginBottom:14 }}>
+                <label style={lbSt}>Unit Address</label>
+                <input value={f.address} onChange={e=>setF(p=>({...p,address:e.target.value}))} style={inSt} placeholder="103-1504 Scott Crescent, Squamish"/>
               </div>
-              <div>
-                <label style={lbSt}>WiFi SSID</label><input value={f.wifi_ssid} onChange={e=>setF(p=>({...p,wifi_ssid:e.target.value}))} style={inSt}/>
-                <label style={lbSt}>WiFi Password</label><input value={f.wifi_password} onChange={e=>setF(p=>({...p,wifi_password:e.target.value}))} style={inSt}/>
-                <label style={lbSt}>Notes</label><textarea value={f.notes} onChange={e=>setF(p=>({...p,notes:e.target.value}))} rows={3} style={{ ...inSt, resize:'vertical' }}/>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 24px' }}>
+                {/* Landlord Lease */}
+                <div>
+                  <div style={{ fontFamily:'IBM Plex Mono', fontSize:10, fontWeight:700, color:'#1B4353', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:10, paddingBottom:6, borderBottom:'1px solid #1B435322' }}>🏠 Landlord Lease</div>
+                  <label style={lbSt}>Landlord Name</label><input value={f.landlord_name} onChange={e=>setF(p=>({...p,landlord_name:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Landlord Email</label><input value={f.landlord_email} onChange={e=>setF(p=>({...p,landlord_email:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Landlord Phone</label><input value={f.landlord_phone} onChange={e=>setF(p=>({...p,landlord_phone:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Lease Start</label><input type="date" value={f.lease_start} onChange={e=>setF(p=>({...p,lease_start:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Lease End</label><input type="date" value={f.lease_end} onChange={e=>setF(p=>({...p,lease_end:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Monthly Lease Amount ($)</label><input type="number" value={f.lease_monthly_price} onChange={e=>setF(p=>({...p,lease_monthly_price:e.target.value}))} style={inSt} placeholder="2800"/>
+                </div>
+                {/* Contract / Guest */}
+                <div>
+                  <div style={{ fontFamily:'IBM Plex Mono', fontSize:10, fontWeight:700, color:A, letterSpacing:'.1em', textTransform:'uppercase', marginBottom:10, paddingBottom:6, borderBottom:`1px solid ${A}22` }}>🤝 Contract & Guest</div>
+                  <label style={lbSt}>Guest Name</label><input value={f.guest_name} onChange={e=>setF(p=>({...p,guest_name:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Guest Contact</label><input value={f.guest_contact} onChange={e=>setF(p=>({...p,guest_contact:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Contract Daily Rate ($)</label><input type="number" value={f.contract_amount} onChange={e=>setF(p=>({...p,contract_amount:e.target.value}))} style={inSt} placeholder="105"/>
+                  <label style={lbSt}>WiFi SSID</label><input value={f.wifi_ssid} onChange={e=>setF(p=>({...p,wifi_ssid:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>WiFi Password</label><input value={f.wifi_password} onChange={e=>setF(p=>({...p,wifi_password:e.target.value}))} style={inSt}/>
+                  <label style={lbSt}>Notes</label><textarea value={f.notes} onChange={e=>setF(p=>({...p,notes:e.target.value}))} rows={3} style={{ ...inSt, resize:'vertical' }}/>
+                </div>
               </div>
             </div>
           )}
