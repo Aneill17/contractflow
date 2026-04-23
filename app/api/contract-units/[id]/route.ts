@@ -30,7 +30,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const extAllowed = [
     'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact',
     'lease_type', 'landlord_additional_contact',
-    'concierge_name', 'concierge_phone', 'concierge_notes',
     'guest_email', 'guest_phone', 'guest2_name', 'guest2_email', 'guest2_phone',
     'lease_monthly_price',
   ]

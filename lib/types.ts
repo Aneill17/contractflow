@@ -200,9 +200,6 @@ export interface ContractUnit {
   landlord_name: string | null
   landlord_email: string | null
   landlord_phone: string | null
-  concierge_name: string | null
-  concierge_phone: string | null
-  concierge_notes: string | null
   landlord_additional_contact: string | null
   lease_monthly_price: number | null
   monthly_cost: number | null
