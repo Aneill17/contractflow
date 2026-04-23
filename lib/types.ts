@@ -176,7 +176,7 @@ export interface UnitPhoto {
 export interface UnitLease {
   id: string
   unit_id: string
-  type: 'landlord' | 'client'
+  lease_type: 'landlord' | 'client'
   file_url: string | null
   lease_start: string | null
   lease_end: string | null

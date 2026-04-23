@@ -8,13 +8,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const formData = await req.formData()
   const file = formData.get('file') as File | null
-  const type = formData.get('type') as 'landlord' | 'client' | null
+  const lease_type = formData.get('type') as 'landlord' | 'client' | null
   if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
-  if (!type) return NextResponse.json({ error: 'type required' }, { status: 400 })
+  if (!lease_type) return NextResponse.json({ error: 'type required' }, { status: 400 })
 
   const supabase = createServerClient()
   const ext = file.name.split('.').pop() ?? 'pdf'
-  const path = `${params.id}/${type}-${Date.now()}.${ext}`
+  const path = `${params.id}/${lease_type}-${Date.now()}.${ext}`
   const buffer = Buffer.from(await file.arrayBuffer())
 
   const { error: uploadErr } = await supabase.storage
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     .from('unit_leases')
     .insert([{
       unit_id: params.id,
-      type,
+      lease_type,
       file_url: urlData.publicUrl,
       lease_start: formData.get('lease_start') || null,
       lease_end: formData.get('lease_end') || null,
