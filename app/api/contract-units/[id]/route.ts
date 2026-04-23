@@ -41,21 +41,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if ('damage_deposit' in body) patch.damage_deposit = body.damage_deposit ? Number(body.damage_deposit) : null
 
   // Try full patch first, fall back to base fields if schema cache error
-  let { data, error } = await supabase.from('units').update(patch).eq('id', params.id).select().single()
+  const result = await supabase.from('units').update(patch).eq('id', params.id).select().single()
 
-  if (error && (error.message.includes('schema cache') || error.message.includes('column') || error.code === 'PGRST204')) {
+  if (result.error && (result.error.message.includes('schema cache') || result.error.message.includes('column') || result.error.code === 'PGRST204')) {
     const basePatch: Record<string, unknown> = {}
     for (const f of baseAllowed) if (f in body) basePatch[f] = body[f]
     const fallback = await supabase.from('units').update(basePatch).eq('id', params.id).select().single()
-    data = fallback.data; error = fallback.error
+    if (fallback.error) return NextResponse.json({ error: fallback.error.message }, { status: 500 })
+    return NextResponse.json(fallback.data)
   }
 
-  const finalResult = { data, error };
-  if (finalResult.error) return NextResponse.json({ error: finalResult.error.message }, { status: 500 });
-  const { data: finalData } = finalResult;
-
-  if (finalResult.error) return NextResponse.json({ error: finalResult.error.message }, { status: 500 })
-  return NextResponse.json(finalData)
+  if (result.error) return NextResponse.json({ error: result.error.message }, { status: 500 })
+  return NextResponse.json(result.data)
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
