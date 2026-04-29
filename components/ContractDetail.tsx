@@ -152,12 +152,203 @@ function renderContractMarkdown(text: string): JSX.Element {
 }
 
 // ── TAB: Request Review ──────────────────────────────────────
-function RequestTab({ contract: c }: { contract: Contract }) {
-  const occupants = (c as any).occupants || []
+function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
+  const rawOccupants = (c as any).occupants || []
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({
+    client_name: c.client_name || '',
+    contact_name: c.contact_name || '',
+    contact_email: c.contact_email || '',
+    contact_phone: c.contact_phone || '',
+    location: c.location || '',
+    units: String(c.units ?? 1),
+    start_date: c.start_date || '',
+    end_date: c.end_date || '',
+    payment_method: c.payment_method || '',
+    notes: c.notes || '',
+    work_site_address: c.work_site_address || '',
+  })
+  const [occupantList, setOccupantList] = useState<string[]>(rawOccupants.map((o: any) => o.name))
+  const [newOccupant, setNewOccupant] = useState('')
+
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const headers = await getAuthHeader()
+      const res = await fetch(`/api/contracts/${c.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({
+          client_name: form.client_name,
+          contact_name: form.contact_name,
+          contact_email: form.contact_email,
+          contact_phone: form.contact_phone,
+          location: form.location,
+          units: parseInt(form.units) || 1,
+          start_date: form.start_date,
+          end_date: form.end_date,
+          payment_method: form.payment_method,
+          notes: form.notes,
+          work_site_address: form.work_site_address || null,
+          occupants: occupantList,
+          audit_action: 'Booking request details updated',
+          actor: 'Team',
+        }),
+      })
+      if (res.ok) {
+        showToast('Request updated — contract details refreshed')
+        setEditing(false)
+        await onRefresh()
+      } else {
+        const d = await res.json().catch(() => ({}))
+        showToast(d.error || 'Save failed', 'error')
+      }
+    } catch {
+      showToast('Save failed', 'error')
+    }
+    setSaving(false)
+  }
+
+  const addOccupant = () => {
+    const name = newOccupant.trim()
+    if (!name) return
+    setOccupantList(l => [...l, name])
+    setNewOccupant('')
+  }
+
+  const removeOccupant = (i: number) => setOccupantList(l => l.filter((_, idx) => idx !== i))
+
+  // Reset form when switching to edit mode
+  const startEdit = () => {
+    setForm({
+      client_name: c.client_name || '',
+      contact_name: c.contact_name || '',
+      contact_email: c.contact_email || '',
+      contact_phone: c.contact_phone || '',
+      location: c.location || '',
+      units: String(c.units ?? 1),
+      start_date: c.start_date || '',
+      end_date: c.end_date || '',
+      payment_method: c.payment_method || '',
+      notes: c.notes || '',
+      work_site_address: c.work_site_address || '',
+    })
+    setOccupantList(rawOccupants.map((o: any) => o.name))
+    setEditing(true)
+  }
+
+  if (editing) {
+    return (
+      <div>
+        {c.stage >= 3 && (
+          <div style={{ background: 'rgba(196,121,58,0.08)', border: '1px solid rgba(196,121,58,0.3)', borderRadius: 8, padding: '10px 16px', marginBottom: 14, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#C4793A' }}>
+            ⚠ Contract already sent — changes here will update the record but not the issued contract documents.
+          </div>
+        )}
+        <div style={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={styles.sectionTitle}>Edit Booking Request</div>
+            <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => setEditing(false)}>Cancel</button>
+          </div>
+
+          <div style={styles.grid2}>
+            <div>
+              <div style={styles.lbl}>Company Name *</div>
+              <input style={styles.inp} value={form.client_name} onChange={e => set('client_name', e.target.value)} placeholder="Company" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Contact Name *</div>
+              <input style={styles.inp} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="Contact" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Email *</div>
+              <input style={styles.inp} type="email" value={form.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="email@example.com" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Phone</div>
+              <input style={styles.inp} value={form.contact_phone} onChange={e => set('contact_phone', e.target.value)} placeholder="604-555-0100" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Location / Region *</div>
+              <input style={styles.inp} value={form.location} onChange={e => set('location', e.target.value)} placeholder="e.g. Prince George, BC" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Units Requested *</div>
+              <input style={styles.inp} type="number" min="1" value={form.units} onChange={e => set('units', e.target.value)} />
+            </div>
+            <div>
+              <div style={styles.lbl}>Check-in Date *</div>
+              <input style={{ ...styles.inp, colorScheme: 'light' }} type="date" value={form.start_date} onChange={e => set('start_date', e.target.value)} />
+            </div>
+            <div>
+              <div style={styles.lbl}>Check-out Date *</div>
+              <input style={{ ...styles.inp, colorScheme: 'light' }} type="date" value={form.end_date} onChange={e => set('end_date', e.target.value)} />
+            </div>
+            <div>
+              <div style={styles.lbl}>Payment Method</div>
+              <input style={styles.inp} value={form.payment_method} onChange={e => set('payment_method', e.target.value)} placeholder="e.g. Invoice, Credit Card" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Work Site Address</div>
+              <input style={styles.inp} value={form.work_site_address} onChange={e => set('work_site_address', e.target.value)} placeholder="Work site location" />
+            </div>
+          </div>
+
+          <div style={{ marginTop: 14 }}>
+            <div style={styles.lbl}>Notes</div>
+            <textarea
+              style={{ ...styles.textarea, minHeight: 72 }}
+              value={form.notes}
+              onChange={e => set('notes', e.target.value)}
+              placeholder="Any special requirements or notes..."
+            />
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.sectionTitle}>Occupants</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            {occupantList.map((name, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(0,191,166,0.08)', border: '1px solid rgba(0,191,166,0.25)', borderRadius: 6, padding: '5px 10px', fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#0B2540' }}>
+                {name}
+                <button onClick={() => removeOccupant(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 13, lineHeight: 1, padding: '0 0 0 4px' }}>×</button>
+              </div>
+            ))}
+            {occupantList.length === 0 && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8' }}>No occupants listed</div>}
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              style={{ ...styles.inp, flex: 1 }}
+              value={newOccupant}
+              onChange={e => setNewOccupant(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addOccupant())}
+              placeholder="Add occupant name and press Enter"
+            />
+            <button style={styles.btnGhost} onClick={addOccupant}>+ Add</button>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+          <button style={styles.btnGhost} onClick={() => setEditing(false)}>Cancel</button>
+          <button style={styles.btnPrimary} onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : '✓ Save Changes'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Read-only view ──
   return (
     <div>
       <div style={styles.card}>
-        <div style={styles.sectionTitle}>Booking Request</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div style={styles.sectionTitle}>Booking Request</div>
+          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={startEdit}>✎ Edit Request</button>
+        </div>
         <div style={styles.grid2}>
           {[
             ['Company', c.client_name],
@@ -169,7 +360,7 @@ function RequestTab({ contract: c }: { contract: Contract }) {
             ['Check-in', formatDate(c.start_date)],
             ['Check-out', formatDate(c.end_date)],
             ['Duration', `${calcMonths(c)} months`],
-            ['Payment Method', c.payment_method],
+            ['Payment Method', c.payment_method || '—'],
           ].map(([l, v]) => (
             <div key={l} style={{ marginBottom: 14 }}>
               <div style={styles.lbl}>{l}</div>
@@ -177,11 +368,17 @@ function RequestTab({ contract: c }: { contract: Contract }) {
             </div>
           ))}
         </div>
-        {occupants.length > 0 && (
+        {c.work_site_address && (
+          <div style={{ marginTop: 10, paddingTop: 14, borderTop: '1px solid #e8ecf0' }}>
+            <div style={styles.lbl}>Work Site</div>
+            <div style={{ fontSize: 13, color: '#334155', marginTop: 4 }}>{c.work_site_address}</div>
+          </div>
+        )}
+        {rawOccupants.length > 0 && (
           <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e8ecf0' }}>
             <div style={styles.lbl}>Occupants</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-              {occupants.map((o: any, i: number) => (
+              {rawOccupants.map((o: any, i: number) => (
                 <div key={i} style={{ background: 'rgba(0,191,166,0.08)', border: '1px solid rgba(0,191,166,0.25)', borderRadius: 6, padding: '5px 12px', fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#0B2540' }}>
                   {o.name}
                 </div>
@@ -1680,7 +1877,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
         ))}
       </div>
 
-      {tab === 'request'  && <RequestTab  contract={c} />}
+      {tab === 'request'  && <RequestTab  contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'quote'    && <QuoteTab    contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'contract' && <ContractTab contract={c} onUpdate={onUpdate} onRefresh={onRefresh} showToast={showToast} />}
       {tab === 'documents' && <DocumentsTab contract={c} />}
