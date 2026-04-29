@@ -399,10 +399,23 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
 // ── TAB: Quote Builder ──────────────────────────────────────
 function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
-  const occupants = (c as any).occupants || []
   const months = calcMonths(c)
+  const [editing, setEditing] = useState(!c.price_per_unit) // open edit mode if quote not yet built
   const [activeUnitsCount, setActiveUnitsCount] = useState<number | null>(null)
   const [totalUnitsCount, setTotalUnitsCount] = useState<number | null>(null)
+  const [sending, setSending] = useState(false)
+  const [sendingPdf, setSendingPdf] = useState(false)
+  const isQuoteSent = c.stage >= 1
+
+  // ── Edit form state (synced from c on edit open) ──
+  const [pricePerUnit, setPricePerUnit] = useState(c.price_per_unit || 0)
+  const [damageDeposit, setDamageDeposit] = useState(c.damage_deposit || 0)
+  const [paymentSchedule, setPaymentSchedule] = useState(c.payment_schedule || 'Monthly')
+  const [inclusions, setInclusions] = useState(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
+  const [exclusions, setExclusions] = useState(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
+  const [quoteNotes, setQuoteNotes] = useState(c.quote_notes || '')
+  const [lineItems, setLineItems] = useState<{ description: string; amount: number }[]>(c.quote_line_items || [])
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const loadUnitStats = async () => {
@@ -416,17 +429,65 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     }
     loadUnitStats()
   }, [c.id])
-  const [pricePerUnit, setPricePerUnit] = useState(c.price_per_unit || 0)
-  const [damageDeposit, setDamageDeposit] = useState(c.damage_deposit || 0)
-  const [paymentSchedule, setPaymentSchedule] = useState(c.payment_schedule || 'Monthly')
-  const [inclusions, setInclusions] = useState(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
-  const [exclusions, setExclusions] = useState(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
-  const [quoteNotes, setQuoteNotes] = useState(c.quote_notes || '')
-  const [lineItems, setLineItems] = useState<{ description: string; amount: number }[]>(c.quote_line_items || [])
-  const [saving, setSaving] = useState(false)
-  const [sending, setSending] = useState(false)
-  const [sendingPdf, setSendingPdf] = useState(false)
-  const isQuoteSent = c.stage >= 1
+
+  // Sync form state from latest contract prop (after saves / refreshes)
+  useEffect(() => {
+    if (!editing) {
+      setPricePerUnit(c.price_per_unit || 0)
+      setDamageDeposit(c.damage_deposit || 0)
+      setPaymentSchedule(c.payment_schedule || 'Monthly')
+      setInclusions(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
+      setExclusions(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
+      setQuoteNotes(c.quote_notes || '')
+      setLineItems(c.quote_line_items || [])
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [c.price_per_unit, c.damage_deposit, c.payment_schedule, c.inclusions, c.exclusions, c.quote_notes, c.quote_line_items])
+
+  const openEdit = () => {
+    setPricePerUnit(c.price_per_unit || 0)
+    setDamageDeposit(c.damage_deposit || 0)
+    setPaymentSchedule(c.payment_schedule || 'Monthly')
+    setInclusions(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
+    setExclusions(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
+    setQuoteNotes(c.quote_notes || '')
+    setLineItems(c.quote_line_items || [])
+    setEditing(true)
+  }
+
+  const addLineItem = () => setLineItems(li => [...li, { description: '', amount: 0 }])
+  const removeLineItem = (i: number) => setLineItems(li => li.filter((_, idx) => idx !== i))
+  const updateLineItem = (i: number, field: string, val: any) =>
+    setLineItems(li => li.map((item, idx) => idx === i ? { ...item, [field]: val } : item))
+
+  const saveQuote = async () => {
+    if (!pricePerUnit) { showToast('Set a price per unit first', 'error'); return }
+    setSaving(true)
+    const headers = await getAuthHeader()
+    const res = await fetch(`/api/contracts/${c.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({
+        price_per_unit: pricePerUnit,
+        damage_deposit: damageDeposit,
+        payment_schedule: paymentSchedule,
+        inclusions,
+        exclusions,
+        quote_notes: quoteNotes,
+        quote_line_items: lineItems,
+        audit_action: 'Quote details saved',
+        actor: 'Team',
+      }),
+    })
+    if (res.ok) {
+      showToast('Quote saved — ready to download or send')
+      setEditing(false)
+      await onRefresh()
+    } else {
+      showToast('Save failed', 'error')
+    }
+    setSaving(false)
+  }
 
   const downloadQuote = () => {
     window.open(`/api/contracts/${c.id}/quote-pdf`, '_blank')
@@ -442,45 +503,20 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     })
     if (res.ok) {
       showToast(sendToClient ? `Quote sent to ${c.contact_email}` : 'Quote sent to your email')
+      await onRefresh()
     } else {
       showToast('Failed to send quote PDF', 'error')
     }
     setSendingPdf(false)
   }
 
-  const baseTotal = c.units * pricePerUnit * months
-  const lineItemsTotal = lineItems.reduce((s, li) => s + (li.amount || 0), 0)
-  const grandTotal = baseTotal + lineItemsTotal + damageDeposit
-
-  const addLineItem = () => setLineItems(li => [...li, { description: '', amount: 0 }])
-  const removeLineItem = (i: number) => setLineItems(li => li.filter((_, idx) => idx !== i))
-  const updateLineItem = (i: number, field: string, val: any) =>
-    setLineItems(li => li.map((item, idx) => idx === i ? { ...item, [field]: val } : item))
-
-  const saveQuote = async () => {
-    setSaving(true)
-    await onUpdate(c.id, {
-      price_per_unit: pricePerUnit, damage_deposit: damageDeposit,
-      payment_schedule: paymentSchedule, inclusions, exclusions,
-      quote_notes: quoteNotes, quote_line_items: lineItems,
-    } as any, 'Quote details saved')
-    showToast('Quote saved')
-    setSaving(false)
-  }
-
-  const sendQuote = async () => {
-    if (!pricePerUnit) { showToast('Set a price per unit first', 'error'); return }
+  const sendInitialQuote = async () => {
     setSending(true)
     const authHeader = await getAuthHeader()
     const res = await fetch(`/api/contracts/${c.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...authHeader },
-      body: JSON.stringify({
-        price_per_unit: pricePerUnit, damage_deposit: damageDeposit,
-        payment_schedule: paymentSchedule, inclusions, exclusions,
-        quote_notes: quoteNotes, quote_line_items: lineItems,
-        stage: 1, actor: 'Team', audit_action: 'Quote sent to client',
-      }),
+      body: JSON.stringify({ stage: 1, actor: 'Team', audit_action: 'Quote sent to client' }),
     })
     if (res.ok) {
       showToast('Quote sent to client — email delivered')
@@ -491,151 +527,277 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setSending(false)
   }
 
-  return (
-    <div>
-      {isQuoteSent && (
-        <div style={{ background: 'rgba(196,121,58,0.08)', border: '1px solid rgba(196,121,58,0.25)', borderRadius: 8, padding: '12px 18px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C4793A' }}>
-            {c.stage === 1 ? '⏳ Quote sent — awaiting client approval' : '✓ Quote approved by client'}
-          </div>
-          {c.stage === 1 && (
-            <button style={styles.btnGhost} onClick={async () => {
-              const authHeader = await getAuthHeader()
-              const res = await fetch(`/api/contracts/${c.id}/remind`, { method: 'POST', headers: { ...authHeader } })
-              if (res.ok) showToast('Reminder sent to client')
-              else showToast('Failed to send reminder', 'error')
-            }}>✉ Send Reminder</button>
-          )}
-        </div>
+  // ── Saved totals (from DB / c prop) ──────────────────────
+  const savedBaseTotal = c.units * (c.price_per_unit || 0) * months
+  const savedLineItems: { description: string; amount: number }[] = c.quote_line_items || []
+  const savedLineTotal = savedLineItems.reduce((s, li) => s + (li.amount || 0), 0)
+  const savedDeposit = c.damage_deposit || 0
+  const savedGrandTotal = savedBaseTotal + savedLineTotal + savedDeposit
+
+  // ── Edit-mode live totals ─────────────────────────────────
+  const editBaseTotal = c.units * pricePerUnit * months
+  const editLineTotal = lineItems.reduce((s, li) => s + (li.amount || 0), 0)
+  const editGrandTotal = editBaseTotal + editLineTotal + damageDeposit
+
+  // ── STATUS BANNER ─────────────────────────────────────────
+  const statusBanner = isQuoteSent ? (
+    <div style={{ background: 'rgba(196,121,58,0.08)', border: '1px solid rgba(196,121,58,0.25)', borderRadius: 8, padding: '12px 18px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#C4793A' }}>
+        {c.stage === 1 ? '⏳ Quote sent — awaiting client approval' : '✓ Quote approved by client'}
+      </div>
+      {c.stage === 1 && (
+        <button style={styles.btnGhost} onClick={async () => {
+          const authHeader = await getAuthHeader()
+          const res = await fetch(`/api/contracts/${c.id}/remind`, { method: 'POST', headers: { ...authHeader } })
+          if (res.ok) showToast('Reminder sent to client')
+          else showToast('Failed to send reminder', 'error')
+        }}>✉ Send Reminder</button>
       )}
+    </div>
+  ) : null
 
-      <div style={styles.card}>
-        <div style={styles.sectionTitle}>Pricing</div>
-        <div style={styles.grid3}>
-          <div>
-            <div style={styles.lbl}>Price / Unit / Month ($)</div>
-            <input style={styles.inpGold} type="number" min="0" value={pricePerUnit || ''} placeholder="0"
-              onChange={e => setPricePerUnit(Number(e.target.value))} />
+  // ── EDIT MODE ─────────────────────────────────────────────
+  if (editing) {
+    return (
+      <div>
+        {statusBanner}
+        {isQuoteSent && (
+          <div style={{ background: 'rgba(196,121,58,0.06)', border: '1px solid rgba(196,121,58,0.2)', borderRadius: 8, padding: '10px 16px', marginBottom: 14, fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#C4793A' }}>
+            ✎ Editing a previously sent quote — save changes, then use "Send Revised Quote" to re-send to the client.
           </div>
-          <div>
-            <div style={styles.lbl}>Units</div>
-            <input style={{ ...styles.inpGold, opacity: 0.5 }} type="number" value={c.units} disabled />
+        )}
+
+        <div style={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div style={styles.sectionTitle}>Pricing</div>
+            <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={() => setEditing(false)}>Cancel</button>
           </div>
-          <div>
-            <div style={styles.lbl}>Duration</div>
-            <input style={{ ...styles.inpGold, opacity: 0.5 }} type="text" value={`${months} months`} disabled />
+          <div style={styles.grid3}>
+            <div>
+              <div style={styles.lbl}>Price / Unit / Month ($)</div>
+              <input style={styles.inpGold} type="number" min="0" value={pricePerUnit || ''} placeholder="0"
+                onChange={e => setPricePerUnit(Number(e.target.value))} />
+            </div>
+            <div>
+              <div style={styles.lbl}>Units</div>
+              <input style={{ ...styles.inpGold, opacity: 0.5 }} type="number" value={c.units} disabled />
+            </div>
+            <div>
+              <div style={styles.lbl}>Duration</div>
+              <input style={{ ...styles.inpGold, opacity: 0.5 }} type="text" value={`${months} months`} disabled />
+            </div>
+            <div>
+              <div style={styles.lbl}>Damage Deposit ($)</div>
+              <input style={styles.inpGold} type="number" min="0" value={damageDeposit || ''} placeholder="0"
+                onChange={e => setDamageDeposit(Number(e.target.value))} />
+            </div>
+            <div>
+              <div style={styles.lbl}>Payment Schedule</div>
+              <select style={styles.inp} value={paymentSchedule} onChange={e => setPaymentSchedule(e.target.value)}>
+                <option>Monthly</option>
+                <option>Bi-weekly</option>
+                <option>Upfront (full term)</option>
+                <option>First & last month upfront</option>
+                <option>Custom</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <div style={styles.lbl}>Damage Deposit ($)</div>
-            <input style={styles.inpGold} type="number" min="0" value={damageDeposit || ''} placeholder="0"
-              onChange={e => setDamageDeposit(Number(e.target.value))} />
-          </div>
-          <div>
-            <div style={styles.lbl}>Payment Schedule</div>
-            <select style={styles.inp} value={paymentSchedule} onChange={e => setPaymentSchedule(e.target.value)}>
-              <option>Monthly</option>
-              <option>Bi-weekly</option>
-              <option>Upfront (full term)</option>
-              <option>First & last month upfront</option>
-              <option>Custom</option>
-            </select>
+          <div style={{ marginTop: 16 }}>
+            <div style={styles.lbl}>Additional Line Items</div>
+            {lineItems.map((li, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' }}>
+                <input style={{ ...styles.inp, flex: 2 }} placeholder="Description (e.g. Parking fee)" value={li.description}
+                  onChange={e => updateLineItem(i, 'description', e.target.value)} />
+                <input style={{ ...styles.inpGold, flex: 1, fontSize: 13 }} type="number" placeholder="$" value={li.amount || ''}
+                  onChange={e => updateLineItem(i, 'amount', Number(e.target.value))} />
+                <button onClick={() => removeLineItem(i)} style={{ background: 'none', border: 'none', color: '#e74c3c99', cursor: 'pointer', fontSize: 16, padding: '0 6px' }}>✕</button>
+              </div>
+            ))}
+            <button style={{ ...styles.btnGhost, marginTop: 10, fontSize: 11, padding: '6px 14px' }} onClick={addLineItem}>+ Add Line Item</button>
           </div>
         </div>
 
-        <div style={{ marginTop: 16 }}>
-          <div style={styles.lbl}>Additional Line Items</div>
-          {lineItems.map((li, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' }}>
-              <input style={{ ...styles.inp, flex: 2 }} placeholder="Description (e.g. Parking fee)" value={li.description}
-                onChange={e => updateLineItem(i, 'description', e.target.value)} />
-              <input style={{ ...styles.inpGold, flex: 1, fontSize: 13 }} type="number" placeholder="$" value={li.amount || ''}
-                onChange={e => updateLineItem(i, 'amount', Number(e.target.value))} />
-              <button onClick={() => removeLineItem(i)} style={{ background: 'none', border: 'none', color: '#e74c3c99', cursor: 'pointer', fontSize: 16, padding: '0 6px' }}>✕</button>
+        {/* Live total preview while editing */}
+        <div style={{ ...styles.card, padding: '16px 22px', background: '#f8f9fb', borderLeft: '3px solid #C4793A' }}>
+          <div style={styles.sectionTitle}>Live Total Preview</div>
+          {[
+            [`Base rent (${c.units} × $${pricePerUnit.toLocaleString()} × ${months} mo)`, editBaseTotal],
+            ...lineItems.filter(li => li.description && li.amount).map(li => [li.description, li.amount] as [string, number]),
+            ...(damageDeposit > 0 ? [['Damage deposit (refundable)', damageDeposit] as [string, number]] : []),
+          ].map(([label, amount], i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #e8ecf0', fontSize: 13 }}>
+              <span style={{ color: '#94a3b8' }}>{label as string}</span>
+              <span style={{ color: '#334155', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>${(amount as number).toLocaleString()}</span>
             </div>
           ))}
-          <button style={{ ...styles.btnGhost, marginTop: 10, fontSize: 11, padding: '6px 14px' }} onClick={addLineItem}>+ Add Line Item</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 12, borderTop: '2px solid rgba(196,121,58,0.2)', marginTop: 4 }}>
+            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Quote Value</span>
+            <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 24, color: '#C4793A', fontWeight: 700 }}>${editGrandTotal.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.sectionTitle}>Terms & Details</div>
+          <div style={styles.grid2}>
+            <div>
+              <div style={styles.lbl}>What's Included</div>
+              <textarea style={styles.textarea} value={inclusions} onChange={e => setInclusions(e.target.value)} />
+            </div>
+            <div>
+              <div style={styles.lbl}>What's Not Included</div>
+              <textarea style={styles.textarea} value={exclusions} onChange={e => setExclusions(e.target.value)} />
+            </div>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <div style={styles.lbl}>Special Notes / Terms</div>
+            <textarea style={{ ...styles.textarea, minHeight: 70 }} value={quoteNotes} onChange={e => setQuoteNotes(e.target.value)} placeholder="Any special conditions or notes..." />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+          <button style={styles.btnGhost} onClick={() => setEditing(false)}>Cancel</button>
+          <button style={styles.btnPrimary} onClick={saveQuote} disabled={saving}>
+            {saving ? 'Saving...' : '✓ Save Quote'}
+          </button>
         </div>
       </div>
+    )
+  }
 
-      {/* Total */}
-      <div style={{ ...styles.card, padding: '18px 22px', background: '#f8f9fb', borderLeft: '3px solid #C4793A' }}>
-        <div style={styles.sectionTitle}>Quote Total</div>
-        {[
-          [`Base rent (${c.units} units × $${pricePerUnit.toLocaleString()} × ${months} mo)`, baseTotal],
-          ...lineItems.filter(li => li.description && li.amount).map(li => [li.description, li.amount]),
-          ...(damageDeposit > 0 ? [['Damage deposit (refundable)', damageDeposit]] : []),
-        ].map(([label, amount], i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #e8ecf0', fontSize: 13 }}>
-            <span style={{ color: '#94a3b8' }}>{label as string}</span>
-            <span style={{ color: '#334155', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>${(amount as number).toLocaleString()}</span>
-          </div>
-        ))}
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14, borderTop: '2px solid rgba(196,121,58,0.2)', marginTop: 4 }}>
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Quote Value</span>
-          <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 26, color: '#C4793A', fontWeight: 700 }}>${grandTotal.toLocaleString()}</span>
+  // ── VIEW MODE (locked) ────────────────────────────────────
+  return (
+    <div>
+      {statusBanner}
+
+      {/* Quote summary card */}
+      <div style={{ ...styles.card, borderLeft: `3px solid ${c.price_per_unit ? '#C4793A' : '#e8ecf0'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={styles.sectionTitle}>Quote Summary</div>
+          <button style={{ ...styles.btnGhost, fontSize: 11, padding: '6px 14px' }} onClick={openEdit}>✎ Edit Quote</button>
         </div>
-        {/* Billing auto-adjustment indicator */}
-        {totalUnitsCount !== null && totalUnitsCount > 0 && (
-          <div style={{
-            marginTop: 14,
-            padding: '10px 14px',
-            borderRadius: 8,
-            background: activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.06)' : 'rgba(196,121,58,0.06)',
-            border: `1px solid ${activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.2)' : 'rgba(196,121,58,0.2)'}`,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: activeUnitsCount === totalUnitsCount ? '#00BFA6' : '#C4793A' }}>
-                {activeUnitsCount} of {totalUnitsCount} units active — billing adjusted
-              </div>
-              {pricePerUnit > 0 && activeUnitsCount !== null && (
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155', fontWeight: 600 }}>
-                  ${((activeUnitsCount ?? 0) * pricePerUnit * 30).toLocaleString()} / mo
+
+        {!c.price_per_unit ? (
+          <div style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>
+            No quote built yet. Click <strong style={{ color: '#C4793A' }}>✎ Edit Quote</strong> to set pricing and terms.
+          </div>
+        ) : (
+          <>
+            {/* Key metrics */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+              {[
+                ['Rate / Unit', `$${(c.price_per_unit || 0).toLocaleString()} / mo`],
+                ['Units', `${c.units}`],
+                ['Duration', `${months} mo`],
+                ['Schedule', c.payment_schedule || 'Monthly'],
+              ].map(([label, val]) => (
+                <div key={label} style={{ background: '#f8f9fb', borderRadius: 8, padding: '12px 14px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{label}</div>
+                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 14, color: '#334155', fontWeight: 600 }}>{val}</div>
                 </div>
-              )}
+              ))}
             </div>
-            {activeUnitsCount !== totalUnitsCount && pricePerUnit > 0 && activeUnitsCount !== null && (
-              <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', marginTop: 4 }}>
-                Full rate: ${(totalUnitsCount * pricePerUnit * 30).toLocaleString()} / mo · Adjusted: ${(activeUnitsCount * pricePerUnit * 30).toLocaleString()} / mo
+
+            {/* Pricing breakdown */}
+            <div style={{ borderTop: '1px solid #e8ecf0', paddingTop: 14 }}>
+              {[
+                [`Base rent (${c.units} × $${(c.price_per_unit || 0).toLocaleString()} × ${months} mo)`, savedBaseTotal],
+                ...savedLineItems.filter(li => li.description && li.amount).map(li => [li.description, li.amount] as [string, number]),
+                ...(savedDeposit > 0 ? [['Damage deposit (refundable)', savedDeposit] as [string, number]] : []),
+              ].map(([label, amount], i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #f1f4f8', fontSize: 13 }}>
+                  <span style={{ color: '#64748b' }}>{label as string}</span>
+                  <span style={{ color: '#334155', fontFamily: 'IBM Plex Mono', fontSize: 12 }}>${(amount as number).toLocaleString()}</span>
+                </div>
+              ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14 }}>
+                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Quote Value</span>
+                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 28, color: '#C4793A', fontWeight: 700 }}>${savedGrandTotal.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Inclusions summary */}
+            {(c.inclusions || c.exclusions) && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 18, paddingTop: 16, borderTop: '1px solid #e8ecf0' }}>
+                {c.inclusions && (
+                  <div>
+                    <div style={styles.lbl}>Included</div>
+                    <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.7, marginTop: 4 }}>
+                      {c.inclusions.split('\n').filter(Boolean).map((line, i) => <div key={i}>· {line}</div>)}
+                    </div>
+                  </div>
+                )}
+                {c.exclusions && (
+                  <div>
+                    <div style={styles.lbl}>Not Included</div>
+                    <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.7, marginTop: 4 }}>
+                      {c.exclusions.split('\n').filter(Boolean).map((line, i) => <div key={i}>· {line}</div>)}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+
+            {c.quote_notes && (
+              <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #e8ecf0' }}>
+                <div style={styles.lbl}>Special Notes</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.7, marginTop: 4, fontStyle: 'italic' }}>{c.quote_notes}</div>
+              </div>
+            )}
+
+            {/* Billing adjustment indicator */}
+            {totalUnitsCount !== null && totalUnitsCount > 0 && c.price_per_unit && (
+              <div style={{
+                marginTop: 14,
+                padding: '10px 14px',
+                borderRadius: 8,
+                background: activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.06)' : 'rgba(196,121,58,0.06)',
+                border: `1px solid ${activeUnitsCount === totalUnitsCount ? 'rgba(0,191,166,0.2)' : 'rgba(196,121,58,0.2)'}`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: activeUnitsCount === totalUnitsCount ? '#00BFA6' : '#C4793A' }}>
+                    {activeUnitsCount} of {totalUnitsCount} units active — billing adjusted
+                  </div>
+                  {activeUnitsCount !== null && (
+                    <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#334155', fontWeight: 600 }}>
+                      ${((activeUnitsCount ?? 0) * (c.price_per_unit || 0) * 30).toLocaleString()} / mo
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Terms */}
-      <div style={styles.card}>
-        <div style={styles.sectionTitle}>Terms & Details</div>
-        <div style={styles.grid2}>
-          <div>
-            <div style={styles.lbl}>What's Included</div>
-            <textarea style={styles.textarea} value={inclusions} onChange={e => setInclusions(e.target.value)} />
-          </div>
-          <div>
-            <div style={styles.lbl}>What's Not Included</div>
-            <textarea style={styles.textarea} value={exclusions} onChange={e => setExclusions(e.target.value)} />
-          </div>
+      {/* Action buttons — only available in view mode to ensure PDF uses saved data */}
+      {c.price_per_unit ? (
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          <button style={styles.btnGhost} onClick={downloadQuote} title="Downloads PDF of the saved quote">
+            ⬇ Download PDF
+          </button>
+          <button style={{ ...styles.btnGhost, borderColor: 'rgba(0,191,166,0.4)', color: '#00BFA6' }} onClick={() => sendQuotePdf(false)} disabled={sendingPdf}>
+            {sendingPdf ? 'Sending...' : '✉ Send to Me'}
+          </button>
+          {isQuoteSent ? (
+            <button
+              style={{ ...styles.btnPrimary, background: '#C4793A' }}
+              onClick={() => sendQuotePdf(true)}
+              disabled={sendingPdf}
+              title="Sends the current saved quote to the client as a revised quote"
+            >
+              {sendingPdf ? 'Sending...' : '↺ Send Revised Quote to Client'}
+            </button>
+          ) : (
+            <button style={styles.btnPrimary} onClick={sendInitialQuote} disabled={sending}>
+              {sending ? 'Sending...' : 'Send Quote to Client →'}
+            </button>
+          )}
         </div>
-        <div style={{ marginTop: 12 }}>
-          <div style={styles.lbl}>Special Notes / Terms</div>
-          <textarea style={{ ...styles.textarea, minHeight: 70 }} value={quoteNotes} onChange={e => setQuoteNotes(e.target.value)} placeholder="Any special conditions or notes..." />
+      ) : (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button style={styles.btnPrimary} onClick={openEdit}>Build Quote →</button>
         </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-        <button style={styles.btnGhost} onClick={saveQuote} disabled={saving}>{saving ? 'Saving...' : 'Save Draft'}</button>
-        <button style={styles.btnGhost} onClick={downloadQuote} title="Preview quote in browser — print or save as PDF from there">
-          ⬇ Download Quote
-        </button>
-        <button style={{ ...styles.btnGhost, borderColor: 'rgba(0,191,166,0.4)', color: '#00BFA6' }} onClick={() => sendQuotePdf(false)} disabled={sendingPdf}>
-          {sendingPdf ? 'Sending...' : '✉ Send to Me'}
-        </button>
-        <button style={{ ...styles.btnGhost, borderColor: 'rgba(0,191,166,0.4)', color: '#00BFA6' }} onClick={() => sendQuotePdf(true)} disabled={sendingPdf || !pricePerUnit}>
-          {sendingPdf ? 'Sending...' : '✉ Email Quote to Client'}
-        </button>
-        <button style={styles.btnPrimary} onClick={sendQuote} disabled={sending || !pricePerUnit}>
-          {sending ? 'Sending...' : isQuoteSent ? 'Resend Quote →' : 'Send Quote to Client →'}
-        </button>
-      </div>
+      )}
     </div>
   )
 }
