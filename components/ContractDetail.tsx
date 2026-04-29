@@ -415,6 +415,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [exclusions, setExclusions] = useState(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
   const [quoteNotes, setQuoteNotes] = useState(c.quote_notes || '')
   const [lineItems, setLineItems] = useState<{ description: string; amount: number }[]>(c.quote_line_items || [])
+  const [paymentDueDay, setPaymentDueDay] = useState(c.payment_due_day || '')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -440,9 +441,10 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
       setExclusions(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
       setQuoteNotes(c.quote_notes || '')
       setLineItems(c.quote_line_items || [])
+      setPaymentDueDay(c.payment_due_day || '')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [c.price_per_unit, c.damage_deposit, c.payment_schedule, c.inclusions, c.exclusions, c.quote_notes, c.quote_line_items])
+  }, [c.price_per_unit, c.damage_deposit, c.payment_schedule, c.inclusions, c.exclusions, c.quote_notes, c.quote_line_items, c.payment_due_day])
 
   const openEdit = () => {
     setPricePerUnit(c.price_per_unit || 0)
@@ -452,6 +454,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setExclusions(c.exclusions || "Personal renter's insurance\nPersonal grocery/food expenses")
     setQuoteNotes(c.quote_notes || '')
     setLineItems(c.quote_line_items || [])
+    setPaymentDueDay(c.payment_due_day || '')
     setEditing(true)
   }
 
@@ -475,6 +478,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         exclusions,
         quote_notes: quoteNotes,
         quote_line_items: lineItems,
+        payment_due_day: paymentDueDay || null,
         audit_action: 'Quote details saved',
         actor: 'Team',
       }),
@@ -601,6 +605,15 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
                 <option>Custom</option>
               </select>
             </div>
+            <div>
+              <div style={styles.lbl}>Payment Due Day</div>
+              <select style={styles.inp} value={paymentDueDay} onChange={e => setPaymentDueDay(e.target.value)}>
+                <option value="">— Not set —</option>
+                {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28].map(d => (
+                  <option key={d} value={String(d)}>{d === 1 ? '1st' : d === 2 ? '2nd' : d === 3 ? '3rd' : `${d}th`} of the month</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div style={{ marginTop: 16 }}>
             <div style={styles.lbl}>Additional Line Items</div>
@@ -683,22 +696,38 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         ) : (
           <>
             {/* Key metrics */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
-              {[
+            {(() => {
+              const dueDayOrd = c.payment_due_day ? (c.payment_due_day === '1' ? '1st' : c.payment_due_day === '2' ? '2nd' : c.payment_due_day === '3' ? '3rd' : `${c.payment_due_day}th`) : null
+              const monthlyTotal = c.units * (c.price_per_unit || 0)
+              const metrics = [
                 ['Rate / Unit', `$${(c.price_per_unit || 0).toLocaleString()} / mo`],
+                ['Monthly Total', `$${monthlyTotal.toLocaleString()} / mo`],
                 ['Units', `${c.units}`],
                 ['Duration', `${months} mo`],
                 ['Schedule', c.payment_schedule || 'Monthly'],
-              ].map(([label, val]) => (
-                <div key={label} style={{ background: '#f8f9fb', borderRadius: 8, padding: '12px 14px', textAlign: 'center' }}>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{label}</div>
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 14, color: '#334155', fontWeight: 600 }}>{val}</div>
+                ...(dueDayOrd ? [['Due Day', `${dueDayOrd} of month`]] : []),
+              ] as [string, string][]
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(metrics.length, 3)}, 1fr)`, gap: 12, marginBottom: 20 }}>
+                  {metrics.map(([label, val]) => (
+                    <div key={label} style={{ background: label === 'Monthly Total' ? 'rgba(196,121,58,0.06)' : '#f8f9fb', borderRadius: 8, padding: '12px 14px', textAlign: 'center', border: label === 'Monthly Total' ? '1px solid rgba(196,121,58,0.2)' : 'none' }}>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{label}</div>
+                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: label === 'Monthly Total' ? 16 : 14, color: label === 'Monthly Total' ? '#C4793A' : '#334155', fontWeight: 600 }}>{val}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )
+            })()}
 
             {/* Pricing breakdown */}
             <div style={{ borderTop: '1px solid #e8ecf0', paddingTop: 14 }}>
+              {/* Monthly payment highlight */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', marginBottom: 8, background: 'rgba(196,121,58,0.06)', border: '1px solid rgba(196,121,58,0.18)', borderRadius: 8 }}>
+                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 11, color: '#C4793A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Monthly Payment{c.payment_due_day ? ` — due ${c.payment_due_day === '1' ? '1st' : c.payment_due_day === '2' ? '2nd' : c.payment_due_day === '3' ? '3rd' : `${c.payment_due_day}th`} of each month` : ''}
+                </span>
+                <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 18, color: '#C4793A', fontWeight: 700 }}>${(c.units * (c.price_per_unit || 0)).toLocaleString()} / mo</span>
+              </div>
               {[
                 [`Base rent (${c.units} × $${(c.price_per_unit || 0).toLocaleString()} × ${months} mo)`, savedBaseTotal],
                 ...savedLineItems.filter(li => li.description && li.amount).map(li => [li.description, li.amount] as [string, number]),

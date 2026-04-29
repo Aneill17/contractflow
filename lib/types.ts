@@ -64,6 +64,7 @@ export interface Contract {
   exclusions?: string
   quote_notes?: string
   quote_line_items?: QuoteLineItem[]
+  payment_due_day?: string
   generated_contract?: string
   start_date: string
   end_date: string

@@ -125,6 +125,7 @@ function buildQuoteHTML(contract: any): string {
       <tr><td class="label">Move-out Date</td><td class="val">${formatDate(contract.end_date)}</td></tr>
       <tr><td class="label">Term</td><td class="val">${months} month${months !== 1 ? 's' : ''}</td></tr>
       <tr><td class="label">Payment Schedule</td><td class="val">${contract.payment_schedule || 'Monthly'}</td></tr>
+      ${contract.payment_due_day ? `<tr><td class="label">Payment Due</td><td class="val">${contract.payment_due_day === '1' ? '1st' : contract.payment_due_day === '2' ? '2nd' : contract.payment_due_day === '3' ? '3rd' : contract.payment_due_day + 'th'} of each month</td></tr>` : ''}
       ${contract.payment_method ? `<tr><td class="label">Payment Method</td><td class="val">${contract.payment_method}</td></tr>` : ''}
     </table>
   </div>
@@ -136,6 +137,12 @@ function buildQuoteHTML(contract: any): string {
       <tr>
         <td class="label">Base Rate</td>
         <td class="val">${formatCurrency(contract.price_per_unit)} / unit / month</td>
+      </tr>
+      <tr style="background:#fff8f0;">
+        <td style="padding:10px 0;font-family:monospace;font-size:11px;color:#C4793A;text-transform:uppercase;letter-spacing:0.08em;">
+          Monthly Payment${contract.payment_due_day ? ` &mdash; due ${contract.payment_due_day === '1' ? '1st' : contract.payment_due_day === '2' ? '2nd' : contract.payment_due_day === '3' ? '3rd' : contract.payment_due_day + 'th'} of each month` : ''}
+        </td>
+        <td style="text-align:right;font-size:18px;font-weight:700;color:#C4793A;padding:10px 0;">${formatCurrency(contract.units * contract.price_per_unit)}</td>
       </tr>
       <tr>
         <td class="label">Base Total (${contract.units} units × ${months} months)</td>
