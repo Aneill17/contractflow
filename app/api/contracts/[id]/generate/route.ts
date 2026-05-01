@@ -33,6 +33,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const inclusions = contract.inclusions || '- Furniture and furnishings\n- Electricity\n- Water\n- Heat\n- High-speed internet\n- Property maintenance\n- Basic property management services'
 
+  // Build contact names list for multi-signatory support
+  const allContacts = [contract.contact_name, contract.contact_name_2, contract.contact_name_3].filter(Boolean)
+  const contactNamesLine = allContacts.join(', ')
+
   const prompt = `You are generating a professional lease agreement for Elias Range Stays, a workforce housing company in British Columbia, Canada.
 
 Fill in the following lease agreement template exactly — replace every {{variable}} with the correct value from the contract details below. Do not change the structure, headings, or legal language. Only fill in the variables.
@@ -41,7 +45,7 @@ CONTRACT DETAILS:
 - Reference: ${contract.reference}
 - Effective Date: ${formatDateLong(startDate)}
 - Client Company: ${contract.client_name}
-- Contact Name: ${contract.contact_name}
+- Contact Name(s): ${contactNamesLine}
 - Client Address: ${contract.contact_email} (use "Address on file" if no address provided)
 - Location Area: ${locationCity}
 - Location City: ${locationCity.split('—')[0]?.trim() || locationCity}
@@ -74,7 +78,7 @@ Squamish, BC V8B 1G7, Canada
 **THE TENANT**
 
 **${contract.client_name}**
-Attention: ${contract.contact_name}
+Attention: ${contactNamesLine}
 [Client address on file]
 
 ---
@@ -201,13 +205,7 @@ Date
 
 **TENANT**
 **${contract.client_name}**
-${contract.contact_name} — Authorized Signatory
-
-________________________________
-Signature
-
-________________________________
-Date
+${allContacts.map((name, i) => `${name} — ${i === 0 ? 'Authorized Signatory' : 'Contract Holder'}\n\n________________________________\nSignature\n\n________________________________\nDate`).join('\n\n')}
 
 ---
 
