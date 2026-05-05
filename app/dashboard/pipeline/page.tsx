@@ -26,6 +26,8 @@ interface Deal {
   devValue?: number          // capital development cost
   annualIncome?: number      // gross annual operating income
   billingModel?: 'standard' | 'split'  // split = ERS mgmt fee + flat rent to devco
+  profitPerUnit?: number     // ERS monthly profit per unit
+  totalProfit?: number       // total profit over contract term
 }
 
 const DEALS: Deal[] = [
@@ -43,6 +45,8 @@ const DEALS: Deal[] = [
     tagColor: T,
     totalValue: 24 * 105 * 30 * 24,
     mrr: 24 * 105 * 30,
+    profitPerUnit: 1_000,
+    totalProfit: 24 * 1_000 * 24,   // 24 units × $1k × 24 months
   },
   {
     id: 2,
@@ -58,6 +62,8 @@ const DEALS: Deal[] = [
     tagColor: T,
     totalValue: 4 * 135 * 30 * 6,
     mrr: 4 * 135 * 30,
+    profitPerUnit: 1_000,
+    totalProfit: 4 * 1_000 * 6,     // 4 units × $1k × 6 months
   },
   {
     id: 3,
@@ -76,6 +82,8 @@ const DEALS: Deal[] = [
     totalValue: 62_500 * 120,            // 10-year gross revenue
     mrr: 1_500_000 / 24,                 // $1.5M ÷ 24 months = $62,500/mo
     billingModel: 'split',
+    profitPerUnit: 1_200,
+    totalProfit: 32 * 1_200 * 120,       // 32 units × $1,200 × 120 months
   },
 ]
 
@@ -164,6 +172,22 @@ function DealCard({ deal }: { deal: Deal }) {
                   <span style={{ fontWeight: 700, color: r.color, fontSize: 10 }}>{r.who}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Profit strip */}
+        {deal.profitPerUnit && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#00BFA608', border: '1px solid #00BFA625', borderRadius: 7, padding: '8px 12px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: '#64748b' }}>
+              <span style={{ fontWeight: 700, color: N }}>ERS Profit</span>
+              {' — '}
+              {fmt(deal.profitPerUnit)}/unit/mo
+              {deal.billingModel === 'split' ? ' · est.' : ''}
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: T }}>{fmt(deal.totalProfit ?? 0)}</span>
+              <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 3 }}>total</span>
             </div>
           </div>
         )}
