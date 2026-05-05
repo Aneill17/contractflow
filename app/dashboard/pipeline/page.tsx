@@ -68,13 +68,13 @@ const DEALS: Deal[] = [
     durationMonths: 120,
     startYear: 2028,
     startLabel: '2028 — 10-Year Lease',
-    notes: 'Healthcare Housing Hub. Master lease + development. ERS bills NH for management services, furniture, cleaning & maintenance. Flat base rent flows to development company to service mortgage.',
+    notes: 'ERS holds a triple-net sublease from the development company and owns the service contract with Northern Health. ERS bills NH for the full-service package (management, furniture, cleaning & maintenance) and passes base rent through to Dev Co to service the mortgage.',
     tag: 'Development 2028',
     tagColor: P,
     devValue: 21_000_000,
-    annualIncome: 1_500_000,
-    totalValue: 1_500_000 * 10,  // 10-year operating income
-    mrr: 1_500_000 / 12,
+    annualIncome: 62_500 * 12,           // $750k/yr gross
+    totalValue: 62_500 * 120,            // 10-year gross revenue
+    mrr: 1_500_000 / 24,                 // $1.5M ÷ 24 months = $62,500/mo
     billingModel: 'split',
   },
 ]
@@ -147,17 +147,21 @@ function DealCard({ deal }: { deal: Deal }) {
         {/* Split billing model breakdown */}
         {deal.billingModel === 'split' && (
           <div style={{ background: `${P}08`, border: `1px solid ${P}20`, borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: P, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>Revenue Split Model</div>
+            <div style={{ fontSize: 9, fontWeight: 700, color: P, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>Triple-Net Sublease — Billing Flow</div>
+            {/* Structure summary */}
+            <div style={{ fontSize: 10, color: '#64748b', marginBottom: 8, lineHeight: 1.5 }}>
+              Dev Co owns building → <strong style={{color:P}}>ERS subleases (NNN)</strong> → ERS contracts with NH
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {[
-                { label: 'Management Services', who: 'ERS', color: T },
-                { label: 'Furniture Package', who: 'ERS', color: T },
-                { label: 'Cleaning & Maintenance', who: 'ERS', color: T },
-                { label: 'Base Rent (flat rate)', who: 'Dev Co. → Mortgage', color: '#94a3b8' },
+                { label: 'Management Services', who: 'ERS keeps', color: T },
+                { label: 'Furniture Package', who: 'ERS keeps', color: T },
+                { label: 'Cleaning & Maintenance', who: 'ERS keeps', color: T },
+                { label: 'Base Rent (flat — pass-through)', who: 'Dev Co → Mortgage', color: '#94a3b8' },
               ].map(r => (
-                <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, padding: '3px 0', borderBottom: '1px solid #8B5CF610' }}>
                   <span style={{ color: '#64748b' }}>{r.label}</span>
-                  <span style={{ fontWeight: 700, color: r.color }}>{r.who}</span>
+                  <span style={{ fontWeight: 700, color: r.color, fontSize: 10 }}>{r.who}</span>
                 </div>
               ))}
             </div>
