@@ -23,6 +23,9 @@ interface Deal {
   tagColor: string
   totalValue: number
   mrr: number
+  devValue?: number          // capital development cost
+  annualIncome?: number      // gross annual operating income
+  billingModel?: 'standard' | 'split'  // split = ERS mgmt fee + flat rent to devco
 }
 
 const DEALS: Deal[] = [
@@ -65,11 +68,14 @@ const DEALS: Deal[] = [
     durationMonths: 120,
     startYear: 2028,
     startLabel: '2028 — 10-Year Lease',
-    notes: 'Healthcare Housing Hub. Master lease agreement. Long-term institutional partnership. Includes development, fit-out and ongoing operations.',
+    notes: 'Healthcare Housing Hub. Master lease + development. ERS bills NH for management services, furniture, cleaning & maintenance. Flat base rent flows to development company to service mortgage.',
     tag: 'Development 2028',
     tagColor: P,
-    totalValue: 1_500_000,
-    mrr: 1_500_000 / 120,
+    devValue: 21_000_000,
+    annualIncome: 1_500_000,
+    totalValue: 1_500_000 * 10,  // 10-year operating income
+    mrr: 1_500_000 / 12,
+    billingModel: 'split',
   },
 ]
 
@@ -121,14 +127,42 @@ function DealCard({ deal }: { deal: Deal }) {
         {/* Value row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: `${deal.tagColor}0a`, border: `1px solid ${deal.tagColor}25`, borderRadius: 7, padding: '10px 14px', marginBottom: 12 }}>
           <div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>Total Contract Value</div>
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>
+              {deal.devValue ? '10-Yr Operating Income' : 'Total Contract Value'}
+            </div>
             <div style={{ fontSize: 22, fontWeight: 700, color: deal.tagColor }}>{fmt(deal.totalValue)}</div>
+            {deal.devValue && (
+              <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 3 }}>+ {fmt(deal.devValue)} development</div>
+            )}
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>Monthly Rev</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: N }}>{fmt(deal.mrr)}<span style={{ fontSize: 11, fontWeight: 400, color: '#94a3b8' }}>/mo</span></div>
+            {deal.annualIncome && (
+              <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{fmt(deal.annualIncome)}/yr gross</div>
+            )}
           </div>
         </div>
+
+        {/* Split billing model breakdown */}
+        {deal.billingModel === 'split' && (
+          <div style={{ background: `${P}08`, border: `1px solid ${P}20`, borderRadius: 7, padding: '10px 12px', marginBottom: 12 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: P, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>Revenue Split Model</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {[
+                { label: 'Management Services', who: 'ERS', color: T },
+                { label: 'Furniture Package', who: 'ERS', color: T },
+                { label: 'Cleaning & Maintenance', who: 'ERS', color: T },
+                { label: 'Base Rent (flat rate)', who: 'Dev Co. → Mortgage', color: '#94a3b8' },
+              ].map(r => (
+                <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                  <span style={{ color: '#64748b' }}>{r.label}</span>
+                  <span style={{ fontWeight: 700, color: r.color }}>{r.who}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Notes */}
         <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.55, fontStyle: 'italic' }}>{deal.notes}</div>
