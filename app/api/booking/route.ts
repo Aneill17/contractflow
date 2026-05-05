@@ -60,6 +60,8 @@ if (error) {
           <table style="width:100%;font-size:14px;border-collapse:collapse;">
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Company</td><td style="text-align:right;font-weight:500;">${contractData.client_name}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Contact</td><td style="text-align:right;">${contractData.contact_name}</td></tr>
+            ${contractData.contact_name_2 ? `<tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Contract Holder 1</td><td style="text-align:right;">${contractData.contact_name_2}</td></tr>` : ''}
+            ${contractData.contact_name_3 ? `<tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Contract Holder 2</td><td style="text-align:right;">${contractData.contact_name_3}</td></tr>` : ''}
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Email</td><td style="text-align:right;">${contractData.contact_email}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Location</td><td style="text-align:right;">${contractData.location}</td></tr>
             <tr><td style="color:#999;padding:8px 0;font-family:monospace;font-size:11px;text-transform:uppercase;">Staff</td><td style="text-align:right;">${contractData.num_staff ?? '—'}</td></tr>

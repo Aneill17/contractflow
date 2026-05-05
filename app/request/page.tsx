@@ -20,6 +20,8 @@ function RequestForm() {
   const [form, setForm] = useState({
     client_name: '',
     contact_name: '',
+    contact_name_2: '',
+    contact_name_3: '',
     contact_email: '',
     contact_phone: '',
     location: '',
@@ -49,6 +51,8 @@ function RequestForm() {
         body: JSON.stringify({
           client_name: form.client_name,
           contact_name: form.contact_name,
+          contact_name_2: form.contact_name_2 || null,
+          contact_name_3: form.contact_name_3 || null,
           contact_email: form.contact_email,
           contact_phone: form.contact_phone,
           location: form.location,
@@ -302,6 +306,16 @@ function RequestForm() {
                 <div>
                   <label style={labelStyle}>Phone</label>
                   <input style={inputStyle} value={form.contact_phone} onChange={e => set('contact_phone', e.target.value)} placeholder="604-555-0100" type="tel" />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={labelStyle}>Contract Holder 1 <span style={{ fontFamily: 'sans-serif', fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
+                  <input style={inputStyle} value={form.contact_name_2} onChange={e => set('contact_name_2', e.target.value)} placeholder="e.g. John Smith" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Contract Holder 2 <span style={{ fontFamily: 'sans-serif', fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
+                  <input style={inputStyle} value={form.contact_name_3} onChange={e => set('contact_name_3', e.target.value)} placeholder="e.g. Jane Smith" />
                 </div>
               </div>
               <div>

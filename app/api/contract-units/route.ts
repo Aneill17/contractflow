@@ -38,8 +38,9 @@ export async function POST(req: NextRequest) {
 
   const contractId = body.contract_id || null
 
-  // Step 1: Insert with only original columns (always safe)
-  const safeInsert: Record<string, unknown> = {
+  // Insert all fields in one shot (contract_id, wifi, guest now exist in schema)
+  const fullInsert: Record<string, unknown> = {
+    contract_id: contractId,
     address: body.address || null,
     status: body.status || 'active',
     landlord_name: body.landlord_name || null,
@@ -47,31 +48,20 @@ export async function POST(req: NextRequest) {
     landlord_phone: body.landlord_phone || null,
     lease_start: body.lease_start || null,
     lease_end: body.lease_end || null,
+    lease_monthly_price: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
     damage_deposit: body.damage_deposit ? Number(body.damage_deposit) : null,
     monthly_cost: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
     daily_rate: body.daily_rate ? Number(body.daily_rate) : null,
-    notes: body.notes || null,
-  }
-
-  const { data: inserted, error: insertErr } = await supabase
-    .from('units').insert([safeInsert]).select().single()
-
-  if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 })
-
-  // Step 2: Update extended columns (contract_id, wifi, guest fields)
-  const extended: Record<string, unknown> = {
-    contract_id: contractId,
     wifi_ssid: body.wifi_ssid || null,
     wifi_password: body.wifi_password || null,
     guest_name: body.guest_name || null,
     guest_contact: body.guest_contact || null,
-    lease_monthly_price: body.lease_monthly_price ? Number(body.lease_monthly_price) : null,
+    notes: body.notes || null,
   }
 
-  const { data: updated, error: updateErr } = await supabase
-    .from('units').update(extended).eq('id', inserted.id).select().single()
+  const { data: inserted, error: insertErr } = await supabase
+    .from('units').insert([fullInsert]).select().single()
 
-  // Return updated if possible, otherwise return the inserted row
-  if (updateErr) return NextResponse.json(inserted)
-  return NextResponse.json(updated)
+  if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 })
+  return NextResponse.json(inserted)
 }

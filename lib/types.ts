@@ -19,13 +19,13 @@ export const STAGE_LABELS: Record<number, string> = {
 }
 
 export const STAGE_COLORS: Record<number, string> = {
-  0: '#94a3b8',   // Request — gray
-  1: '#C4793A',   // Quote Sent — amber
-  2: '#C4793A',   // Contract — amber
-  3: '#C4793A',   // Contract Sent — amber
-  4: '#00BFA6',   // Signed — teal
-  5: '#00BFA6',   // Operational — teal
-  6: '#4F87A0',   // Complete — steel blue
+  0: '#94a3b8',   // Request — slate gray
+  1: '#F59E0B',   // Quote Sent — amber
+  2: '#F97316',   // Contract — orange
+  3: '#8B5CF6',   // Contract Sent — purple
+  4: '#3B82F6',   // Signed — blue
+  5: '#00BFA6',   // Operational — ERS teal
+  6: '#10B981',   // Complete — emerald
 }
 
 export interface Occupant {
@@ -53,6 +53,8 @@ export interface Contract {
   reference: string
   client_name: string
   contact_name: string
+  contact_name_2?: string | null
+  contact_name_3?: string | null
   contact_email: string
   contact_phone?: string
   location: string

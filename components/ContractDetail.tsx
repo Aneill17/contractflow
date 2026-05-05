@@ -159,6 +159,8 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const [form, setForm] = useState({
     client_name: c.client_name || '',
     contact_name: c.contact_name || '',
+    contact_name_2: (c as any).contact_name_2 || '',
+    contact_name_3: (c as any).contact_name_3 || '',
     contact_email: c.contact_email || '',
     contact_phone: c.contact_phone || '',
     location: c.location || '',
@@ -184,6 +186,8 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
         body: JSON.stringify({
           client_name: form.client_name,
           contact_name: form.contact_name,
+          contact_name_2: form.contact_name_2 || null,
+          contact_name_3: form.contact_name_3 || null,
           contact_email: form.contact_email,
           contact_phone: form.contact_phone,
           location: form.location,
@@ -226,6 +230,8 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
     setForm({
       client_name: c.client_name || '',
       contact_name: c.contact_name || '',
+      contact_name_2: (c as any).contact_name_2 || '',
+      contact_name_3: (c as any).contact_name_3 || '',
       contact_email: c.contact_email || '',
       contact_phone: c.contact_phone || '',
       location: c.location || '',
@@ -262,6 +268,14 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
             <div>
               <div style={styles.lbl}>Contact Name *</div>
               <input style={styles.inp} value={form.contact_name} onChange={e => set('contact_name', e.target.value)} placeholder="Contact" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Contract Holder 1 <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
+              <input style={styles.inp} value={form.contact_name_2} onChange={e => set('contact_name_2', e.target.value)} placeholder="e.g. John Smith" />
+            </div>
+            <div>
+              <div style={styles.lbl}>Contract Holder 2 <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
+              <input style={styles.inp} value={form.contact_name_3} onChange={e => set('contact_name_3', e.target.value)} placeholder="e.g. Jane Smith" />
             </div>
             <div>
               <div style={styles.lbl}>Email *</div>
@@ -353,6 +367,8 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
           {[
             ['Company', c.client_name],
             ['Contact', c.contact_name],
+            ...((c as any).contact_name_2 ? [['Contract Holder 1', (c as any).contact_name_2]] : []),
+            ...((c as any).contact_name_3 ? [['Contract Holder 2', (c as any).contact_name_3]] : []),
             ['Email', c.contact_email],
             ['Phone', c.contact_phone || '—'],
             ['Location', c.location],

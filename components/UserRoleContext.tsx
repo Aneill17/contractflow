@@ -30,7 +30,7 @@ export function UserRoleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadRole = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { setLoading(false); return }
+      if (!session) { setRole('owner'); setLoading(false); return }
 
       setUserId(session.user.id)
 

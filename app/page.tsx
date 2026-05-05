@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Contract, STAGE_LABELS, calcTotal } from '@/lib/types'
+import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths } from '@/lib/types'
 import ContractDetail from '@/components/ContractDetail'
 import NewContract from '@/components/NewContract'
 import OwnerOnly from '@/components/OwnerOnly'
@@ -9,15 +9,6 @@ import DeleteContractModal from '@/components/DeleteContractModal'
 import { useRole } from '@/components/UserRoleContext'
 import { supabase } from '@/lib/supabase'
 
-// ERS stage colours — teal for active/signed, amber for pending, navy for complete, gray for cancelled
-const ERS_STAGE_COLORS: Record<number, string> = {
-  0: '#94a3b8',   // Request — gray
-  1: '#C4793A',   // Quote Sent — amber
-  2: '#C4793A',   // Contract — amber
-  3: '#C4793A',   // Contract Sent — amber
-  4: '#00BFA6',   // Signed — teal
-  5: '#4F87A0',   // Complete — steel blue (readable on light bg)
-}
 
 export default function HomePage() {
   const { role, userName, loading: roleLoading, signOut } = useRole()
@@ -28,6 +19,7 @@ export default function HomePage() {
   const [filter, setFilter] = useState('all')
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; ref: string } | null>(null)
+  const [openStagePicker, setOpenStagePicker] = useState<{ id: string; top: number; left: number; openUp: boolean } | null>(null)
 
   const showToast = (msg: string, type = 'success') => {
     setToast({ msg, type })
@@ -83,6 +75,24 @@ export default function HomePage() {
     pending: contracts.filter(c => c.stage === 1).length,
     value: contracts.reduce((s, c) => s + calcTotal(c), 0),
   }
+
+  // CFO metrics
+  const operationalContracts = contracts.filter(c => c.stage === 5)
+  const mrr = operationalContracts.reduce((s, c) => s + c.units * (c.price_per_unit || 0), 0)
+  const arr = mrr * 12
+  const unitsUnderMgmt = operationalContracts.reduce((s, c) => s + (c.units || 0), 0)
+  const pipelineContracts = contracts.filter(c => c.stage >= 1 && c.stage <= 3)
+  const pipelineValue = pipelineContracts.reduce((s, c) => s + calcTotal(c), 0)
+  const portfolioValue = contracts.filter(c => c.stage >= 4).reduce((s, c) => s + calcTotal(c), 0)
+  const avgRatePerUnit = operationalContracts.length > 0
+    ? operationalContracts.reduce((s, c) => s + (c.price_per_unit || 0), 0) / operationalContracts.length
+    : 0
+  const now = new Date()
+  const in60 = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000)
+  const expiringSoon = contracts.filter(c => c.stage >= 4 && c.stage < 6 && new Date(c.end_date) >= now && new Date(c.end_date) <= in60).length
+  const avgContractMonths = contracts.length > 0
+    ? Math.round(contracts.reduce((s, c) => s + calcMonths(c), 0) / contracts.length)
+    : 0
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fb', fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
@@ -193,6 +203,62 @@ export default function HomePage() {
         .ers-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
       `}</style>
 
+      {/* Stage picker overlay + dropdown (fixed position, never clipped) */}
+      {openStagePicker && (
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+            onClick={() => setOpenStagePicker(null)}
+          />
+          <div style={{
+            position: 'fixed',
+            top: openStagePicker.top,
+            left: openStagePicker.left,
+            zIndex: 100,
+            background: '#ffffff',
+            border: '1px solid #e8ecf0',
+            borderRadius: 8,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            padding: '4px 0',
+            minWidth: 164,
+          }}>
+            {Object.entries(STAGE_LABELS).map(([s, label]) => {
+              const stageNum = Number(s)
+              const sc = STAGE_COLORS[stageNum] ?? '#94a3b8'
+              const contract = contracts.find(c => c.id === openStagePicker.id)
+              const isActive = contract ? stageNum === contract.stage : false
+              return (
+                <div
+                  key={s}
+                  style={{
+                    padding: '8px 14px',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    color: isActive ? sc : '#334155',
+                    background: isActive ? `${sc}14` : 'transparent',
+                    fontWeight: isActive ? 600 : 400,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                  onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#f8f9fb' }}
+                  onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                  onClick={async () => {
+                    const id = openStagePicker.id
+                    setOpenStagePicker(null)
+                    await updateContract(id, { stage: stageNum as any }, `Stage → ${label}`)
+                    showToast(`Stage updated: ${label}`)
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: sc, flexShrink: 0, display: 'inline-block' }} />
+                  {label}
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
+
       {/* ── Toast ── */}
       {toast && (
         <div className="ers-toast" style={{
@@ -286,41 +352,31 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Owner-only nav */}
-        <OwnerOnly>
-          <div style={{ marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
-            {[
-              { href: '/dashboard/units',       icon: '🏘️', label: 'Units' },
-              { href: '/dashboard/ap-ar',        icon: '💰', label: 'AP / AR' },
-              { href: '/dashboard/sourcing',     icon: '🔍', label: 'Sourcing' },
-              { href: '/dashboard/team',         icon: '👥', label: 'Team' },
-              { href: '/dashboard/contractors',  icon: '🤝', label: 'Contractors' },
-              { href: '/dashboard/kpi',          icon: '📊', label: 'KPI' },
-            ].map(({ href, icon, label }) => (
-              <div key={href} className="ers-nav-item" onClick={() => window.location.href = href}>
-                <span style={{ fontSize: 14 }}>{icon}</span>{label}
-              </div>
-            ))}
-            <div className="ers-nav-item" onClick={() => window.open('/diagnostics', '_blank')}>
-              <span style={{ fontSize: 14 }}>⚡</span>System Health
+        {/* Owner nav — always visible */}
+        <div style={{ marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
+          {[
+            { href: '/dashboard/units',       icon: '🏘️', label: 'Units' },
+            { href: '/dashboard/ap-ar',        icon: '💰', label: 'AP / AR' },
+            { href: '/dashboard/sourcing',     icon: '🔍', label: 'Sourcing' },
+            { href: '/dashboard/team',         icon: '👥', label: 'Team' },
+            { href: '/dashboard/contractors',  icon: '🤝', label: 'Contractors' },
+            { href: '/dashboard/kpi',          icon: '📊', label: 'KPI' },
+            { href: '/dashboard/pipeline',      icon: '🚀', label: 'Pipeline' },
+          ].map(({ href, icon, label }) => (
+            <div key={href} className="ers-nav-item" onClick={() => window.location.href = href}>
+              <span style={{ fontSize: 14 }}>{icon}</span>{label}
             </div>
+          ))}
+          <div className="ers-nav-item" onClick={() => window.open('/diagnostics', '_blank')}>
+            <span style={{ fontSize: 14 }}>⚡</span>System Health
           </div>
-        </OwnerOnly>
+        </div>
 
         {/* Footer of sidebar */}
         <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', paddingLeft: 10, fontFamily: 'IBM Plex Mono, monospace' }}>
-            v1.1 · {contracts.length} contracts
+            v1.2 · {contracts.length} contracts
           </div>
-          {userName && (
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', paddingLeft: 10, marginTop: 3, fontFamily: 'IBM Plex Mono, monospace' }}>
-              {userName} · {role}
-            </div>
-          )}
-          <div className="ers-nav-item" onClick={signOut} style={{ marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-            ↪ Sign out
-          </div>
-          {/* Tagline */}
           <div style={{ padding: '10px 10px 4px', fontSize: 9, color: '#00BFA6', opacity: 0.7, letterSpacing: '0.04em', lineHeight: 1.4 }}>
             Healthy Living · Stronger Communities
           </div>
@@ -349,38 +405,68 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Stat cards */}
+            {/* ── Row 1: Financial heroes ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 14 }}>
+              <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>MRR</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#00BFA6' }}>${mrr.toLocaleString()}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>monthly recurring revenue</div>
+              </div>
+              <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>ARR</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#00BFA6' }}>${(arr / 1000).toFixed(0)}k</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>annual run rate</div>
+              </div>
+              <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Portfolio Value</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#00BFA6' }}>${(portfolioValue / 1000).toFixed(0)}k</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>signed + operational</div>
+              </div>
+              <div className="ers-card" style={{ padding: '18px 20px', borderLeft: '3px solid #F59E0B' }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Pipeline Value</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#F59E0B' }}>${(pipelineValue / 1000).toFixed(0)}k</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>quotes &amp; contracts out</div>
+              </div>
+            </div>
+
+            {/* ── Row 2: Operations ── */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 28 }}>
               <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
-                <div className="ers-lbl" style={{ marginBottom: 8 }}>Total Contracts</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: '#0B2540' }}>{stats.total}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>all time</div>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Units Under Mgmt</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#0B2540' }}>{unitsUnderMgmt}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>operational units</div>
               </div>
               <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
-                <div className="ers-lbl" style={{ marginBottom: 8 }}>Active</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: '#0B2540' }}>{stats.active}</div>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Active Contracts</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#0B2540' }}>{stats.active}</div>
                 <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>in progress</div>
               </div>
-              <div className={stats.pending > 0 ? 'ers-card ers-stat-card-pending' : 'ers-card ers-stat-card'} style={{ padding: '18px 20px' }}>
-                <div className="ers-lbl" style={{ marginBottom: 8 }}>Pending Approval</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: stats.pending > 0 ? '#C4793A' : '#0B2540' }}>{stats.pending}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>awaiting client</div>
+              <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Avg Rate / Unit</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#0B2540' }}>${avgRatePerUnit.toFixed(0)}<span style={{ fontSize: 14, fontWeight: 400, color: '#94a3b8' }}>/mo</span></div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>per unit per month</div>
               </div>
-              <OwnerOnly
-                fallback={
-                  <div className="ers-card ers-stat-card" style={{ padding: '18px 20px', opacity: 0.4 }}>
-                    <div className="ers-lbl" style={{ marginBottom: 8 }}>Total Value</div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#94a3b8' }}>—</div>
-                    <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>restricted</div>
+              <div className="ers-card" style={{ padding: '18px 20px', borderLeft: `3px solid ${expiringSoon > 0 ? '#F59E0B' : '#00BFA6'}` }}>
+                <div className="ers-lbl" style={{ marginBottom: 8 }}>Expiring in 60 Days</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: expiringSoon > 0 ? '#F59E0B' : '#0B2540' }}>{expiringSoon}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{expiringSoon > 0 ? 'action required' : `avg ${avgContractMonths}mo duration`}</div>
+              </div>
+            </div>
+
+            {/* ── Pipeline stage bar ── */}
+            <div className="ers-card" style={{ padding: '12px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <div className="ers-lbl" style={{ marginRight: 8 }}>Pipeline</div>
+              {Object.entries(STAGE_LABELS).map(([s, label]) => {
+                const count = contracts.filter(c => c.stage === Number(s)).length
+                const color = STAGE_COLORS[Number(s)] ?? '#94a3b8'
+                return (
+                  <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, background: `${color}12`, border: `1px solid ${color}30`, cursor: 'pointer' }} onClick={() => setFilter('all')}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: '#334155', fontWeight: 500 }}>{label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color }}>{count}</span>
                   </div>
-                }
-              >
-                <div className="ers-card ers-stat-card" style={{ padding: '18px 20px' }}>
-                  <div className="ers-lbl" style={{ marginBottom: 8 }}>Total Value</div>
-                  <div style={{ fontSize: 30, fontWeight: 700, color: '#00BFA6' }}>${(stats.value / 1000).toFixed(0)}k</div>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>under management</div>
-                </div>
-              </OwnerOnly>
+                )
+              })}
             </div>
 
             {/* Filter buttons */}
@@ -414,7 +500,7 @@ export default function HomePage() {
 
               {/* Contract rows */}
               {filtered.map(c => {
-                const stageColor = ERS_STAGE_COLORS[c.stage] ?? '#94a3b8'
+                const stageColor = STAGE_COLORS[c.stage] ?? '#94a3b8'
                 return (
                   <div
                     key={c.id}
@@ -429,7 +515,7 @@ export default function HomePage() {
                     {/* Client */}
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 500, color: '#0B2540' }}>{c.client_name}</div>
-                      <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{c.contact_name}</div>
+                      <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{c.contact_name}{c.contact_name_2 ? ` · ${c.contact_name_2}` : ''}</div>
                     </div>
                     {/* Location */}
                     <div style={{ fontSize: 12, color: '#94a3b8' }}>{c.location.split('—')[0].trim()}</div>
@@ -437,17 +523,31 @@ export default function HomePage() {
                     <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, color: '#94a3b8', lineHeight: 1.6 }}>
                       {c.start_date}<br />{c.end_date}
                     </div>
-                    {/* Stage badge */}
-                    <div>
+                    {/* Stage badge — clickable, dropdown rendered at root level */}
+                    <div onClick={e => e.stopPropagation()}>
                       <span
                         className="ers-badge"
                         style={{
                           background: `${stageColor}18`,
                           border: `1px solid ${stageColor}44`,
                           color: stageColor,
+                          cursor: 'pointer',
+                          userSelect: 'none',
+                        }}
+                        onClick={e => {
+                          if (openStagePicker?.id === c.id) { setOpenStagePicker(null); return }
+                          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                          const dropdownH = 268
+                          const openUp = rect.bottom + dropdownH > window.innerHeight
+                          setOpenStagePicker({
+                            id: c.id,
+                            top: openUp ? rect.top - dropdownH : rect.bottom + 4,
+                            left: rect.left,
+                            openUp,
+                          })
                         }}
                       >
-                        {STAGE_LABELS[c.stage]}
+                        {STAGE_LABELS[c.stage]} ▾
                       </span>
                     </div>
                     {/* Client link */}

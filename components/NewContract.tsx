@@ -8,7 +8,7 @@ interface Props {
 
 export default function NewContract({ onSave }: Props) {
   const [form, setForm] = useState({
-    client_name: '', contact_name: '', contact_email: '',
+    client_name: '', contact_name: '', contact_name_2: '', contact_email: '',
     location: '', units: 1, price_per_unit: 2800,
     start_date: '', end_date: '', payment_due: '',
     payment_method: 'EFT', notes: '',
@@ -102,7 +102,7 @@ export default function NewContract({ onSave }: Props) {
       <div className="nc-grid2" style={{ marginBottom: 14 }}>
         <div className="nc-card" style={{ padding: 22 }}>
           <div className="nc-section-title">Client Info</div>
-          {[['client_name','Company Name'],['contact_name','Contact Person'],['contact_email','Email Address']].map(([k,l]) => (
+          {[['client_name','Company Name'],['contact_name','Contact Person'],['contact_name_2','Contract Holder (optional)'],['contact_email','Email Address']].map(([k,l]) => (
             <div key={k} className="nc-field">
               <label className="nc-lbl">{l}</label>
               <input className="nc-inp" type={k === 'contact_email' ? 'email' : 'text'} value={(form as any)[k]} onChange={e => set(k, e.target.value)} placeholder={l} />
