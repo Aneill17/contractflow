@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 
 const N = '#0B2540', T = '#00BFA6', A = '#F59E0B', P = '#8B5CF6'
 
@@ -137,7 +138,14 @@ function DealCard({ deal }: { deal: Deal }) {
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────
+const TABS = [
+  { id: 'pipeline', label: '🚀 Prospective Pipeline' },
+  { id: 'nh-lease',  label: '🏥 NH Master Lease Contract' },
+  { id: 'uhnbc',    label: '🏗️ UHNBC Housing Model' },
+]
+
 export default function PipelinePage() {
+  const [tab, setTab] = useState('pipeline')
   const totalValue = DEALS.reduce((s, d) => s + d.totalValue, 0)
   const totalUnits = DEALS.reduce((s, d) => s + d.units, 0)
   const peakMrr = DEALS.reduce((s, d) => s + d.mrr, 0)
@@ -181,7 +189,34 @@ export default function PipelinePage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '36px 32px 80px' }}>
+      {/* ── Tab bar ── */}
+      <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '0 32px', display: 'flex', gap: 0 }}>
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            padding: '12px 20px',
+            fontSize: 13,
+            fontWeight: 600,
+            color: tab === t.id ? T : '#64748b',
+            background: 'none',
+            border: 'none',
+            borderBottom: tab === t.id ? `2px solid ${T}` : '2px solid transparent',
+            cursor: 'pointer',
+            letterSpacing: '0.01em',
+            transition: 'color .15s',
+            whiteSpace: 'nowrap',
+          }}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* ── Doc iframes ── */}
+      {tab === 'nh-lease' && (
+        <iframe src="/docs/nh-master-lease-contract.html" style={{ width: '100%', height: 'calc(100vh - 105px)', border: 'none', display: 'block' }} />
+      )}
+      {tab === 'uhnbc' && (
+        <iframe src="/docs/uhnbc-housing-model.html" style={{ width: '100%', height: 'calc(100vh - 105px)', border: 'none', display: 'block' }} />
+      )}
+
+      {tab === 'pipeline' && <div style={{ maxWidth: 1100, margin: '0 auto', padding: '36px 32px 80px' }}>
 
         {/* ── Header ── */}
         <div style={{ marginBottom: 32 }}>
@@ -311,7 +346,7 @@ export default function PipelinePage() {
           <span style={{ color: T, fontWeight: 600 }}>Elias Range Stays</span> · eliasrangestays.ca · austin@eliasrangestays.ca
         </div>
 
-      </div>
+      </div>}
     </div>
   )
 }

@@ -355,15 +355,15 @@ export default function HomePage() {
         {/* Owner nav — always visible */}
         <div style={{ marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
           {[
-            { href: '/dashboard/units',       icon: '🏘️', label: 'Units' },
-            { href: '/dashboard/ap-ar',        icon: '💰', label: 'AP / AR' },
-            { href: '/dashboard/sourcing',     icon: '🔍', label: 'Sourcing' },
-            { href: '/dashboard/team',         icon: '👥', label: 'Team' },
-            { href: '/dashboard/contractors',  icon: '🤝', label: 'Contractors' },
-            { href: '/dashboard/kpi',          icon: '📊', label: 'KPI' },
-            { href: '/dashboard/pipeline',      icon: '🚀', label: 'Pipeline' },
-          ].map(({ href, icon, label }) => (
-            <div key={href} className="ers-nav-item" onClick={() => window.location.href = href}>
+            { href: '/dashboard/units',       icon: '🏘️', label: 'Units',       disabled: false },
+            { href: '/dashboard/ap-ar',        icon: '💰', label: 'AP / AR',     disabled: false },
+            { href: '/dashboard/sourcing',     icon: '🔍', label: 'Sourcing',    disabled: false },
+            { href: '/dashboard/team',         icon: '👥', label: 'Team',        disabled: true },
+            { href: '/dashboard/contractors',  icon: '🤝', label: 'Contractors', disabled: true },
+            { href: '/dashboard/kpi',          icon: '📊', label: 'KPI',         disabled: false },
+            { href: '/dashboard/pipeline',      icon: '🚀', label: 'Pipeline',    disabled: false },
+          ].map(({ href, icon, label, disabled }) => (
+            <div key={href} className="ers-nav-item" style={disabled ? { opacity: 0.35, cursor: 'not-allowed', pointerEvents: 'none' } : {}} onClick={() => !disabled && (window.location.href = href)}>
               <span style={{ fontSize: 14 }}>{icon}</span>{label}
             </div>
           ))}
