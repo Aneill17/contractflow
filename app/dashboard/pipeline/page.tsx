@@ -197,33 +197,15 @@ export default function PipelinePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fb', fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
 
-      {/* ── Top nav bar ── */}
-      <div style={{ background: N, padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0, height: 52, borderBottom: `2px solid ${T}` }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 32 }}>
+      {/* ── Top nav bar — pipeline is a standalone shareable doc, no app links — */}
+      <div style={{ background: N, padding: '0 32px', display: 'flex', alignItems: 'center', height: 52, borderBottom: `2px solid ${T}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 32 }}>
           <img src="/logo.png" alt="ERS" style={{ height: 32, background: '#fff', borderRadius: 5, padding: '2px 6px' }} />
-        </a>
-        {[
-          { href: '/', label: 'Contracts' },
-          { href: '/dashboard/units', label: 'Units' },
-          { href: '/dashboard/ap-ar', label: 'AP / AR' },
-          { href: '/dashboard/kpi', label: 'KPI' },
-          { href: '/dashboard/pipeline', label: 'Pipeline', active: true },
-        ].map(n => (
-          <a key={n.href} href={n.href} style={{
-            padding: '0 16px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: 12,
-            fontWeight: 600,
-            color: n.active ? T : 'rgba(255,255,255,0.5)',
-            textDecoration: 'none',
-            borderBottom: n.active ? `2px solid ${T}` : '2px solid transparent',
-            letterSpacing: '0.02em',
-          }}>{n.label}</a>
-        ))}
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.02em' }}>Elias Range Stays</span>
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: T, letterSpacing: '0.02em' }}>Pipeline</div>
         <div style={{ marginLeft: 'auto', fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'IBM Plex Mono, monospace' }}>
-          Prospective Pipeline · {new Date().getFullYear()}
+          eliasrangestays.ca
         </div>
       </div>
 
