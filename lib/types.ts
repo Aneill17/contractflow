@@ -48,6 +48,69 @@ export interface QuoteLineItem {
   amount: number
 }
 
+export interface QuoteResearchData {
+  quote_number: string
+  generated_at: string
+  city: string
+  rate_per_night: number
+  furniture_in_house: boolean
+  financials: {
+    units: number
+    months: number
+    rate_per_night: number
+    monthly_revenue: number
+    opex_per_unit: number
+    total_monthly_opex: number
+    monthly_profit: number
+    operating_margin_pct: number
+    contract_total_revenue: number
+    furniture_cost: number
+    pack_in_cost: number
+    pack_out_cost: number
+    total_one_time: number
+    moving_amortized_per_unit_month: number
+  }
+  capital_schedule: Array<{
+    month: string
+    event: string
+    cash_out: number
+    cash_in: number
+    net: number
+    cumulative: number
+  }>
+  waterfall: {
+    gross_revenue: number
+    total_opex: number
+    contribution_margin: number
+    cm_margin_pct: number
+    corporate_tax: number
+    reserves: number
+    owner_salary: number
+    net_retained: number
+  }
+  market: {
+    city: string
+    source_date: string
+    lt_1bed_median: number
+    lt_1bed_top_market: number
+    hotel_avg_nightly: number
+    hotel_monthly_equiv: number
+    airbnb_avg_nightly: number
+    airbnb_monthly_equiv: number
+    corporate_furnished_monthly: number
+    ers_rate_per_night: number
+    ers_monthly_per_person: number
+    ers_savings_vs_hotel_pct: number
+    ers_vs_airbnb_pct: number
+  }
+  raw_docs?: {
+    quote_md?: string
+    capital_md?: string
+    waterfall_md?: string
+    market_md?: string
+  }
+}
+
 export interface Contract {
   id: string
   reference: string
@@ -66,6 +129,7 @@ export interface Contract {
   exclusions?: string
   quote_notes?: string
   quote_line_items?: QuoteLineItem[]
+  quote_research?: QuoteResearchData | null
   payment_due_day?: string
   generated_contract?: string
   start_date: string

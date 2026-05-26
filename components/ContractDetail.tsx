@@ -7,6 +7,7 @@ import { Contract, STAGE_LABELS, STAGE_COLORS, calcTotal, calcMonths, formatDate
 import { supabase } from '@/lib/supabase'
 import { useRole } from '@/components/UserRoleContext'
 import ContractUnitsTab from '@/components/ContractUnitsTab'
+import QuoteResearch from '@/components/QuoteResearch'
 
 // Lazy-load PDF button — browser only
 const ContractPDFButton = dynamic(() => import('./ContractPDFButton'), {
@@ -415,6 +416,7 @@ function RequestTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
 // ── TAB: Quote Builder ──────────────────────────────────────
 function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
+  const [quoteSubTab, setQuoteSubTab] = useState<'builder' | 'research'>('builder')
   const months = calcMonths(c)
   const [editing, setEditing] = useState(!c.price_per_unit) // open edit mode if quote not yet built
   const [activeUnitsCount, setActiveUnitsCount] = useState<number | null>(null)
@@ -696,6 +698,37 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   // ── VIEW MODE (locked) ────────────────────────────────────
   return (
     <div>
+      {/* Quote sub-tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 18, borderBottom: '1px solid #e8ecf0', paddingBottom: 0 }}>
+        {(['builder', 'research'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setQuoteSubTab(tab)}
+            style={{
+              background: 'none',
+              border: 'none',
+              borderBottom: quoteSubTab === tab ? '2px solid #C4793A' : '2px solid transparent',
+              color: quoteSubTab === tab ? '#C4793A' : '#94a3b8',
+              fontFamily: 'IBM Plex Mono',
+              fontSize: 11,
+              fontWeight: quoteSubTab === tab ? 600 : 400,
+              padding: '6px 14px 10px',
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              marginBottom: -1,
+            }}
+          >
+            {tab === 'builder' ? '📋 Quote Builder' : '🔬 Research'}
+          </button>
+        ))}
+      </div>
+
+      {quoteSubTab === 'research' && (
+        <QuoteResearch contract={c} onUpdate={onUpdate} showToast={showToast} />
+      )}
+
+      {quoteSubTab === 'builder' && <div>
       {statusBanner}
 
       {/* Quote summary card */}
@@ -843,6 +876,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
           <button style={styles.btnPrimary} onClick={openEdit}>Build Quote →</button>
         </div>
       )}
+      </div>}
     </div>
   )
 }
