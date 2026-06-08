@@ -49,6 +49,11 @@ interface Contact {
   followUpOverdue: boolean
   followUpToday: boolean
   conversations?: FullConversation[]
+  // Relationship context (migration 022)
+  relationship_start_date?: string
+  first_meeting_location?: string
+  first_meeting_event?: string
+  first_meeting_context?: string
 }
 
 interface Conversation {
@@ -135,6 +140,10 @@ const CONTACTS: Contact[] = [
     followUpOverdue: false,
     followUpToday: false,
     conversations: SANDRA_CONVERSATIONS,
+    relationship_start_date: 'Jan 15, 2024',
+    first_meeting_location: 'Vancouver, BC',
+    first_meeting_event: 'Construction Housing Summit 2024',
+    first_meeting_context: 'Met at the ERS booth — she was looking for Whistler crew housing',
   },
   {
     id: '2',
@@ -724,6 +733,39 @@ function ContactDetailPanel({
         )}
       </div>
 
+      {/* Relationship context (migration 022 fields) */}
+      {(contact.relationship_start_date || contact.first_meeting_location || contact.first_meeting_event || contact.first_meeting_context) && (
+        <div style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, padding: '12px 14px' }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#6366f1', fontWeight: 700, marginBottom: 10, letterSpacing: '0.06em' }}>RELATIONSHIP CONTEXT</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: 12 }}>
+            {contact.relationship_start_date && (
+              <div>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: '#94a3b8', marginBottom: 2 }}>RELATIONSHIP START</div>
+                <div style={{ color: '#334155', fontWeight: 600 }}>{contact.relationship_start_date}</div>
+              </div>
+            )}
+            {contact.first_meeting_location && (
+              <div>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: '#94a3b8', marginBottom: 2 }}>FIRST MEETING LOCATION</div>
+                <div style={{ color: '#334155' }}>{contact.first_meeting_location}</div>
+              </div>
+            )}
+            {contact.first_meeting_event && (
+              <div style={{ gridColumn: '1/-1' }}>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: '#94a3b8', marginBottom: 2 }}>FIRST MEETING EVENT</div>
+                <div style={{ color: '#334155', fontWeight: 600 }}>{contact.first_meeting_event}</div>
+              </div>
+            )}
+            {contact.first_meeting_context && (
+              <div style={{ gridColumn: '1/-1' }}>
+                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: '#94a3b8', marginBottom: 2 }}>CONTEXT</div>
+                <div style={{ color: '#64748b', fontStyle: 'italic', lineHeight: 1.5 }}>"{contact.first_meeting_context}"</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Next action */}
       <div style={{
         background: `${A}12`,
@@ -831,6 +873,14 @@ function ContactDetailPanel({
 // ─── Conversations Tab ────────────────────────────────────────────────────────
 function ConversationsTab() {
   const [typeFilter, setTypeFilter] = useState<'all' | ConvType>('all')
+  const [companyFilter, setCompanyFilter] = useState('')
+  const [contractFilter, setContractFilter] = useState('')
+
+  const uniqueCompanies = Array.from(new Set(CONVERSATIONS.map(c => c.company))).sort()
+  const uniqueContracts = [
+    { id: 'CF-2024-0012', label: 'CF-2024-0012 · Maxwell Floors' },
+    { id: 'CF-2024-0089', label: 'CF-2024-0089 · Meridian Construction' },
+  ]
 
   const filters: { key: 'all' | ConvType; label: string }[] = [
     { key: 'all', label: 'All Types' },
@@ -841,11 +891,39 @@ function ConversationsTab() {
     { key: 'in_person', label: '🤝 In Person' },
   ]
 
-  const filtered = typeFilter === 'all' ? CONVERSATIONS : CONVERSATIONS.filter(c => c.type === typeFilter)
+  const filtered = CONVERSATIONS.filter(c => {
+    if (typeFilter !== 'all' && c.type !== typeFilter) return false
+    if (companyFilter && c.company !== companyFilter) return false
+    if (contractFilter) {
+      // Only Maxwell (CF-2024-0012) and Meridian (CF-2024-0089)
+      const companyForContract = contractFilter === 'CF-2024-0012' ? 'Maxwell Floors'
+        : contractFilter === 'CF-2024-0089' ? 'Meridian Construction Group' : null
+      if (companyForContract && c.company !== companyForContract) return false
+    }
+    return true
+  })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      {/* Filter row */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 9 }}>
+        <select
+          style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 7, padding: '6px 10px', fontSize: 12, color: '#334155', cursor: 'pointer', outline: 'none' }}
+          value={companyFilter}
+          onChange={e => setCompanyFilter(e.target.value)}
+        >
+          <option value="">All Companies</option>
+          {uniqueCompanies.map(co => <option key={co} value={co}>{co}</option>)}
+        </select>
+        <select
+          style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 7, padding: '6px 10px', fontSize: 12, color: '#334155', cursor: 'pointer', outline: 'none' }}
+          value={contractFilter}
+          onChange={e => setContractFilter(e.target.value)}
+        >
+          <option value="">All Contracts</option>
+          {uniqueContracts.map(ct => <option key={ct.id} value={ct.id}>{ct.label}</option>)}
+        </select>
+        <div style={{ width: 1, height: 20, background: '#e2e8f0', flexShrink: 0 }} />
         {filters.map(f => (
           <button
             key={f.key}
@@ -866,6 +944,12 @@ function ConversationsTab() {
             {f.label}
           </button>
         ))}
+        {(companyFilter || contractFilter || typeFilter !== 'all') && (
+          <button
+            style={{ padding: '5px 10px', borderRadius: 7, border: '1px solid #e2e8f0', background: '#fff', color: '#94a3b8', fontSize: 11, cursor: 'pointer', marginLeft: 'auto' }}
+            onClick={() => { setCompanyFilter(''); setContractFilter(''); setTypeFilter('all') }}
+          >Clear</button>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1160,8 +1244,47 @@ function LogConvModal({ onClose, prefillContactId }: { onClose: () => void; pref
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
+// ── Mock companies data for Companies tab ────────────────────────────────────
+const MOCK_COMPANIES = [
+  {
+    name: 'Maxwell Floors',
+    contacts: ['Kelly Marsh', 'Rick Wagner'],
+    contract: 'CF-2024-0012',
+    contractStatus: 'Active',
+    lastConv: 'Jun 8',
+  },
+  {
+    name: 'Meridian Construction Group',
+    contacts: ['Sandra Leigh'],
+    contract: 'CF-2024-0089',
+    contractStatus: 'Active',
+    lastConv: 'Jun 5',
+  },
+  {
+    name: 'Green Infrastructure Partners',
+    contacts: ['Mark Osei'],
+    contract: undefined,
+    contractStatus: 'Quoted',
+    lastConv: 'Jun 4',
+  },
+  {
+    name: 'Northern Health',
+    contacts: ['Dr. Patricia Yuen'],
+    contract: undefined,
+    contractStatus: 'Prospect',
+    lastConv: 'May 28',
+  },
+  {
+    name: 'Fulmer & Co Capital',
+    contacts: ['Tony Fulmer'],
+    contract: undefined,
+    contractStatus: 'Prospect',
+    lastConv: 'Jun 6',
+  },
+]
+
 export default function CRMPreviewPage() {
-  const [activeTab, setActiveTab] = useState<'contacts' | 'conversations'>('contacts')
+  const [activeTab, setActiveTab] = useState<'contacts' | 'conversations' | 'companies'>('contacts')
   const [statusFilter, setStatusFilter] = useState<'all' | ContactStatus>('all')
   const [expandedId, setExpandedId] = useState<string | null>('1') // Sandra open by default
   const [showModal, setShowModal] = useState(true)
@@ -1247,20 +1370,24 @@ export default function CRMPreviewPage() {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 0, marginTop: 16 }}>
-              {(['contacts', 'conversations'] as const).map(tab => (
+              {([
+                { key: 'contacts', label: '👥 Contacts' },
+                { key: 'conversations', label: '💬 Conversations' },
+                { key: 'companies', label: '🏢 Companies' },
+              ] as const).map(({ key, label }) => (
                 <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  key={key}
+                  onClick={() => setActiveTab(key as any)}
                   style={{
                     padding: '10px 22px', border: 'none', background: 'transparent',
-                    color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.5)',
-                    fontWeight: activeTab === tab ? 700 : 500,
+                    color: activeTab === key ? '#fff' : 'rgba(255,255,255,0.5)',
+                    fontWeight: activeTab === key ? 700 : 500,
                     fontSize: 14, cursor: 'pointer', fontFamily: 'inherit',
-                    borderBottom: activeTab === tab ? `3px solid ${T}` : '3px solid transparent',
-                    transition: 'all 0.15s', textTransform: 'capitalize',
+                    borderBottom: activeTab === key ? `3px solid ${T}` : '3px solid transparent',
+                    transition: 'all 0.15s',
                   }}
                 >
-                  {tab === 'contacts' ? `👥 Contacts` : `💬 Conversations`}
+                  {label}
                 </button>
               ))}
             </div>
@@ -1373,6 +1500,33 @@ export default function CRMPreviewPage() {
           )}
 
           {activeTab === 'conversations' && <ConversationsTab />}
+
+          {/* ── Companies Tab ── */}
+          {activeTab === 'companies' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {MOCK_COMPANIES.map(co => (
+                <div key={co.name} style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: N }}>{co.name}</div>
+                    <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>
+                      {co.contacts.join(', ')}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                    {co.contract ? (
+                      <span style={{ fontFamily: 'monospace', fontSize: 12, color: T, fontWeight: 600 }}>{co.contract}</span>
+                    ) : null}
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, borderRadius: 12, padding: '3px 10px',
+                      background: co.contractStatus === 'Active' ? 'rgba(0,191,166,0.1)' : co.contractStatus === 'Quoted' ? 'rgba(59,130,246,0.1)' : 'rgba(245,158,11,0.1)',
+                      color: co.contractStatus === 'Active' ? T : co.contractStatus === 'Quoted' ? '#3B82F6' : A,
+                    }}>{co.contractStatus}</span>
+                    <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'monospace' }}>Last conv: {co.lastConv}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

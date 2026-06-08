@@ -46,6 +46,8 @@ export async function POST(req: NextRequest) {
     source = 'direct', referred_by,
     contract_id, quoted = false,
     status = 'prospect', notes,
+    relationship_start_date, first_meeting_location,
+    first_meeting_event, first_meeting_context,
   } = body
 
   if (!name?.trim()) {
@@ -66,6 +68,10 @@ export async function POST(req: NextRequest) {
       quoted,
       status,
       notes: notes || null,
+      relationship_start_date: relationship_start_date || null,
+      first_meeting_location: first_meeting_location || null,
+      first_meeting_event: first_meeting_event || null,
+      first_meeting_context: first_meeting_context || null,
     })
     .select()
     .single()

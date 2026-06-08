@@ -45,6 +45,8 @@ export async function PATCH(
     'name', 'company', 'role', 'email', 'phone',
     'source', 'referred_by', 'contract_id',
     'quoted', 'status', 'notes',
+    'relationship_start_date', 'first_meeting_location',
+    'first_meeting_event', 'first_meeting_context',
   ]
   const patch: Record<string, any> = {}
   for (const key of allowedFields) {

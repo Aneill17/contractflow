@@ -287,6 +287,7 @@ export default function ClientPortalOverview() {
           {[
             { href: '/client/portal', label: 'Overview' },
             { href: '/client/portal/contracts', label: 'Contracts' },
+            { href: '/client/portal/referrals', label: 'Referrals' },
             { href: '/client/portal/team', label: 'Team' },
           ].map(({ href, label }) => {
             const active = typeof window !== 'undefined' && window.location.pathname === href
@@ -658,12 +659,13 @@ export default function ClientPortalOverview() {
           {/* ══ QUICK ACTIONS ════════════════════════════════════ */}
           <div>
             <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 18, color: N, marginBottom: 14 }}>Quick Actions</div>
-            <div className="ers-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+            <div className="ers-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
               {[
                 { icon: '🔄', label: 'Swap Staff Member', sub: 'Update who\'s in a unit', href: contracts[0] ? `/client/portal/contracts/${contracts[0].id}` : '/client/portal/contracts' },
                 { icon: '📅', label: 'Request Extension', sub: 'Extend your contract dates', href: contracts[0] ? `/client/portal/contracts/${contracts[0].id}` : '/client/portal/contracts' },
                 { icon: '🧹', label: 'Request Cleaning', sub: 'Schedule a unit clean', href: contracts[0] ? `/client/portal/contracts/${contracts[0].id}` : '/client/portal/contracts' },
                 { icon: '👥', label: 'Manage Team Access', sub: 'Add or remove portal users', href: '/client/portal/team' },
+                { icon: '🤝', label: 'Refer a Colleague', sub: 'Help someone find workforce housing', href: '/client/portal/referrals' },
               ].map(({ icon, label, sub, href }) => (
                 <Link key={label} href={href} className="ers-quick-action">
                   <div style={{ fontSize: 28, marginBottom: 10 }}>{icon}</div>

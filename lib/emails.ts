@@ -1,13 +1,15 @@
 import { Resend } from 'resend'
 import { Contract, calcTotal, formatDate } from './types'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
-const AUSTIN = 'austin@eliasrangestays.ca'
-// Hardcoded production URL — avoids all Vercel env var / build-time substitution issues
-const APP_URL = process.env.NODE_ENV === 'production'
+const APP_BASE = process.env.NODE_ENV === 'production'
   ? 'https://contractflow-omega.vercel.app'
   : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+const FROM = process.env.FROM_EMAIL || 'Elias Range Stays <contracts@team.eliasrangestays.ca>'
+const AUSTIN = 'austin@eliasrangestays.ca'
+// Hardcoded production URL — avoids all Vercel env var / build-time substitution issues
+const APP_URL = APP_BASE
 
 // ── Quote Sent ────────────────────────────────────────────────
 export async function sendQuoteEmail(contract: Contract, occupants: { name: string }[]) {
@@ -210,6 +212,218 @@ export async function sendConfirmationEmail(contract: Contract) {
         </div>
         <div style="text-align:center;margin:32px 0;">
           <a href="${portalUrl}" style="background:#C9A84C;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;font-weight:600;">View Portal →</a>
+        </div>
+      </div>
+    `,
+  })
+}
+
+// ── Booking Request — Confirmation to Booker ─────────────────
+export async function sendBookingConfirmationEmail(params: {
+  name: string
+  company: string
+  email: string
+  phone?: string
+  housing_need: string
+  preferred_location: string
+  num_people: number
+  preferred_call_time: string
+  how_heard: string
+  referral_code?: string
+}) {
+  await resend.emails.send({
+    from: FROM,
+    to: params.email,
+    subject: 'We received your inquiry — Elias Range Stays',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
+        <div style="background:#0B2540;border-radius:14px;padding:28px 32px;margin-bottom:32px;text-align:center;">
+          <div style="font-family:Arial Black,sans-serif;font-weight:900;font-size:22px;color:#ffffff;letter-spacing:0.08em;margin-bottom:6px;">ELIAS RANGE STAYS</div>
+          <div style="font-size:11px;color:#00BFA6;letter-spacing:0.18em;font-weight:600;">Healthy Living · Stronger Communities</div>
+        </div>
+        <p style="font-size:16px;color:#1a1a1a;line-height:1.7;">Hi ${params.name.split(' ')[0]},</p>
+        <p style="font-size:14px;color:#555;line-height:1.8;">Thanks for reaching out — we received your inquiry and will be in touch within <strong>24 hours</strong>.</p>
+        <div style="background:#f0faf8;border:1px solid rgba(0,191,166,0.2);border-radius:12px;padding:24px;margin:24px 0;font-size:32px;text-align:center;">
+          ✅
+          <div style="font-size:16px;font-weight:700;color:#0B2540;margin-top:8px;">Request received!</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">We'll be in touch within 24 hours. Check your email for confirmation.</div>
+        </div>
+        <div style="background:#f9f7f4;border-radius:10px;padding:20px 24px;margin:20px 0;">
+          <div style="font-family:monospace;font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:14px;">Your Inquiry Summary</div>
+          ${[
+            ['Company', params.company],
+            ['Location', params.preferred_location],
+            ['People', String(params.num_people)],
+            ['Housing Need', params.housing_need],
+            ['Best Time to Call', params.preferred_call_time],
+            params.referral_code ? ['Referral Code', params.referral_code] : null,
+          ].filter((item): item is [string, string] => Array.isArray(item)).map(([l, v]) => `
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #ece7df;font-size:13px;">
+              <span style="font-family:monospace;font-size:10px;color:#999;text-transform:uppercase;">${l}</span>
+              <span style="color:#1a1a1a;text-align:right;max-width:60%;">${v}</span>
+            </div>
+          `).join('')}
+        </div>
+        <p style="font-size:13px;color:#777;line-height:1.8;">Questions in the meantime? Call Austin directly: <strong>(250) 719-8085</strong> or email <a href="mailto:austin@eliasrangestays.ca" style="color:#00BFA6;">austin@eliasrangestays.ca</a></p>
+        <div style="border-top:1px solid #ece7df;margin-top:32px;padding-top:20px;text-align:center;">
+          <div style="font-family:monospace;font-size:10px;color:#bbb;letter-spacing:0.1em;">ELIAS RANGE STAYS · Healthy Living · Stronger Communities</div>
+          <div style="font-family:monospace;font-size:10px;color:#ccc;margin-top:4px;"><a href="${APP_URL}" style="color:#ccc;">eliasrangestays.ca</a></div>
+        </div>
+      </div>
+    `,
+  })
+}
+
+// ── Booking Request — Notification to Austin ─────────────────
+export async function sendBookingNotificationEmail(params: {
+  name: string
+  company: string
+  email: string
+  phone?: string
+  housing_need: string
+  preferred_location: string
+  num_people: number
+  preferred_call_time: string
+  how_heard: string
+  referral_code?: string
+}) {
+  const source = params.referral_code ? `Referral (${params.referral_code})` : params.how_heard
+  await resend.emails.send({
+    from: FROM,
+    to: AUSTIN,
+    subject: `📞 New Booking Inquiry — ${params.name} at ${params.company}`,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
+        <div style="background:#f0faf8;border:1px solid rgba(0,191,166,0.25);border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+          <div style="font-size:28px;margin-bottom:8px;">📞</div>
+          <div style="font-size:20px;font-weight:700;color:#0B2540;">New Booking Inquiry</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">${new Date().toLocaleString('en-CA', { dateStyle: 'full', timeStyle: 'short' })}</div>
+        </div>
+        <div style="background:#f9f7f4;border-radius:10px;padding:20px 24px;margin:20px 0;">
+          ${[
+            ['Name', params.name],
+            ['Company', params.company],
+            ['Email', params.email],
+            ['Phone', params.phone || 'Not provided'],
+            ['Location', params.preferred_location],
+            ['People', String(params.num_people)],
+            ['Best Time to Call', params.preferred_call_time],
+            ['Source', source],
+            ['Housing Need', params.housing_need],
+          ].map(([l, v]) => `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ece7df;font-size:13px;">
+              <span style="font-family:monospace;font-size:10px;color:#999;text-transform:uppercase;">${l}</span>
+              <span style="color:#1a1a1a;text-align:right;max-width:65%;">${v}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div style="text-align:center;margin:28px 0;">
+          <a href="${APP_URL}" style="background:#0B2540;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-family:monospace;font-size:13px;font-weight:600;">Open ContractFlow →</a>
+        </div>
+      </div>
+    `,
+  })
+}
+
+// ── Referral Email — to the Referee ──────────────────────────
+export async function sendReferralEmail(params: {
+  referee_name: string
+  referee_email: string
+  referee_company: string
+  referring_name: string
+  referring_company: string
+  referring_company_since?: string   // e.g. "6 months"
+  personal_note?: string
+  referral_code: string
+}) {
+  const bookUrl = `${APP_URL}/book?ref=${params.referral_code}`
+  const quoteUrl = `${APP_URL}/book?ref=${params.referral_code}&type=quote`
+  const firstName = params.referee_name.split(' ')[0]
+
+  await resend.emails.send({
+    from: FROM,
+    to: params.referee_email,
+    subject: `${params.referring_name} thinks you could use Elias Range Stays`,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;color:#1a1a1a;">
+
+        <!-- Header -->
+        <div style="background:#0B2540;border-radius:14px 14px 0 0;padding:32px;text-align:center;margin-bottom:0;">
+          <div style="font-family:Arial Black,sans-serif;font-weight:900;font-size:24px;color:#ffffff;letter-spacing:0.08em;margin-bottom:8px;">ELIAS RANGE STAYS</div>
+          <div style="font-size:12px;color:#00BFA6;letter-spacing:0.18em;font-weight:600;">Healthy Living · Stronger Communities</div>
+        </div>
+
+        <!-- Body -->
+        <div style="background:#ffffff;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 14px 14px;padding:36px 32px;">
+
+          <p style="font-size:16px;color:#1a1a1a;line-height:1.7;margin-top:0;">Hi ${firstName},</p>
+
+          <p style="font-size:14px;color:#555;line-height:1.8;">
+            <strong>${params.referring_name}</strong> at <strong>${params.referring_company}</strong> thought you'd benefit from working with Elias Range Stays — and wanted to make a personal introduction.
+          </p>
+
+          <!-- Social Proof Block -->
+          <div style="background:#f0faf8;border-left:4px solid #00BFA6;border-radius:0 10px 10px 0;padding:18px 22px;margin:24px 0;font-style:italic;font-size:14px;color:#334155;line-height:1.7;">
+            "${params.referring_company} has been working with Elias Range Stays${params.referring_company_since ? ` for ${params.referring_company_since}` : ''} — housing their workforce with a single, fully-managed solution."
+          </div>
+
+          <hr style="border:none;border-top:1px solid #e8e8e8;margin:28px 0;" />
+
+          <!-- What We Do -->
+          <div style="margin:24px 0;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">What We Do</div>
+            ${[
+              ['🏠', 'Workforce & Staff Housing', 'Away-from-home projects, any length'],
+              ['✓', 'Fully Managed', 'Furniture, utilities, 24/7 support'],
+              ['📄', 'Single Invoice', 'No landlord headaches'],
+              ['🏥', 'Healthcare & Construction Specialists', 'BC & Canada-wide'],
+            ].map(([icon, title, sub]) => `
+              <div style="display:flex;gap:14px;margin-bottom:12px;align-items:flex-start;">
+                <div style="font-size:18px;min-width:26px;line-height:1.4;">${icon}</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:#1a1a1a;">${title}</div>
+                  <div style="font-size:12px;color:#64748b;">${sub}</div>
+                </div>
+              </div>
+            `).join('')}
+            <div style="background:#f9f7f4;border-radius:8px;padding:12px 16px;margin-top:16px;font-size:12px;color:#64748b;font-style:italic;">
+              Currently housing 34+ units across 6+ hospital regions.
+            </div>
+          </div>
+
+          ${params.personal_note ? `
+          <!-- Personal Note -->
+          <div style="background:#fffbf0;border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:18px 20px;margin:24px 0;">
+            <div style="font-family:monospace;font-size:10px;color:#F59E0B;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;">A note from ${params.referring_name}</div>
+            <p style="font-size:13px;color:#555;line-height:1.8;margin:0;font-style:italic;">"${params.personal_note}"</p>
+          </div>
+          ` : ''}
+
+          <hr style="border:none;border-top:1px solid #e8e8e8;margin:28px 0;" />
+
+          <!-- CTAs -->
+          <div style="font-family:monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:16px;text-align:center;">Two Ways to Get Started</div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+            <a href="${bookUrl}" style="background:#0B2540;color:white;padding:14px 24px;border-radius:9px;text-decoration:none;font-family:monospace;font-size:12px;font-weight:600;display:inline-block;text-align:center;">📞 Book a Call</a>
+            <a href="${quoteUrl}" style="background:#00BFA6;color:white;padding:14px 24px;border-radius:9px;text-decoration:none;font-family:monospace;font-size:12px;font-weight:600;display:inline-block;text-align:center;">🏠 Request a Housing Quote</a>
+          </div>
+
+          <div style="text-align:center;font-size:13px;color:#777;line-height:1.8;margin-bottom:8px;">
+            Questions? Call Austin directly: <strong>(250) 719-8085</strong><br/>
+            Or email: <a href="mailto:austin@eliasrangestays.ca" style="color:#00BFA6;">austin@eliasrangestays.ca</a>
+          </div>
+          <div style="text-align:center;font-size:12px;margin-bottom:20px;">
+            <a href="https://eliasrangestays.ca" style="color:#00BFA6;text-decoration:none;">eliasrangestays.ca</a>
+          </div>
+
+          <!-- Footer -->
+          <div style="border-top:1px solid #e8e8e8;padding-top:18px;margin-top:8px;text-align:center;">
+            <div style="font-family:monospace;font-size:10px;color:#bbb;letter-spacing:0.1em;">ELIAS RANGE STAYS · Healthy Living · Stronger Communities</div>
+            <div style="font-size:11px;color:#ccc;margin-top:8px;">
+              <a href="${APP_URL}/unsubscribe" style="color:#ccc;">Unsubscribe</a>
+            </div>
+          </div>
+
         </div>
       </div>
     `,

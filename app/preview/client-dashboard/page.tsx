@@ -204,7 +204,7 @@ export default function ClientDashboardPreview() {
             </div>
           </div>
 
-          {['Overview', 'Contracts', 'Team'].map(label => (
+          {['Overview', 'Contracts', 'Referrals', 'Team'].map(label => (
             <div key={label} style={{
               padding: '7px 16px',
               borderRadius: 8,

@@ -41,6 +41,11 @@ interface Contact {
   notes: string | null
   created_at: string
   updated_at: string
+  // Relationship context fields (migration 022)
+  relationship_start_date?: string | null
+  first_meeting_location?: string | null
+  first_meeting_event?: string | null
+  first_meeting_context?: string | null
   contracts?: { id: string; reference: string; client_name: string; stage: number } | null
   conversations?: Conversation[]
   latest_conversation?: Conversation | null
@@ -168,6 +173,10 @@ interface ContactFormData {
   name: string; company: string; role: string; email: string; phone: string
   source: ContactSource; referred_by: string; contract_id: string
   quoted: boolean; status: ContactStatus; notes: string
+  relationship_start_date: string
+  first_meeting_location: string
+  first_meeting_event: string
+  first_meeting_context: string
 }
 
 function ContactModal({
@@ -190,6 +199,10 @@ function ContactModal({
     quoted: initial?.quoted ?? false,
     status: initial?.status ?? 'prospect',
     notes: initial?.notes ?? '',
+    relationship_start_date: initial?.relationship_start_date ?? '',
+    first_meeting_location: initial?.first_meeting_location ?? '',
+    first_meeting_event: initial?.first_meeting_event ?? '',
+    first_meeting_context: initial?.first_meeting_context ?? '',
   })
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
@@ -203,7 +216,15 @@ function ContactModal({
       const headers = await getAuthHeaders()
       const url = initial ? `/api/contacts/${initial.id}` : '/api/contacts'
       const method = initial ? 'PATCH' : 'POST'
-      const body = { ...form, contract_id: form.contract_id || null, referred_by: form.referred_by || null }
+      const body = {
+        ...form,
+        contract_id: form.contract_id || null,
+        referred_by: form.referred_by || null,
+        relationship_start_date: form.relationship_start_date || null,
+        first_meeting_location: form.first_meeting_location || null,
+        first_meeting_event: form.first_meeting_event || null,
+        first_meeting_context: form.first_meeting_context || null,
+      }
       const r = await fetch(url, { method, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!r.ok) { const d = await r.json(); setErr(d.error || 'Save failed'); return }
       const data = await r.json()
@@ -282,6 +303,29 @@ function ContactModal({
           <div style={{ marginTop: 14 }}>
             <div style={lbl}>Notes</div>
             <textarea style={{ ...inp, minHeight: 72, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Background, context, anything useful..." />
+          </div>
+
+          {/* Relationship fields */}
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid #e8ecf0' }}>
+            <div style={{ ...lbl, fontSize: 10, marginBottom: 12, color: '#6366f1' }}>Relationship Context</div>
+            <div style={grid2}>
+              <div>
+                <div style={lbl}>Relationship Start Date</div>
+                <input style={{ ...inp, colorScheme: 'light' }} type="date" value={form.relationship_start_date} onChange={e => set('relationship_start_date', e.target.value)} />
+              </div>
+              <div>
+                <div style={lbl}>First Meeting Location</div>
+                <input style={inp} placeholder="e.g. Vancouver, BC" value={form.first_meeting_location} onChange={e => set('first_meeting_location', e.target.value)} />
+              </div>
+              <div>
+                <div style={lbl}>First Meeting Event</div>
+                <input style={inp} placeholder="e.g. Construction Housing Summit 2024" value={form.first_meeting_event} onChange={e => set('first_meeting_event', e.target.value)} />
+              </div>
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <div style={lbl}>First Meeting Context</div>
+              <textarea style={{ ...inp, minHeight: 60, resize: 'vertical' }} value={form.first_meeting_context} onChange={e => set('first_meeting_context', e.target.value)} placeholder="e.g. Met at the ERS booth — she was looking for Whistler crew housing" />
+            </div>
           </div>
         </div>
 
@@ -724,6 +768,40 @@ function ContactDetail({
         </div>
       )}
 
+      {(contact.relationship_start_date || contact.first_meeting_location || contact.first_meeting_event || contact.first_meeting_context) && (
+        <div style={{ marginBottom: 18, paddingBottom: 18, borderBottom: '1px solid #e8ecf0' }}>
+          <div style={{ ...lbl, color: '#6366f1', marginBottom: 10 }}>Relationship Context</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
+            {contact.relationship_start_date && (
+              <div>
+                <div style={lbl}>Relationship Start</div>
+                <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>
+                  {new Date(contact.relationship_start_date).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </div>
+              </div>
+            )}
+            {contact.first_meeting_location && (
+              <div>
+                <div style={lbl}>First Meeting Location</div>
+                <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>{contact.first_meeting_location}</div>
+              </div>
+            )}
+            {contact.first_meeting_event && (
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={lbl}>First Meeting Event</div>
+                <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>{contact.first_meeting_event}</div>
+              </div>
+            )}
+            {contact.first_meeting_context && (
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={lbl}>Context</div>
+                <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, marginTop: 2, fontStyle: 'italic' }}>"{contact.first_meeting_context}"</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Conversations */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -809,11 +887,17 @@ function ConversationsFeed({
   contracts: ContractRef[]
   onLogConversation: () => void
 }) {
+  const [filterCompany, setFilterCompany] = useState('')
   const [filterContact, setFilterContact] = useState('')
   const [filterContract, setFilterContract] = useState('')
   const [filterType, setFilterType] = useState('')
   const [filterFrom, setFilterFrom] = useState('')
   const [filterTo, setFilterTo] = useState('')
+
+  // Unique companies from contacts for filter dropdown
+  const uniqueCompanies = Array.from(new Set(
+    contacts.map(c => c.company).filter(Boolean)
+  )).sort() as string[]
 
   const filtered = conversations.filter(c => {
     if (filterContact && c.contact_id !== filterContact) return false
@@ -821,6 +905,11 @@ function ConversationsFeed({
     if (filterType && c.type !== filterType) return false
     if (filterFrom && new Date(c.created_at) < new Date(filterFrom)) return false
     if (filterTo && new Date(c.created_at) > new Date(filterTo + 'T23:59:59')) return false
+    // Company filter — filter by contacts that belong to this company
+    if (filterCompany) {
+      const contactsAtCompany = contacts.filter(ct => ct.company === filterCompany)
+      if (!contactsAtCompany.some(ct => ct.id === c.contact_id)) return false
+    }
     return true
   })
 
@@ -828,9 +917,14 @@ function ConversationsFeed({
     <div>
       {/* Filters */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20, padding: '14px 18px', background: '#f8f9fb', border: '1px solid #e8ecf0', borderRadius: 8 }}>
+        {/* Company filter */}
+        <select style={{ ...inp, flex: '1 1 160px', maxWidth: 200 }} value={filterCompany} onChange={e => { setFilterCompany(e.target.value); setFilterContact('') }}>
+          <option value="">All Companies</option>
+          {uniqueCompanies.map(co => <option key={co} value={co}>{co}</option>)}
+        </select>
         <select style={{ ...inp, flex: '1 1 160px', maxWidth: 220 }} value={filterContact} onChange={e => setFilterContact(e.target.value)}>
           <option value="">All Contacts</option>
-          {contacts.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` · ${c.company}` : ''}</option>)}
+          {(filterCompany ? contacts.filter(c => c.company === filterCompany) : contacts).map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` · ${c.company}` : ''}</option>)}
         </select>
         <select style={{ ...inp, flex: '1 1 160px', maxWidth: 220 }} value={filterContract} onChange={e => setFilterContract(e.target.value)}>
           <option value="">All Contracts</option>
@@ -844,8 +938,8 @@ function ConversationsFeed({
         </select>
         <input style={{ ...inp, flex: '0 0 130px', colorScheme: 'light' }} type="date" value={filterFrom} onChange={e => setFilterFrom(e.target.value)} placeholder="From" title="From date" />
         <input style={{ ...inp, flex: '0 0 130px', colorScheme: 'light' }} type="date" value={filterTo} onChange={e => setFilterTo(e.target.value)} placeholder="To" title="To date" />
-        {(filterContact || filterContract || filterType || filterFrom || filterTo) && (
-          <button style={{ ...btnGhost, padding: '7px 14px', fontSize: 11 }} onClick={() => { setFilterContact(''); setFilterContract(''); setFilterType(''); setFilterFrom(''); setFilterTo('') }}>
+        {(filterCompany || filterContact || filterContract || filterType || filterFrom || filterTo) && (
+          <button style={{ ...btnGhost, padding: '7px 14px', fontSize: 11 }} onClick={() => { setFilterCompany(''); setFilterContact(''); setFilterContract(''); setFilterType(''); setFilterFrom(''); setFilterTo('') }}>
             Clear Filters
           </button>
         )}
@@ -966,8 +1060,116 @@ const errStyle: React.CSSProperties = {
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
+// ─── Companies Tab ──────────────────────────────────────────────────────────
+
+function CompaniesTab({ contacts, contracts, onSelectContact }: {
+  contacts: Contact[]
+  contracts: ContractRef[]
+  onSelectContact: (c: Contact) => void
+}) {
+  const [expandedCompany, setExpandedCompany] = useState<string | null>(null)
+
+  // Group contacts by company
+  const byCompany = contacts.reduce((acc, c) => {
+    const key = c.company || '(No Company)'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(c)
+    return acc
+  }, {} as Record<string, Contact[]>)
+
+  const companies = Object.entries(byCompany).sort((a, b) => a[0].localeCompare(b[0]))
+
+  return (
+    <div>
+      {companies.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8', fontSize: 13 }}>No contacts yet.</div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {companies.map(([company, compContacts]) => {
+          const isExpanded = expandedCompany === company
+          // Find linked contracts
+          const linkedContracts = contracts.filter(ct =>
+            compContacts.some(c => c.contract_id === ct.id)
+          )
+          // Last conversation
+          const allConvs = compContacts.flatMap(c => c.conversations || [])
+          const lastConv = allConvs.sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )[0]
+
+          return (
+            <div key={company} style={{ background: '#fff', border: '1px solid #e8ecf0', borderRadius: 10, overflow: 'hidden' }}>
+              <div
+                style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
+                onClick={() => setExpandedCompany(isExpanded ? null : company)}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: N }}>{company}</div>
+                  <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>
+                    {compContacts.length} contact{compContacts.length !== 1 ? 's' : ''}
+                    {linkedContracts.length > 0 && (
+                      <> · {linkedContracts.map(ct => (
+                        <span key={ct.id} style={{ fontFamily: 'monospace', color: T, marginLeft: 4 }}>{ct.reference}</span>
+                      ))}</>
+                    )}
+                    {lastConv && (
+                      <> · Last conv: {new Date(lastConv.created_at).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}</>
+                    )}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {compContacts.slice(0, 3).map(c => (
+                    <span key={c.id} style={{ background: STATUS_META[c.status]?.bg, color: STATUS_META[c.status]?.color, fontSize: 10, fontWeight: 600, borderRadius: 12, padding: '2px 8px' }}>
+                      {c.name.split(' ')[0]}
+                    </span>
+                  ))}
+                  {compContacts.length > 3 && <span style={{ fontSize: 11, color: '#94a3b8' }}>+{compContacts.length - 3}</span>}
+                </div>
+                <div style={{ fontSize: 16, color: '#94a3b8' }}>{isExpanded ? '▲' : '▼'}</div>
+              </div>
+
+              {isExpanded && (
+                <div style={{ borderTop: '1px solid #f1f4f8', padding: '12px 18px 16px', background: '#fafbfc' }}>
+                  {compContacts.map(contact => {
+                    const sm = STATUS_META[contact.status]
+                    const latest = contact.latest_conversation
+                    return (
+                      <div
+                        key={contact.id}
+                        style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 0', borderBottom: '1px solid #f1f4f8', cursor: 'pointer' }}
+                        onClick={() => onSelectContact(contact)}
+                      >
+                        <div style={{ width: 30, height: 30, borderRadius: '50%', background: `linear-gradient(135deg, ${N} 0%, ${T} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                          {contact.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: N }}>{contact.name}</span>
+                            {contact.role && <span style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic' }}>{contact.role}</span>}
+                            <span style={{ background: sm.bg, color: sm.color, fontSize: 10, fontWeight: 600, borderRadius: 10, padding: '2px 7px' }}>{sm.label}</span>
+                          </div>
+                          {latest && (
+                            <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>
+                              {CONV_ICONS[latest.type]} {latest.summary?.slice(0, 80)}{(latest.summary?.length ?? 0) > 80 ? '...' : ''}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ fontSize: 11, color: T, fontWeight: 600, flexShrink: 0 }}>View →</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function ContactsPage() {
-  const [tab, setTab] = useState<'contacts' | 'conversations'>('contacts')
+  const [tab, setTab] = useState<'contacts' | 'conversations' | 'companies'>('contacts')
   const [contacts, setContacts] = useState<Contact[]>([])
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [contracts, setContracts] = useState<ContractRef[]>([])
@@ -978,6 +1180,7 @@ export default function ContactsPage() {
   const [prefillContactId, setPrefillContactId] = useState<string | undefined>()
   const [prefillContractId] = useState<string | undefined>()
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [filterCompany, setFilterCompany] = useState('')
   const [filterStatus, setFilterStatus] = useState<ContactStatus | 'all'>('all')
   const [filterFollowUpDue, setFilterFollowUpDue] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -1091,6 +1294,7 @@ export default function ContactsPage() {
             { href: '/dashboard/units', icon: '🏘️', label: 'Units' },
             { href: '/dashboard/ap-ar', icon: '💰', label: 'AP / AR' },
             { href: '/dashboard/sourcing', icon: '🔍', label: 'Sourcing' },
+            { href: '/dashboard/referrals', icon: '🤝', label: 'Referrals' },
           ].map(n => (
             <a key={n.href} href={n.href} className="crm-nav-link" style={{
               padding: '8px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500,
@@ -1150,6 +1354,7 @@ export default function ContactsPage() {
             {([
               ['contacts', '👥 Contacts'],
               ['conversations', '💬 Conversations'],
+              ['companies', '🏢 Companies'],
             ] as const).map(([key, label]) => (
               <button
                 key={key}
@@ -1238,6 +1443,18 @@ export default function ContactsPage() {
               contacts={contacts}
               contracts={contracts}
               onLogConversation={() => handleLogConv(undefined)}
+            />
+          )}
+
+          {/* ── Companies Tab ── */}
+          {!loading && tab === 'companies' && (
+            <CompaniesTab
+              contacts={contacts}
+              contracts={contracts}
+              onSelectContact={(c) => {
+                setSelectedContact(c)
+                setTab('contacts')
+              }}
             />
           )}
         </div>
