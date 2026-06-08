@@ -1707,6 +1707,177 @@ function DocumentsTab({ contract: c }: { contract: Contract }) {
 }
 
 // ── TAB: Audit Trail ───────────────────────────────────────
+// ── TAB: Conversations (linked to this contract) ───────────
+const CONV_ICONS: Record<string, string> = {
+  call: '📞', text: '💬', email: '📧',
+  meeting: '🤝', voicemail: '📳', other: '📝',
+}
+const CONV_TYPE_LABELS: Record<string, string> = {
+  call: 'Call', text: 'Text', email: 'Email',
+  meeting: 'Meeting', voicemail: 'Voicemail', other: 'Other',
+}
+
+function ContractConversationsTab({ contract: c }: { contract: Contract }) {
+  const [convs, setConvs] = useState<any[]>([])
+  const [contacts, setContacts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+
+  // Log form
+  const [form, setForm] = useState({
+    contact_id: '', type: 'call', direction: 'outbound',
+    summary: '', next_action: '', follow_up_date: '',
+  })
+  const [saving, setSaving] = useState(false)
+  const [err, setErr] = useState('')
+  const setF = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const [convR, ctR] = await Promise.all([
+        fetch(`/api/conversations?contract_id=${c.id}`),
+        fetch('/api/contacts'),
+      ])
+      if (convR.ok) setConvs(await convR.json())
+      if (ctR.ok) setContacts(await ctR.json())
+    } finally { setLoading(false) }
+  }
+
+  useEffect(() => { load() }, [c.id])
+
+  const handleLog = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.contact_id) { setErr('Select a contact'); return }
+    if (!form.summary.trim()) { setErr('Summary required'); return }
+    setSaving(true); setErr('')
+    try {
+      const r = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, contract_id: c.id, follow_up_date: form.follow_up_date || null, next_action: form.next_action || null }),
+      })
+      if (r.ok) {
+        setShowModal(false)
+        setForm({ contact_id: '', type: 'call', direction: 'outbound', summary: '', next_action: '', follow_up_date: '' })
+        load()
+      } else {
+        const d = await r.json(); setErr(d.error || 'Save failed')
+      }
+    } catch { setErr('Network error') }
+    finally { setSaving(false) }
+  }
+
+  const cardStyle = {
+    background: '#fff', border: '1px solid #e8ecf0',
+    borderRadius: 10, padding: '22px 24px',
+    boxShadow: '0 1px 4px rgba(11,37,64,0.05)',
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={styles.sectionTitle}>Conversations Linked to This Contract</div>
+        <button style={styles.btnPrimary} onClick={() => setShowModal(true)}>+ Log Conversation</button>
+      </div>
+
+      {/* Log modal */}
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(11,37,64,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
+          <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 20px 60px rgba(11,37,64,0.15)', width: '100%', maxWidth: 540, overflow: 'hidden' }}>
+            <div style={{ padding: '18px 24px 14px', borderBottom: '1px solid #e8ecf0', display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#0B2540' }}>Log Conversation</span>
+              <button style={{ background: 'none', border: 'none', fontSize: 22, color: '#94a3b8', cursor: 'pointer' }} onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleLog} style={{ padding: '20px 24px' }}>
+              {err && <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', padding: '10px 14px', borderRadius: 7, fontSize: 13, marginBottom: 14 }}>{err}</div>}
+              <div style={styles.grid2}>
+                <div style={{ gridColumn: '1/-1' }}>
+                  <div style={styles.lbl}>Contact *</div>
+                  <select style={styles.inp} value={form.contact_id} onChange={e => setF('contact_id', e.target.value)}>
+                    <option value="">— Select contact —</option>
+                    {contacts.map((ct: any) => <option key={ct.id} value={ct.id}>{ct.name}{ct.company ? ` · ${ct.company}` : ''}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div style={styles.lbl}>Type</div>
+                  <select style={styles.inp} value={form.type} onChange={e => setF('type', e.target.value)}>
+                    {Object.entries(CONV_TYPE_LABELS).map(([v, l]) => <option key={v} value={v}>{CONV_ICONS[v]} {l}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div style={styles.lbl}>Direction</div>
+                  <select style={styles.inp} value={form.direction} onChange={e => setF('direction', e.target.value)}>
+                    <option value="outbound">→ Outbound</option>
+                    <option value="inbound">← Inbound</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginTop: 12 }}>
+                <div style={styles.lbl}>Summary *</div>
+                <textarea style={{ ...styles.textarea, minHeight: 80 }} value={form.summary} onChange={e => setF('summary', e.target.value)} placeholder="What was discussed?" />
+              </div>
+              <div style={{ ...styles.grid2, marginTop: 12 }}>
+                <div>
+                  <div style={styles.lbl}>Next Action</div>
+                  <input style={styles.inp} value={form.next_action} onChange={e => setF('next_action', e.target.value)} placeholder="e.g. Send updated quote" />
+                </div>
+                <div>
+                  <div style={styles.lbl}>Follow-Up Date</div>
+                  <input style={{ ...styles.inp, colorScheme: 'light' }} type="date" value={form.follow_up_date} onChange={e => setF('follow_up_date', e.target.value)} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 18 }}>
+                <button type="button" style={styles.btnGhost} onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="submit" style={styles.btnPrimary} disabled={saving}>{saving ? 'Saving...' : 'Log Conversation'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {loading && <div style={{ fontFamily: 'IBM Plex Mono', fontSize: 12, color: '#94a3b8', padding: '20px 0' }}>Loading...</div>}
+
+      {!loading && convs.length === 0 && (
+        <div style={{ ...cardStyle, textAlign: 'center', padding: '36px 0', color: '#94a3b8', fontSize: 13 }}>
+          No conversations linked to this contract yet.
+          <br />
+          <button style={{ ...styles.btnPrimary, marginTop: 14, fontSize: 12 }} onClick={() => setShowModal(true)}>+ Log First Conversation</button>
+        </div>
+      )}
+
+      {!loading && convs.length > 0 && (
+        <div style={cardStyle}>
+          {convs.map((conv: any, i: number) => (
+            <div key={conv.id} style={{ padding: '14px 0', borderBottom: i < convs.length - 1 ? '1px solid #f1f4f8' : 'none', display: 'flex', gap: 14 }}>
+              <div style={{ flexShrink: 0, fontSize: 18, paddingTop: 2 }}>{CONV_ICONS[conv.type] ?? '📝'}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0B2540' }}>{conv.contacts?.name ?? '—'}</span>
+                    {conv.contacts?.company && <span style={{ fontSize: 12, color: '#94a3b8' }}>{conv.contacts.company}</span>}
+                    <span style={{ fontSize: 11, color: '#64748b' }}>{CONV_TYPE_LABELS[conv.type]} · {conv.direction === 'outbound' ? '→ Out' : '← In'}</span>
+                  </div>
+                  <span style={{ fontFamily: 'IBM Plex Mono', fontSize: 10, color: '#94a3b8', flexShrink: 0 }}>
+                    {new Date(conv.created_at).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>{conv.summary}</div>
+                {conv.next_action && <div style={{ fontSize: 12, color: '#00BFA6', marginTop: 4 }}>→ <strong>Next:</strong> {conv.next_action}</div>}
+                {conv.follow_up_date && (
+                  <div style={{ fontSize: 11, color: new Date(conv.follow_up_date) <= new Date() ? '#F59E0B' : '#94a3b8', marginTop: 3, fontFamily: 'IBM Plex Mono' }}>
+                    {new Date(conv.follow_up_date) <= new Date() ? '⚠ ' : '📅 '}Follow up: {conv.follow_up_date}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AuditTab({ contract: c }: { contract: Contract }) {
   const logs = [...((c as any).audit_logs || [])].reverse()
   return (
@@ -1984,13 +2155,14 @@ const styles: Record<string, any> = {
 export default function ContractDetail({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   const { role } = useRole()
   const TABS = [
-    { key: 'request',   label: 'Request' },
-    { key: 'quote',     label: '✦ Quote' },
-    { key: 'contract',  label: '📋 Contract' },
-    { key: 'documents', label: '📄 Documents' },
-    { key: 'units',     label: '🏠 Units' },
-    { key: 'calendar',  label: '📅 Calendar' },
-    { key: 'audit',     label: 'Audit Trail' },
+    { key: 'request',       label: 'Request' },
+    { key: 'quote',         label: '✦ Quote' },
+    { key: 'contract',      label: '📋 Contract' },
+    { key: 'documents',     label: '📄 Documents' },
+    { key: 'units',         label: '🏠 Units' },
+    { key: 'calendar',      label: '📅 Calendar' },
+    { key: 'conversations', label: '💬 Conversations' },
+    { key: 'audit',         label: 'Audit Trail' },
   ]
   const [tab, setTab] = useState('request')
 
@@ -2117,6 +2289,7 @@ export default function ContractDetail({ contract: c, onUpdate, onRefresh, showT
       {tab === 'documents' && <DocumentsTab contract={c} />}
       {tab === 'units'     && <ContractUnitsTab contract={c} showToast={showToast} />}
       {tab === 'calendar' && <ContractCalendar contract={c} />}
+      {tab === 'conversations' && <ContractConversationsTab contract={c} />}
       {tab === 'audit'    && <AuditTab    contract={c} />}
     </div>
   )

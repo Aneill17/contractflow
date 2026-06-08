@@ -355,6 +355,7 @@ export default function HomePage() {
         {/* Owner nav — always visible */}
         <div style={{ marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8 }}>
           {[
+            { href: '/dashboard/contacts',   icon: '🗒️', label: 'CRM / Contacts', disabled: false },
             { href: '/dashboard/units',       icon: '🏘️', label: 'Units',       disabled: false },
             { href: '/dashboard/ap-ar',        icon: '💰', label: 'AP / AR',     disabled: false },
             { href: '/dashboard/sourcing',     icon: '🔍', label: 'Sourcing',    disabled: false },
@@ -362,6 +363,7 @@ export default function HomePage() {
             { href: '/dashboard/contractors',  icon: '🤝', label: 'Contractors', disabled: true },
             { href: '/dashboard/kpi',          icon: '📊', label: 'KPI',         disabled: false },
             { href: '/dashboard/pipeline',      icon: '🚀', label: 'Pipeline',    disabled: false },
+            { href: '/dashboard/cleaning',      icon: '🧹', label: 'Cleaning',    disabled: false },
           ].map(({ href, icon, label, disabled }) => (
             <div key={href} className="ers-nav-item" style={disabled ? { opacity: 0.35, cursor: 'not-allowed', pointerEvents: 'none' } : {}} onClick={() => !disabled && (window.location.href = href)}>
               <span style={{ fontSize: 14 }}>{icon}</span>{label}

@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getClientSessionFromRequest } from '@/lib/clientAuth'
 
-// Public routes — no auth required
-const PUBLIC_PATHS = [
-  '/login',
-  '/request',
-  '/client/',
-  '/api/client/',
-  '/api/booking',
-  '/api/auth/',
-  '/api/client-portal/',
-  '/_next',
-  '/favicon',
-  '/v2-plan.html',
-]
+// Client portal protected routes
+const CLIENT_PORTAL_PREFIX = '/client/portal'
 
 export function middleware(req: NextRequest) {
-  // Auth temporarily disabled — allow all routes
+  const { pathname } = req.nextUrl
+
+  // Protect /client/portal/* routes — check client_session cookie
+  // Login page is always public
+  if (
+    pathname.startsWith(CLIENT_PORTAL_PREFIX) &&
+    !pathname.startsWith('/client/portal/login')
+  ) {
+    const session = getClientSessionFromRequest(req)
+    if (!session) {
+      const loginUrl = new URL('/client/portal/login', req.url)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
+  // Everything else — internal dashboard uses Supabase auth client-side
   return NextResponse.next()
 }
 

@@ -27,6 +27,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const allowed = [
     'address', 'wifi_ssid', 'wifi_password', 'guest_name', 'guest_contact',
     'status', 'notes', 'contract_id',
+    // Client portal fields
+    'cleanliness', 'occupancy_status',
     // Legacy
     'city', 'province', 'lat', 'lng', 'monthly_cost', 'daily_rate',
     'bedrooms', 'landlord_name', 'landlord_email', 'landlord_phone',

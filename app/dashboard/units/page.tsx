@@ -17,6 +17,8 @@ interface UnitRow {
   lease_end: string | null
   landlord_name: string | null
   status: string
+  cleanliness?: 'clean' | 'dirty' | 'cleaning_requested'
+  occupancy_status?: 'occupied' | 'vacant'
   // joined from contract
   contract?: {
     company_name?: string
@@ -86,6 +88,29 @@ export default function UnitsPage() {
   const active = units.filter(u => u.status === 'active').length
   const total = units.length
 
+  const markClean = async (unit: UnitRow) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const h: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+    }
+    // Try to complete any open cleaning request first
+    const crRes = await fetch(`/api/cleaning-requests?unit_id=${unit.id}`, { headers: h }).catch(() => null)
+    const crData = crRes?.ok ? await crRes.json().catch(() => []) : []
+    const pending = Array.isArray(crData) ? crData.find((r: any) => r.status !== 'completed' && r.unit_id === unit.id) : null
+    if (pending) {
+      await fetch(`/api/cleaning-requests/${pending.id}/complete`, { method: 'POST', headers: h })
+    } else {
+      await fetch(`/api/units/${unit.id}`, {
+        method: 'PATCH',
+        headers: h,
+        body: JSON.stringify({ cleanliness: 'clean' }),
+      })
+    }
+    const r = await fetch('/api/contract-units', { headers: h })
+    if (r.ok) setUnits(await r.json())
+  }
+
   return (
     <div style={{ padding: '32px 36px', background: '#f8f9fb', minHeight: '100vh', fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       {/* Header */}
@@ -109,13 +134,13 @@ export default function UnitsPage() {
           {/* Table header */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 1.2fr 2fr 1.5fr 1fr',
+            gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 1.2fr 2fr 1.5fr 1fr 1.5fr 1.2fr',
             gap: 0,
             padding: '10px 20px',
             background: '#f8f9fb',
             borderBottom: '1px solid #e8ecf0',
           }}>
-            {['Address', 'Client', 'Guest Name', 'Guest Contact', 'Lease Type', 'Lease Period', 'Landlord', 'Status'].map(h => (
+            {['Address', 'Client', 'Guest Name', 'Guest Contact', 'Lease Type', 'Lease Period', 'Landlord', 'Status', 'Cleanliness', ''].map(h => (
               <div key={h} style={lbl}>{h}</div>
             ))}
           </div>
@@ -132,7 +157,7 @@ export default function UnitsPage() {
                 onClick={() => unit.contract_id && router.push(`/contract/${unit.contract_id}`)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 1.2fr 2fr 1.5fr 1fr',
+                  gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 1.2fr 2fr 1.5fr 1fr 1.5fr 1.2fr',
                   gap: 0,
                   padding: '14px 20px',
                   borderBottom: i < units.length - 1 ? '1px solid #f1f4f8' : 'none',
@@ -177,6 +202,39 @@ export default function UnitsPage() {
                   }}>
                     {isActive ? '● Active' : '○ ' + unit.status}
                   </span>
+                </div>
+                {/* Cleanliness badge */}
+                <div>
+                  {unit.cleanliness === 'dirty' && (
+                    <span style={{ fontSize: 10, fontFamily: 'IBM Plex Mono', padding: '3px 8px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.25)', whiteSpace: 'nowrap' }}>🔴 Dirty</span>
+                  )}
+                  {unit.cleanliness === 'cleaning_requested' && (
+                    <span style={{ fontSize: 10, fontFamily: 'IBM Plex Mono', padding: '3px 8px', borderRadius: 10, background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)', whiteSpace: 'nowrap' }}>🟡 Requested</span>
+                  )}
+                  {(!unit.cleanliness || unit.cleanliness === 'clean') && (
+                    <span style={{ fontSize: 10, fontFamily: 'IBM Plex Mono', padding: '3px 8px', borderRadius: 10, background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', whiteSpace: 'nowrap' }}>🟢 Clean</span>
+                  )}
+                </div>
+                {/* Mark Clean button */}
+                <div onClick={e => e.stopPropagation()}>
+                  {(unit.cleanliness === 'dirty' || unit.cleanliness === 'cleaning_requested') && (
+                    <button
+                      onClick={() => markClean(unit)}
+                      style={{
+                        background: T,
+                        color: '#fff',
+                        border: 'none',
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                        fontFamily: 'IBM Plex Mono',
+                        fontSize: 10,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      ✓ Mark Clean
+                    </button>
+                  )}
                 </div>
               </div>
             )
