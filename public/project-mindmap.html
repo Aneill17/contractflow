@@ -108,11 +108,11 @@
 
 <div class="page-header">
   <h1>ERS Project Map — June 2026</h1>
-  <p>Active Streams &amp; Dependencies · Prepared for Laurie McPherson, Director of Operations</p>
+  <p>Active Streams &amp; Dependencies · All Streams Build Toward the ERS Vision</p>
 </div>
 
 <div class="canvas-wrapper">
-<svg width="2000" height="3200" viewBox="0 0 2000 3200" xmlns="http://www.w3.org/2000/svg">
+<svg width="2000" height="4200" viewBox="0 0 2000 4200" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <!-- Arrow markers -->
   <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
@@ -132,6 +132,9 @@
   </marker>
   <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
     <path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/>
+  </marker>
+  <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED"/>
   </marker>
 
   <!-- Drop shadow filter -->
@@ -252,7 +255,7 @@
 <text x="457" y="120" text-anchor="middle" font-size="9" fill="white" font-weight="700">BLOCKED: needs bridge</text>
 
 <!-- Bridge → Negotiate MOU Northern Health (cross-stream dependency line) -->
-<path d="M550,245 C700,245 750,520 835,520" stroke="#009793" stroke-width="1" stroke-dasharray="4,3" fill="none" opacity="0.5" marker-end="url(#arrow-teal)"/>
+<path d="M552,250 C1100,250 1200,2775 550,2775" stroke="#F59E0B" stroke-width="1" stroke-dasharray="6,4" fill="none" opacity="0.0"/>
 
 <!-- Bridge → Complete Dev Permit -->
 <path d="M550,250 C720,250 800,390 880,390" stroke="#009793" stroke-width="1.5" fill="none" marker-end="url(#arrow-teal)"/>
@@ -269,115 +272,117 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <!-- Stream 2 lane background -->
-<rect x="20" y="820" width="1960" height="700" rx="16" fill="#00698A" opacity="0.04"/>
-<rect x="20" y="820" width="1960" height="700" rx="16" fill="none" stroke="#00698A" stroke-width="1" opacity="0.15"/>
-<text x="1940" y="848" text-anchor="middle" font-size="11" font-weight="700" fill="#00698A" opacity="0.5" letter-spacing="1">STREAM 2</text>
+<rect x="20" y="820" width="1960" height="760" rx="16" fill="#00698A" opacity="0.04"/>
+<rect x="20" y="820" width="1960" height="760" rx="16" fill="none" stroke="#00698A" stroke-width="1" opacity="0.15"/>
 <text x="1960" y="848" text-anchor="end" font-size="11" font-weight="700" fill="#00698A" opacity="0.5" letter-spacing="1">STREAM 2</text>
 
 <!-- Hub: ERS Operations & Management -->
-<circle cx="135" cy="1170" r="100" fill="#00698A" filter="url(#hub-shadow)"/>
-<circle cx="135" cy="1170" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
-<text x="135" y="1150" text-anchor="middle" font-size="20" fill="white">⚙️</text>
-<text x="135" y="1171" text-anchor="middle" font-size="13" font-weight="700" fill="white">ERS Operations</text>
-<text x="135" y="1188" text-anchor="middle" font-size="13" font-weight="700" fill="white">&amp; Management</text>
+<circle cx="135" cy="1200" r="100" fill="#00698A" filter="url(#hub-shadow)"/>
+<circle cx="135" cy="1200" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+<text x="135" y="1180" text-anchor="middle" font-size="20" fill="white">⚙️</text>
+<text x="135" y="1201" text-anchor="middle" font-size="13" font-weight="700" fill="white">ERS Operations</text>
+<text x="135" y="1218" text-anchor="middle" font-size="13" font-weight="700" fill="white">&amp; Management</text>
 
 <!-- Austin Neill node -->
-<path d="M235,1145 C290,1145 310,1050 365,1050" stroke="#00698A" stroke-width="1.5" fill="none" marker-end="url(#arrow-blue)"/>
-<rect x="365" y="1022" width="185" height="56" rx="8" fill="white" stroke="#00698A" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1043" text-anchor="middle" font-size="11" fill="#00698A" font-weight="700">Austin Neill</text>
-<text x="457" y="1061" text-anchor="middle" font-size="11" fill="#0B2540">CEO &amp; Director</text>
+<path d="M235,1175 C290,1175 310,1070 365,1070" stroke="#00698A" stroke-width="1.5" fill="none" marker-end="url(#arrow-blue)"/>
+<rect x="365" y="1042" width="185" height="56" rx="8" fill="white" stroke="#00698A" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1063" text-anchor="middle" font-size="11" fill="#00698A" font-weight="700">Austin Neill</text>
+<text x="457" y="1081" text-anchor="middle" font-size="11" fill="#0B2540">CEO &amp; Director</text>
 
-<!-- Laurie McPherson node [HIRING - dashed] -->
-<path d="M235,1165 C290,1165 310,1160 365,1160" stroke="#00698A" stroke-width="1.5" fill="none" marker-end="url(#arrow-blue)"/>
-<rect x="365" y="1132" width="185" height="56" rx="8" fill="white" stroke="#00698A" stroke-width="2" stroke-dasharray="6,3" filter="url(#shadow)"/>
-<text x="457" y="1153" text-anchor="middle" font-size="11" fill="#00698A" font-weight="700">Laurie McPherson</text>
-<text x="457" y="1169" text-anchor="middle" font-size="11" fill="#0B2540">Director of Ops</text>
-<rect x="410" y="1180" width="94" height="14" rx="3" fill="#00698A"/>
-<text x="457" y="1191" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">HIRING IN PROGRESS</text>
+<!-- Mairi-Anne MacLeod node -->
+<path d="M235,1195 C290,1195 310,1185 365,1185" stroke="#00698A" stroke-width="1.5" fill="none" marker-end="url(#arrow-blue)"/>
+<rect x="365" y="1157" width="185" height="56" rx="8" fill="white" stroke="#00698A" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1177" text-anchor="middle" font-size="11" fill="#00698A" font-weight="700">Mairi-Anne MacLeod</text>
+<text x="457" y="1193" text-anchor="middle" font-size="11" fill="#0B2540">Logistics Coordinator</text>
+<!-- Badges: Role Doc + Contract -->
+<rect x="366" y="1207" width="60" height="14" rx="3" fill="#6366F1" opacity="0.85"/>
+<text x="396" y="1218" text-anchor="middle" font-size="8" fill="white" font-weight="600">📄 Role Doc</text>
+<rect x="432" y="1207" width="60" height="14" rx="3" fill="#00698A" opacity="0.85"/>
+<text x="462" y="1218" text-anchor="middle" font-size="8" fill="white" font-weight="600">📋 Contract</text>
 
-<!-- "Removing from Austin" nodes - items transferring to Laurie -->
-<!-- These show as muted nodes coming from Austin with "→ Laurie" badge -->
+<!-- ─────────────────────────────────────── -->
+<!-- Delegation items — "Needs Owner" style (grey dashed border, no name) -->
+<!-- ─────────────────────────────────────── -->
 
-<!-- Items to transfer - arranged in two columns from Austin -->
-<!-- Column 1 -->
-<path d="M550,1050 C600,1050 630,895 680,895" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="870" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+<!-- Header label: DELEGATING FROM AUSTIN → -->
+<rect x="546" y="846" width="210" height="22" rx="4" fill="#0B2540" opacity="0.08"/>
+<text x="652" y="861" text-anchor="middle" font-size="10" fill="#0B2540" font-weight="700" letter-spacing="0.5">DELEGATING FROM AUSTIN →</text>
+
+<!-- Column 1 of delegation items -->
+<path d="M550,1070 C600,1070 630,895 680,895" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="870" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
 <text x="765" y="890" text-anchor="middle" font-size="10.5" fill="#475569">Corporate</text>
 <text x="765" y="906" text-anchor="middle" font-size="10.5" fill="#475569">Filings</text>
-<rect x="727" y="917" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="927" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<rect x="709" y="917" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="927" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1055 C600,1055 630,955 680,955" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="930" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+<path d="M550,1075 C600,1075 630,955 680,955" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="930" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
 <text x="765" y="950" text-anchor="middle" font-size="10.5" fill="#475569">Payroll Oversight</text>
 <text x="765" y="966" text-anchor="middle" font-size="10.5" fill="#475569">&amp; Approvals</text>
-<rect x="727" y="977" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="987" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<rect x="709" y="977" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="987" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1060 C590,1060 620,1015 680,1015" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="990" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+<path d="M550,1080 C590,1080 620,1015 680,1015" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="990" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
 <text x="765" y="1010" text-anchor="middle" font-size="10.5" fill="#475569">Bookkeeping</text>
 <text x="765" y="1026" text-anchor="middle" font-size="10.5" fill="#475569">Coordination</text>
-<rect x="727" y="1037" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1047" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<rect x="709" y="1037" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1047" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1065 C590,1065 620,1075 680,1075" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1050" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+<path d="M550,1085 C590,1085 620,1075 680,1075" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1050" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
 <text x="765" y="1070" text-anchor="middle" font-size="10.5" fill="#475569">Monthly Reporting</text>
 <text x="765" y="1086" text-anchor="middle" font-size="10.5" fill="#475569">Accountability</text>
-<rect x="727" y="1097" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1107" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<rect x="709" y="1097" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1107" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1070 C590,1070 620,1135 680,1135" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1110" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+<path d="M550,1090 C590,1090 620,1135 680,1135" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1110" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
 <text x="765" y="1130" text-anchor="middle" font-size="10.5" fill="#475569">Property Mgmt</text>
 <text x="765" y="1146" text-anchor="middle" font-size="10.5" fill="#475569">Oversight</text>
-<rect x="727" y="1157" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1167" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<rect x="709" y="1157" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1167" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<!-- Column 2 -->
-<path d="M550,1075 C590,1075 620,1195 680,1195" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1170" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="765" y="1190" text-anchor="middle" font-size="10.5" fill="#475569">Guest Services</text>
-<text x="765" y="1206" text-anchor="middle" font-size="10.5" fill="#475569">Oversight</text>
-<rect x="727" y="1217" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1227" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<!-- Column 2 of delegation items -->
+<path d="M550,1095 C590,1095 620,1210 680,1210" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1185" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="765" y="1205" text-anchor="middle" font-size="10.5" fill="#475569">Guest Services</text>
+<text x="765" y="1221" text-anchor="middle" font-size="10.5" fill="#475569">Oversight</text>
+<rect x="709" y="1232" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1242" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1080 C590,1080 620,1255 680,1255" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1230" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="765" y="1250" text-anchor="middle" font-size="10.5" fill="#475569">Unit Leasing</text>
-<text x="765" y="1266" text-anchor="middle" font-size="10.5" fill="#475569">&amp; Closing</text>
-<rect x="727" y="1277" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1287" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<path d="M550,1100 C590,1100 620,1270 680,1270" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1245" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="765" y="1265" text-anchor="middle" font-size="10.5" fill="#475569">Unit Leasing</text>
+<text x="765" y="1281" text-anchor="middle" font-size="10.5" fill="#475569">&amp; Closing</text>
+<rect x="709" y="1292" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1302" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1085 C590,1085 620,1315 680,1315" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1290" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="765" y="1310" text-anchor="middle" font-size="10.5" fill="#475569">Year-End &amp;</text>
-<text x="765" y="1326" text-anchor="middle" font-size="10.5" fill="#475569">Accounting Coord.</text>
-<rect x="727" y="1337" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1347" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<path d="M550,1105 C590,1105 620,1330 680,1330" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1305" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="765" y="1325" text-anchor="middle" font-size="10.5" fill="#475569">Year-End &amp;</text>
+<text x="765" y="1341" text-anchor="middle" font-size="10.5" fill="#475569">Accounting Coord.</text>
+<rect x="709" y="1352" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1362" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1090 C590,1090 620,1375 680,1375" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1350" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="765" y="1370" text-anchor="middle" font-size="10.5" fill="#475569">Quarterly Banking</text>
-<text x="765" y="1386" text-anchor="middle" font-size="10.5" fill="#475569">Updates</text>
-<rect x="727" y="1397" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1407" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<path d="M550,1110 C590,1110 620,1390 680,1390" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1365" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="765" y="1385" text-anchor="middle" font-size="10.5" fill="#475569">Quarterly Banking</text>
+<text x="765" y="1401" text-anchor="middle" font-size="10.5" fill="#475569">Updates</text>
+<rect x="709" y="1412" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1422" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<path d="M550,1095 C590,1095 620,1435 680,1435" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
-<rect x="680" y="1410" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="765" y="1430" text-anchor="middle" font-size="10.5" fill="#475569">Document Upload</text>
-<text x="765" y="1446" text-anchor="middle" font-size="10.5" fill="#475569">&amp; Facilitation</text>
-<rect x="727" y="1457" width="76" height="13" rx="3" fill="#009793" opacity="0.85"/>
-<text x="765" y="1467" text-anchor="middle" font-size="8" fill="white" font-weight="600">→ Laurie</text>
+<path d="M550,1115 C590,1115 620,1450 680,1450" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow-grey)"/>
+<rect x="680" y="1425" width="170" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="765" y="1445" text-anchor="middle" font-size="10.5" fill="#475569">Document Upload</text>
+<text x="765" y="1461" text-anchor="middle" font-size="10.5" fill="#475569">&amp; Facilitation</text>
+<rect x="709" y="1472" width="112" height="13" rx="3" fill="#94a3b8" opacity="0.7"/>
+<text x="765" y="1482" text-anchor="middle" font-size="8" fill="white" font-weight="600">Needs Owner</text>
 
-<!-- "Removing from Austin" header label -->
-<rect x="546" y="846" width="200" height="22" rx="4" fill="#0B2540" opacity="0.08"/>
-<text x="647" y="861" text-anchor="middle" font-size="10" fill="#0B2540" font-weight="700" letter-spacing="0.5">DELEGATING TO LAURIE →</text>
-
-<!-- Laurie takes over dotted connection to all -->
-<line x1="855" y1="1160" x2="855" y2="1470" stroke="#009793" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.4"/>
-<text x="870" y="1315" font-size="9.5" fill="#009793" font-weight="600" opacity="0.7">Laurie owns these</text>
+<!-- Vertical connector line across items -->
+<line x1="855" y1="1160" x2="855" y2="1480" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+<text x="870" y="1320" font-size="9.5" fill="#94a3b8" font-weight="600" opacity="0.8">Ownership TBD</text>
 
 <!-- Stream 2 label -->
 <text x="44" y="848" font-size="13" font-weight="700" fill="#00698A" letter-spacing="0.3">Stream 2 — ERS Operations &amp; Management</text>
@@ -388,93 +393,92 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <!-- Stream 3 lane background -->
-<rect x="20" y="1570" width="1960" height="620" rx="16" fill="#6366F1" opacity="0.04"/>
-<rect x="20" y="1570" width="1960" height="620" rx="16" fill="none" stroke="#6366F1" stroke-width="1" opacity="0.15"/>
-<text x="1960" y="1598" text-anchor="end" font-size="11" font-weight="700" fill="#6366F1" opacity="0.5" letter-spacing="1">STREAM 3</text>
+<rect x="20" y="1630" width="1960" height="620" rx="16" fill="#6366F1" opacity="0.04"/>
+<rect x="20" y="1630" width="1960" height="620" rx="16" fill="none" stroke="#6366F1" stroke-width="1" opacity="0.15"/>
+<text x="1960" y="1658" text-anchor="end" font-size="11" font-weight="700" fill="#6366F1" opacity="0.5" letter-spacing="1">STREAM 3</text>
 
 <!-- Hub: Role Clarity & Systems -->
-<circle cx="135" cy="1880" r="100" fill="#6366F1" filter="url(#hub-shadow)"/>
-<circle cx="135" cy="1880" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
-<text x="135" y="1860" text-anchor="middle" font-size="20" fill="white">👥</text>
-<text x="135" y="1881" text-anchor="middle" font-size="13" font-weight="700" fill="white">Role Clarity</text>
-<text x="135" y="1898" text-anchor="middle" font-size="13" font-weight="700" fill="white">&amp; Systems</text>
+<circle cx="135" cy="1940" r="100" fill="#6366F1" filter="url(#hub-shadow)"/>
+<circle cx="135" cy="1940" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+<text x="135" y="1920" text-anchor="middle" font-size="20" fill="white">👥</text>
+<text x="135" y="1941" text-anchor="middle" font-size="13" font-weight="700" fill="white">Role Clarity</text>
+<text x="135" y="1958" text-anchor="middle" font-size="13" font-weight="700" fill="white">&amp; Systems</text>
 
 <!-- Node: Monthly Reporting (Lexi) -->
-<path d="M235,1840 C290,1840 310,1640 365,1640" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="1612" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1632" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Monthly Reporting</text>
-<text x="457" y="1650" text-anchor="middle" font-size="11" fill="#0B2540">Lexi — Financials</text>
+<path d="M235,1900 C290,1900 310,1700 365,1700" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="1672" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1692" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Monthly Reporting</text>
+<text x="457" y="1710" text-anchor="middle" font-size="11" fill="#0B2540">Lexi — Financials</text>
 
 <!-- Node: Tenant Issues (Angela) -->
-<path d="M235,1855 C290,1855 310,1720 365,1720" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="1692" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1712" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Tenant Issues &amp;</text>
-<text x="457" y="1730" text-anchor="middle" font-size="11" fill="#0B2540">Coord. (Angela)</text>
+<path d="M235,1915 C290,1915 310,1780 365,1780" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="1752" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1772" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Tenant Issues &amp;</text>
+<text x="457" y="1790" text-anchor="middle" font-size="11" fill="#0B2540">Coord. (Angela)</text>
 
 <!-- Node: Maintenance Request System -->
-<path d="M235,1870 C290,1870 310,1800 365,1800" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="1772" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1792" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Maintenance</text>
-<text x="457" y="1810" text-anchor="middle" font-size="11" fill="#0B2540">Request System</text>
+<path d="M235,1930 C290,1930 310,1860 365,1860" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="1832" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1852" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Maintenance</text>
+<text x="457" y="1870" text-anchor="middle" font-size="11" fill="#0B2540">Request System</text>
 
 <!-- Maintenance → Process & Responsibility Owner -->
-<path d="M550,1800 C600,1800 620,1800 670,1800" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="670" y="1773" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="755" y="1793" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Process &amp;</text>
-<text x="755" y="1808" text-anchor="middle" font-size="10.5" fill="#0B2540">Responsibility</text>
-<text x="755" y="1820" text-anchor="middle" font-size="10" fill="#6366F1">Owner</text>
+<path d="M550,1860 C600,1860 620,1860 670,1860" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="670" y="1833" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="755" y="1853" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Process &amp;</text>
+<text x="755" y="1868" text-anchor="middle" font-size="10.5" fill="#0B2540">Responsibility</text>
+<text x="755" y="1880" text-anchor="middle" font-size="10" fill="#6366F1">Owner</text>
 
 <!-- Node: Guest Comms & Client Relations -->
-<path d="M235,1885 C290,1885 310,1880 365,1880" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="1852" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1872" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Guest Comms &amp;</text>
-<text x="457" y="1890" text-anchor="middle" font-size="11" fill="#0B2540">Client Relations</text>
+<path d="M235,1945 C290,1945 310,1940 365,1940" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="1912" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="1932" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Guest Comms &amp;</text>
+<text x="457" y="1950" text-anchor="middle" font-size="11" fill="#0B2540">Client Relations</text>
 
 <!-- Guest Comms → Assigned Owner + Process -->
-<path d="M550,1880 C600,1880 620,1880 670,1880" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="670" y="1853" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="755" y="1873" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Assigned Owner</text>
-<text x="755" y="1889" text-anchor="middle" font-size="10.5" fill="#0B2540">+ Process</text>
+<path d="M550,1940 C600,1940 620,1940 670,1940" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="670" y="1913" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="755" y="1933" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Assigned Owner</text>
+<text x="755" y="1949" text-anchor="middle" font-size="10.5" fill="#0B2540">+ Process</text>
 
 <!-- Node: Unit Sourcing System -->
-<path d="M235,1900" stroke="#6366F1"/>
-<path d="M235,1900 C290,1900 310,1960 365,1960" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="1932" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="1952" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Unit Sourcing</text>
-<text x="457" y="1970" text-anchor="middle" font-size="11" fill="#0B2540">System</text>
+<path d="M235,1960 C290,1960 310,2020 365,2020" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="1992" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="2012" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">Unit Sourcing</text>
+<text x="457" y="2030" text-anchor="middle" font-size="11" fill="#0B2540">System</text>
 
 <!-- Unit Sourcing → Find→Sort→Lease→Close -->
-<path d="M550,1960 C600,1960 620,1960 670,1960" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="670" y="1933" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="755" y="1953" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Find → Sort →</text>
-<text x="755" y="1969" text-anchor="middle" font-size="10.5" fill="#0B2540">Lease → Close</text>
+<path d="M550,2020 C600,2020 620,2020 670,2020" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="670" y="1993" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="755" y="2013" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Find → Sort →</text>
+<text x="755" y="2029" text-anchor="middle" font-size="10.5" fill="#0B2540">Lease → Close</text>
 
 <!-- Find→Sort → Austin: Approve Highlights Only -->
-<path d="M840,1960 C890,1960 910,1960 955,1960" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="955" y="1933" width="185" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="1047" y="1953" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Austin: Approve</text>
-<text x="1047" y="1969" text-anchor="middle" font-size="10.5" fill="#0B2540">Highlights Only</text>
+<path d="M840,2020 C890,2020 910,2020 955,2020" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="955" y="1993" width="185" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1047" y="2013" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">Austin: Approve</text>
+<text x="1047" y="2029" text-anchor="middle" font-size="10.5" fill="#0B2540">Highlights Only</text>
 
 <!-- Node: ContractFlow Online & Updated -->
-<path d="M235,1915 C290,1915 310,2060 365,2060" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="365" y="2032" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="2052" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">ContractFlow</text>
-<text x="457" y="2070" text-anchor="middle" font-size="11" fill="#0B2540">Online &amp; Updated</text>
+<path d="M235,1975 C290,1975 310,2120 365,2120" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="365" y="2092" width="185" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="2112" text-anchor="middle" font-size="11" fill="#6366F1" font-weight="600">ContractFlow</text>
+<text x="457" y="2130" text-anchor="middle" font-size="11" fill="#0B2540">Online &amp; Updated</text>
 
 <!-- ContractFlow → All Units in System -->
-<path d="M550,2060 C600,2060 620,2040 670,2040" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="670" y="2013" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="755" y="2033" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">All Units in</text>
-<text x="755" y="2049" text-anchor="middle" font-size="10.5" fill="#0B2540">System</text>
+<path d="M550,2120 C600,2120 620,2100 670,2100" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="670" y="2073" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="755" y="2093" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">All Units in</text>
+<text x="755" y="2109" text-anchor="middle" font-size="10.5" fill="#0B2540">System</text>
 
 <!-- All Units → All Contacts in CRM -->
-<path d="M840,2040 C890,2040 910,2040 955,2040" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
-<rect x="955" y="2013" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
-<text x="1040" y="2033" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">All Contacts</text>
-<text x="1040" y="2049" text-anchor="middle" font-size="10.5" fill="#0B2540">in CRM</text>
+<path d="M840,2100 C890,2100 910,2100 955,2100" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#arrow-indigo)"/>
+<rect x="955" y="2073" width="170" height="54" rx="8" fill="#eef2ff" stroke="#6366F1" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1040" y="2093" text-anchor="middle" font-size="10.5" fill="#0B2540" font-weight="600">All Contacts</text>
+<text x="1040" y="2109" text-anchor="middle" font-size="10.5" fill="#0B2540">in CRM</text>
 
 <!-- Stream 3 label -->
-<text x="44" y="1598" font-size="13" font-weight="700" fill="#6366F1" letter-spacing="0.3">Stream 3 — Role Clarity &amp; Systems</text>
+<text x="44" y="1658" font-size="13" font-weight="700" fill="#6366F1" letter-spacing="0.3">Stream 3 — Role Clarity &amp; Systems</text>
 
 
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -482,82 +486,276 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <!-- Stream 4 lane background -->
-<rect x="20" y="2240" width="1960" height="880" rx="16" fill="#F59E0B" opacity="0.04"/>
-<rect x="20" y="2240" width="1960" height="880" rx="16" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.15"/>
-<text x="1960" y="2268" text-anchor="end" font-size="11" font-weight="700" fill="#F59E0B" opacity="0.5" letter-spacing="1">STREAM 4</text>
+<rect x="20" y="2300" width="1960" height="880" rx="16" fill="#F59E0B" opacity="0.04"/>
+<rect x="20" y="2300" width="1960" height="880" rx="16" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.15"/>
+<text x="1960" y="2328" text-anchor="end" font-size="11" font-weight="700" fill="#F59E0B" opacity="0.5" letter-spacing="1">STREAM 4</text>
 
 <!-- Hub: Finance & Accountability -->
-<circle cx="135" cy="2680" r="100" fill="#F59E0B" filter="url(#hub-shadow)"/>
-<circle cx="135" cy="2680" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
-<text x="135" y="2660" text-anchor="middle" font-size="20" fill="white">💰</text>
-<text x="135" y="2681" text-anchor="middle" font-size="13" font-weight="700" fill="white">Finance &amp;</text>
-<text x="135" y="2698" text-anchor="middle" font-size="13" font-weight="700" fill="white">Accountability</text>
+<circle cx="135" cy="2740" r="100" fill="#F59E0B" filter="url(#hub-shadow)"/>
+<circle cx="135" cy="2740" r="100" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+<text x="135" y="2720" text-anchor="middle" font-size="20" fill="white">💰</text>
+<text x="135" y="2741" text-anchor="middle" font-size="13" font-weight="700" fill="white">Finance &amp;</text>
+<text x="135" y="2758" text-anchor="middle" font-size="13" font-weight="700" fill="white">Accountability</text>
 
 <!-- Finance nodes - 8 nodes arranged vertically from hub -->
 <!-- Node: Accounts Payable [TBD] -->
-<path d="M235,2580 C290,2580 310,2290 365,2290" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2262" width="185" height="56" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2282" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounts Payable</text>
-<rect x="420" y="2294" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2304" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2640 C290,2640 310,2350 365,2350" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2322" width="185" height="56" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2342" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounts Payable</text>
+<rect x="420" y="2354" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2364" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Accounts Receivable [TBD] -->
-<path d="M235,2600 C290,2600 310,2385 365,2385" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2357" width="185" height="56" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2377" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounts Receivable</text>
-<rect x="420" y="2389" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2399" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2660 C290,2660 310,2445 365,2445" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2417" width="185" height="56" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2437" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounts Receivable</text>
+<rect x="420" y="2449" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2459" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Payroll Setup & Management [TBD] -->
-<path d="M235,2625 C290,2625 310,2485 365,2485" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2454" width="185" height="62" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2474" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Payroll Setup &amp;</text>
-<text x="457" y="2490" text-anchor="middle" font-size="11" fill="#b45309">Management</text>
-<rect x="420" y="2502" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2512" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2685 C290,2685 310,2545 365,2545" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2514" width="185" height="62" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2534" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Payroll Setup &amp;</text>
+<text x="457" y="2550" text-anchor="middle" font-size="11" fill="#b45309">Management</text>
+<rect x="420" y="2562" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2572" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Bookkeeping Closed Monthly [Lexi] -->
-<path d="M235,2655 C290,2655 310,2585 365,2585" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2554" width="185" height="62" rx="8" fill="white" stroke="#F59E0B" stroke-width="2" filter="url(#shadow)"/>
-<text x="457" y="2574" text-anchor="middle" font-size="11" fill="#F59E0B" font-weight="600">Bookkeeping</text>
-<text x="457" y="2590" text-anchor="middle" font-size="11" fill="#0B2540">Closed Monthly</text>
-<rect x="420" y="2602" width="74" height="13" rx="3" fill="#009793"/>
-<text x="457" y="2612" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: Lexi</text>
+<path d="M235,2715 C290,2715 310,2645 365,2645" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2614" width="185" height="62" rx="8" fill="white" stroke="#F59E0B" stroke-width="2" filter="url(#shadow)"/>
+<text x="457" y="2634" text-anchor="middle" font-size="11" fill="#F59E0B" font-weight="600">Bookkeeping</text>
+<text x="457" y="2650" text-anchor="middle" font-size="11" fill="#0B2540">Closed Monthly</text>
+<rect x="420" y="2662" width="74" height="13" rx="3" fill="#009793"/>
+<text x="457" y="2672" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: Lexi</text>
 
 <!-- Node: Quarterly Bank Updates [TBD] -->
-<path d="M235,2680 C290,2680 310,2680 365,2680" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2654" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2674" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Quarterly Bank</text>
-<text x="457" y="2690" text-anchor="middle" font-size="11" fill="#b45309">Updates</text>
-<rect x="420" y="2700" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2710" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2740 C290,2740 310,2740 365,2740" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2714" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2734" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Quarterly Bank</text>
+<text x="457" y="2750" text-anchor="middle" font-size="11" fill="#b45309">Updates</text>
+<rect x="420" y="2760" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2770" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Asset Financing Doc Prep [TBD] -->
-<path d="M235,2710 C290,2710 310,2775 365,2775" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2749" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2769" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Asset Financing</text>
-<text x="457" y="2785" text-anchor="middle" font-size="11" fill="#b45309">Doc Prep</text>
-<rect x="420" y="2797" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2807" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2770 C290,2770 310,2835 365,2835" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2809" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2829" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Asset Financing</text>
+<text x="457" y="2845" text-anchor="middle" font-size="11" fill="#b45309">Doc Prep</text>
+<rect x="420" y="2857" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2867" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Year-End Close & Tax Coord [TBD] -->
-<path d="M235,2730 C290,2730 310,2870 365,2870" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2844" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2864" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Year-End Close &amp;</text>
-<text x="457" y="2880" text-anchor="middle" font-size="11" fill="#b45309">Tax Coord.</text>
-<rect x="420" y="2892" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2902" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2790 C290,2790 310,2930 365,2930" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2904" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="2924" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Year-End Close &amp;</text>
+<text x="457" y="2940" text-anchor="middle" font-size="11" fill="#b45309">Tax Coord.</text>
+<rect x="420" y="2952" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="2962" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Node: Accounting Meetups & Plans [TBD] -->
-<path d="M235,2745 C290,2745 310,2965 365,2965" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
-<rect x="365" y="2939" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
-<text x="457" y="2959" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounting</text>
-<text x="457" y="2975" text-anchor="middle" font-size="11" fill="#b45309">Meetups &amp; Plans</text>
-<rect x="420" y="2987" width="74" height="13" rx="3" fill="#F59E0B"/>
-<text x="457" y="2997" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
+<path d="M235,2805 C290,2805 310,3025 365,3025" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+<rect x="365" y="2999" width="185" height="52" rx="8" fill="#fffbeb" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#shadow)"/>
+<text x="457" y="3019" text-anchor="middle" font-size="11" fill="#b45309" font-weight="600">Accounting</text>
+<text x="457" y="3035" text-anchor="middle" font-size="11" fill="#b45309">Meetups &amp; Plans</text>
+<rect x="420" y="3047" width="74" height="13" rx="3" fill="#F59E0B"/>
+<text x="457" y="3057" text-anchor="middle" font-size="8.5" fill="white" font-weight="700">OWNER: TBD</text>
 
 <!-- Stream 4 label -->
-<text x="44" y="2268" font-size="13" font-weight="700" fill="#F59E0B" letter-spacing="0.3">Stream 4 — Finance &amp; Accountability</text>
+<text x="44" y="2328" font-size="13" font-weight="700" fill="#F59E0B" letter-spacing="0.3">Stream 4 — Finance &amp; Accountability</text>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- STREAM 5: ERS VISION & SCALE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- Stream 5 lane background -->
+<rect x="20" y="3240" width="1960" height="930" rx="16" fill="#7C3AED" opacity="0.04"/>
+<rect x="20" y="3240" width="1960" height="930" rx="16" fill="none" stroke="#7C3AED" stroke-width="1.5" opacity="0.25"/>
+<text x="1960" y="3268" text-anchor="end" font-size="11" font-weight="700" fill="#7C3AED" opacity="0.5" letter-spacing="1">STREAM 5</text>
+
+<!-- Stream 5 label -->
+<text x="44" y="3268" font-size="13" font-weight="700" fill="#7C3AED" letter-spacing="0.3">Stream 5 — ERS Vision &amp; Scale</text>
+
+<!-- Framing label -->
+<text x="44" y="4150" font-size="11" font-style="italic" fill="#7C3AED" opacity="0.7">← All streams on this map are building blocks toward this vision</text>
+
+<!-- Hub: ERS Vision & Scale -->
+<circle cx="135" cy="3700" r="108" fill="#7C3AED" filter="url(#hub-shadow)"/>
+<circle cx="135" cy="3700" r="108" fill="none" stroke="white" stroke-width="2.5" opacity="0.3"/>
+<text x="135" y="3674" text-anchor="middle" font-size="24" fill="white">🚀</text>
+<text x="135" y="3700" text-anchor="middle" font-size="13" font-weight="700" fill="white">ERS Vision</text>
+<text x="135" y="3718" text-anchor="middle" font-size="13" font-weight="700" fill="white">&amp; Scale</text>
+
+<!-- ─── Austin Focus Node (connected to hub with thick border) ─── -->
+<path d="M135,3592 C135,3560 220,3540 280,3530" stroke="#7C3AED" stroke-width="2.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="280" y="3506" width="210" height="62" rx="10" fill="white" stroke="#7C3AED" stroke-width="3" filter="url(#hub-shadow)"/>
+<text x="385" y="3527" text-anchor="middle" font-size="11" fill="#7C3AED" font-weight="700">Austin Neill</text>
+<text x="385" y="3543" text-anchor="middle" font-size="10.5" fill="#0B2540">BizDev · Leadership</text>
+<text x="385" y="3558" text-anchor="middle" font-size="10.5" fill="#0B2540">Partnerships · Corporate</text>
+<text x="385" y="3571" text-anchor="middle" font-size="9.5" fill="#7C3AED" font-weight="600">Negotiation</text>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- 6 DIVISION NODES + SUB-NODES (branching right from hub)   -->
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<!-- DIVISION 1: Construction Workforce Housing (y≈3310) -->
+<path d="M243,3645 C300,3645 320,3330 390,3330" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3298" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3320" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">🏗️ Construction</text>
+<text x="490" y="3338" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">Workforce Housing</text>
+
+<!-- D1 sub-nodes -->
+<path d="M590,3320 C640,3320 660,3310 710,3310" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3285" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3305" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Scaling crew housing</text>
+<text x="805" y="3321" text-anchor="middle" font-size="10.5" fill="#4C1D95">on projects</text>
+
+<path d="M590,3340 C640,3340 660,3360 710,3360" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3338" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3358" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Sublease contracts</text>
+<text x="805" y="3374" text-anchor="middle" font-size="10.5" fill="#4C1D95">multiple projects</text>
+
+<!-- DIVISION 2: Hospital Infrastructure (y≈3435) -->
+<path d="M243,3660 C300,3660 320,3445 390,3445" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3413" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3435" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">🏥 Hospital</text>
+<text x="490" y="3453" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">Infrastructure</text>
+
+<!-- D2 sub-nodes -->
+<path d="M590,3430 C640,3430 660,3415 710,3415" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3390" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3410" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Large contracts</text>
+<text x="805" y="3426" text-anchor="middle" font-size="10.5" fill="#4C1D95">health authorities</text>
+
+<path d="M590,3445 C640,3445 660,3448 710,3448" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3440" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3460" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Pre-construction</text>
+<text x="805" y="3476" text-anchor="middle" font-size="10.5" fill="#4C1D95">worker housing</text>
+
+<path d="M590,3460 C640,3460 660,3500 710,3500" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3492" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3512" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Full property mgmt</text>
+<text x="805" y="3528" text-anchor="middle" font-size="10.5" fill="#4C1D95">healthcare assets</text>
+
+<!-- DIVISION 3: Asset Acquisition & Growth (y≈3570) -->
+<path d="M243,3690 C300,3690 320,3580 390,3580" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3550" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3572" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">🏢 Asset Acquisition</text>
+<text x="490" y="3590" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">&amp; Growth</text>
+
+<!-- D3 sub-nodes -->
+<path d="M590,3568 C640,3568 660,3558 710,3558" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3535" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3555" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Buy &amp; acquire assets</text>
+<text x="805" y="3571" text-anchor="middle" font-size="10.5" fill="#4C1D95">that fit financial model</text>
+
+<path d="M590,3582 C640,3582 660,3608 710,3608" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3588" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3608" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Cash flow + profit</text>
+<text x="805" y="3624" text-anchor="middle" font-size="10.5" fill="#4C1D95">+ long-term growth</text>
+
+<!-- DIVISION 4: Investments (y≈3700) -->
+<path d="M243,3710 C300,3710 320,3710 390,3710" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3678" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3700" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">💼 Investments</text>
+
+<!-- D4 sub-nodes -->
+<path d="M590,3698 C640,3698 660,3668 710,3668" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3638" width="190" height="62" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3658" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Investment fund</text>
+<text x="805" y="3673" text-anchor="middle" font-size="10" fill="#4C1D95">Institutional healthcare</text>
+<text x="805" y="3688" text-anchor="middle" font-size="10" fill="#4C1D95">housing hubs</text>
+
+<path d="M590,3712 C640,3712 660,3715 710,3715" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3702" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3722" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Asset managers</text>
+
+<path d="M590,3726 C640,3726 660,3762 710,3762" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3750" width="190" height="62" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3770" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Acquisition, finance</text>
+<text x="805" y="3784" text-anchor="middle" font-size="10" fill="#4C1D95">underwriting &amp;</text>
+<text x="805" y="3798" text-anchor="middle" font-size="10" fill="#4C1D95">management team</text>
+
+<!-- DIVISION 5: Events & Communications (y≈3840) -->
+<path d="M243,3740 C300,3740 320,3855 390,3855" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3823" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3845" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">📣 Events &amp;</text>
+<text x="490" y="3863" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">Communications</text>
+
+<!-- D5 sub-nodes -->
+<path d="M590,3845 C640,3845 660,3840 710,3840" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3818" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3838" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Mastermind</text>
+<text x="805" y="3852" text-anchor="middle" font-size="10.5" fill="#4C1D95">program</text>
+
+<path d="M590,3860 C640,3860 660,3888 710,3888" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3870" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3890" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">Drawclose</text>
+<text x="805" y="3906" text-anchor="middle" font-size="10.5" fill="#4C1D95">program</text>
+
+<!-- DIVISION 6: Internal Apps & Systems (y≈3960) -->
+<path d="M243,3755 C300,3755 320,3975 390,3975" stroke="#7C3AED" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="390" y="3943" width="200" height="64" rx="8" fill="white" stroke="#7C3AED" stroke-width="2" filter="url(#shadow)"/>
+<text x="490" y="3965" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">🔧 Internal Apps</text>
+<text x="490" y="3983" text-anchor="middle" font-size="12" fill="#7C3AED" font-weight="700">&amp; Systems</text>
+
+<!-- D6 sub-nodes -->
+<path d="M590,3963 C640,3963 660,3950 710,3950" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3928" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="3948" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">ContractFlow</text>
+<text x="805" y="3962" text-anchor="middle" font-size="10" fill="#009793">(live)</text>
+
+<path d="M590,3975 C640,3975 660,3998 710,3998" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="3980" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="4000" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">CRM &amp; client portal</text>
+<text x="805" y="4016" text-anchor="middle" font-size="10" fill="#4C1D95">(building)</text>
+
+<path d="M590,3987 C640,3987 660,4048 710,4048" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+<rect x="710" y="4030" width="190" height="50" rx="8" fill="#f5f3ff" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="805" y="4050" text-anchor="middle" font-size="10.5" fill="#4C1D95" font-weight="600">AI agents &amp;</text>
+<text x="805" y="4066" text-anchor="middle" font-size="10.5" fill="#4C1D95">automation tools</text>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- TEAMS BEING BUILT (vertical stack, right side of Stream 5) -->
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<!-- Teams header -->
+<rect x="1120" y="3270" width="200" height="26" rx="6" fill="#7C3AED" opacity="0.15"/>
+<text x="1220" y="3288" text-anchor="middle" font-size="11" font-weight="700" fill="#7C3AED" letter-spacing="0.5">TEAMS BEING BUILT</text>
+
+<!-- Team connector line from hub -->
+<path d="M243,3700 C700,3700 900,3340 1120,3340" stroke="#7C3AED" stroke-width="1" stroke-dasharray="6,4" fill="none" opacity="0.35" marker-end="url(#arrow-purple)"/>
+
+<!-- Team nodes stacked vertically -->
+<rect x="1120" y="3308" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3331" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Research Team</text>
+
+<rect x="1120" y="3362" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3385" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Acquisition Team</text>
+
+<rect x="1120" y="3416" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3439" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Asset Mgmt Team</text>
+
+<rect x="1120" y="3470" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3493" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Operations Team</text>
+
+<rect x="1120" y="3524" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3547" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Management Team</text>
+
+<rect x="1120" y="3578" width="200" height="44" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3601" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Finance Lead</text>
+
+<rect x="1120" y="3632" width="200" height="62" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3652" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Media Team</text>
+<text x="1220" y="3667" text-anchor="middle" font-size="10" fill="#6D28D9">(social, PR, gov't</text>
+<text x="1220" y="3682" text-anchor="middle" font-size="10" fill="#6D28D9">relations, newsletter)</text>
+
+<rect x="1120" y="3704" width="200" height="50" rx="8" fill="white" stroke="#7C3AED" stroke-width="1.5" filter="url(#shadow)"/>
+<text x="1220" y="3724" text-anchor="middle" font-size="11" fill="#4C1D95" font-weight="600">Partnerships &amp;</text>
+<text x="1220" y="3740" text-anchor="middle" font-size="10.5" fill="#4C1D95">BizDev Team</text>
+
+<!-- Vertical connector joining all team nodes -->
+<line x1="1108" y1="3330" x2="1108" y2="3740" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.35"/>
 
 
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -565,12 +763,9 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 
 <!-- Stream 1 Bridge → Stream 4 Asset Financing (visual cross-dependency) -->
-<path d="M552,250 C1100,250 1200,2775 550,2775" stroke="#F59E0B" stroke-width="1" stroke-dasharray="6,4" fill="none" opacity="0.3" marker-end="url(#arrow-amber)"/>
+<path d="M552,250 C1100,250 1200,2835 550,2835" stroke="#F59E0B" stroke-width="1" stroke-dasharray="6,4" fill="none" opacity="0.3" marker-end="url(#arrow-amber)"/>
 <rect x="1100" y="1480" width="140" height="20" rx="4" fill="#fffbeb" stroke="#F59E0B" stroke-width="1"/>
 <text x="1170" y="1494" text-anchor="middle" font-size="9" fill="#b45309" font-weight="600">feeds Stream 4</text>
-
-<!-- Stream 2 Laurie Hiring → Stream 2 Operations node cross note -->
-<path d="M550,1160 C620,1160 660,1170 670,1170" stroke="#00698A" stroke-width="1" stroke-dasharray="4,3" fill="none" opacity="0.4"/>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- SUMMARY CALLOUT BOX TOP RIGHT -->
@@ -587,9 +782,9 @@
 <text x="1370" y="210" font-size="11" fill="#cbd5e1">Dawson Creek Healthcare Hub · $429K appraised</text>
 <text x="1370" y="226" font-size="11" fill="#cbd5e1">Bridge financing: $322K–$343K target</text>
 
-<text x="1370" y="250" font-size="11.5" fill="#009793" font-weight="600">Key Hire</text>
-<text x="1370" y="268" font-size="11" fill="#cbd5e1">Director of Operations (Laurie McPherson)</text>
-<text x="1370" y="284" font-size="11" fill="#F59E0B">⚠  10 operational streams pending handoff</text>
+<text x="1370" y="250" font-size="11.5" fill="#009793" font-weight="600">Team Building</text>
+<text x="1370" y="268" font-size="11" fill="#cbd5e1">Logistics Coordinator: Mairi-Anne MacLeod</text>
+<text x="1370" y="284" font-size="11" fill="#F59E0B">⚠  10 operational streams — ownership TBD</text>
 
 <text x="1370" y="308" font-size="10" fill="#64748b">contractflow-omega.vercel.app · eliasrangestays.ca</text>
 
@@ -619,6 +814,10 @@
     <div class="legend-dot" style="background:#F59E0B"></div>
     Stream 4 · Finance
   </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#7C3AED"></div>
+    Stream 5 · Vision &amp; Scale
+  </div>
 
   <div style="width:1px;height:28px;background:#e2e8f0;margin:0 4px"></div>
 
@@ -635,8 +834,8 @@
     Unassigned (TBD)
   </div>
   <div class="legend-item">
-    <div class="legend-rect" style="background:#f8fafc;border-color:#94a3b8"></div>
-    Delegating → Laurie
+    <div class="legend-rect" style="background:#f8fafc;border-color:#94a3b8;border-style:dashed"></div>
+    Needs Owner
   </div>
   <div class="legend-item">
     <div class="legend-rect" style="background:#fffbeb;border-color:#F59E0B;border-style:dashed"></div>
