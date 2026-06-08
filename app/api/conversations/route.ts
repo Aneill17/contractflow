@@ -53,6 +53,9 @@ export async function POST(req: NextRequest) {
     next_action,
     follow_up_date,
     actor = 'Austin',
+    how_met,
+    where_met,
+    business_card = false,
   } = body
 
   if (!contact_id) {
@@ -70,6 +73,9 @@ export async function POST(req: NextRequest) {
       next_action: next_action || null,
       follow_up_date: follow_up_date || null,
       actor,
+      how_met: how_met || null,
+      where_met: where_met || null,
+      business_card: business_card ?? false,
     })
     .select(`
       *,

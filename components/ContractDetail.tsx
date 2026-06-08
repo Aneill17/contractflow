@@ -427,6 +427,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
 
   // ── Edit form state (synced from c on edit open) ──
   const [pricePerUnit, setPricePerUnit] = useState(c.price_per_unit || 0)
+  const [hotelComparableRate, setHotelComparableRate] = useState(c.hotel_comparable_rate || 0)
   const [damageDeposit, setDamageDeposit] = useState(c.damage_deposit || 0)
   const [paymentSchedule, setPaymentSchedule] = useState(c.payment_schedule || 'Monthly')
   const [inclusions, setInclusions] = useState(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
@@ -453,6 +454,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
   useEffect(() => {
     if (!editing) {
       setPricePerUnit(c.price_per_unit || 0)
+      setHotelComparableRate(c.hotel_comparable_rate || 0)
       setDamageDeposit(c.damage_deposit || 0)
       setPaymentSchedule(c.payment_schedule || 'Monthly')
       setInclusions(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
@@ -462,10 +464,11 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
       setPaymentDueDay(c.payment_due_day || '')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [c.price_per_unit, c.damage_deposit, c.payment_schedule, c.inclusions, c.exclusions, c.quote_notes, c.quote_line_items, c.payment_due_day])
+  }, [c.price_per_unit, c.hotel_comparable_rate, c.damage_deposit, c.payment_schedule, c.inclusions, c.exclusions, c.quote_notes, c.quote_line_items, c.payment_due_day])
 
   const openEdit = () => {
     setPricePerUnit(c.price_per_unit || 0)
+    setHotelComparableRate(c.hotel_comparable_rate || 0)
     setDamageDeposit(c.damage_deposit || 0)
     setPaymentSchedule(c.payment_schedule || 'Monthly')
     setInclusions(c.inclusions || 'All utilities (heat, water, electricity, internet)\nParking as specified\nLaundry facilities on-site\nProperty maintenance')
@@ -490,6 +493,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({
         price_per_unit: pricePerUnit,
+        hotel_comparable_rate: hotelComparableRate,
         damage_deposit: damageDeposit,
         payment_schedule: paymentSchedule,
         inclusions,
@@ -622,6 +626,12 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
                 onChange={e => setPricePerUnit(Number(e.target.value))} />
             </div>
             <div>
+              <div style={styles.lbl}>Hotel/Airbnb Avg Rate ($/night)</div>
+              <input style={styles.inpGold} type="number" min="0" value={hotelComparableRate || ''} placeholder="e.g. 189"
+                onChange={e => setHotelComparableRate(Number(e.target.value))} />
+              <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 3 }}>Used to calculate client savings</div>
+            </div>
+            <div>
               <div style={styles.lbl}>Units</div>
               <input style={{ ...styles.inpGold, opacity: 0.5 }} type="number" value={c.units} disabled />
             </div>
@@ -748,6 +758,7 @@ function QuoteTab({ contract: c, onUpdate, onRefresh, showToast }: Props) {
                 ['Duration', `${months} mo`],
                 ['Schedule', c.payment_schedule || 'Monthly'],
                 ...(dueDayOrd ? [['Due Day', `${dueDayOrd} of month`]] : []),
+                ...(c.hotel_comparable_rate ? [['Hotel/Airbnb Avg', `$${c.hotel_comparable_rate}/night`]] : []),
               ] as [string, string][]
               return (
                 <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(metrics.length, 3)}, 1fr)`, gap: 12, marginBottom: 20 }}>

@@ -151,6 +151,7 @@ export interface Contract {
   work_site_lng?: number
   current_housing_rate?: number
   current_housing_location?: string
+  hotel_comparable_rate?: number
   created_at: string
   updated_at: string
   occupants?: Occupant[]

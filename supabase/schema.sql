@@ -26,6 +26,7 @@ create table contracts (
   client_sig      text,
   provider_sig    text,
   contract_file_url text,
+  hotel_comparable_rate integer default 0,
   created_at      timestamptz default now(),
   updated_at      timestamptz default now()
 );

@@ -16,6 +16,7 @@ export async function PATCH(
   const allowedFields = [
     'type', 'direction', 'summary', 'next_action',
     'follow_up_date', 'contract_id', 'actor',
+    'how_met', 'where_met', 'business_card',
   ]
   const patch: Record<string, any> = {}
   for (const key of allowedFields) {

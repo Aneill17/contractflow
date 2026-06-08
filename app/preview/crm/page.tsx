@@ -9,8 +9,23 @@ const A = '#F59E0B'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type ContactStatus = 'prospect' | 'quoted' | 'active' | 'inactive'
-type ConvType = 'call' | 'text' | 'email' | 'meeting' | 'voicemail'
+type ConvType = 'call' | 'text' | 'email' | 'meeting' | 'in_person' | 'voicemail' | 'other'
 type ConvDirection = 'outbound' | 'inbound'
+type HowMet = 'cold_outreach' | 'in_person' | 'referral_intro' | 'event' | 'existing_relationship' | 'inbound_inquiry'
+
+interface FullConversation {
+  id: string
+  date: string
+  type: ConvType
+  direction: ConvDirection
+  summary: string
+  nextAction?: string
+  followUpDate?: string
+  followUpOverdue?: boolean
+  howMet?: HowMet
+  whereMet?: string
+  businessCard?: boolean
+}
 
 interface Contact {
   id: string
@@ -33,6 +48,7 @@ interface Contact {
   followUpDate: string
   followUpOverdue: boolean
   followUpToday: boolean
+  conversations?: FullConversation[]
 }
 
 interface Conversation {
@@ -49,6 +65,53 @@ interface Conversation {
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
+const SANDRA_CONVERSATIONS: FullConversation[] = [
+  {
+    id: 'sc1',
+    date: 'Jun 5, 2026',
+    type: 'call',
+    direction: 'outbound',
+    summary: 'Confirmed extension through September. Will send updated PO by end of week.',
+    nextAction: 'Send updated contract addendum',
+    followUpDate: 'Jun 12',
+    followUpOverdue: true,
+    howMet: 'referral_intro',
+    whereMet: undefined,
+    businessCard: false,
+  },
+  {
+    id: 'sc2',
+    date: 'Jun 5, 2026',
+    type: 'email',
+    direction: 'inbound',
+    summary: 'Received updated invoice. Payment processing this week.',
+    howMet: undefined,
+    businessCard: false,
+  },
+  {
+    id: 'sc3',
+    date: 'May 22, 2026',
+    type: 'call',
+    direction: 'outbound',
+    summary: 'Discussed Q3 headcount increase — 4 more staff from Aug 1.',
+    howMet: undefined,
+    businessCard: false,
+  },
+  {
+    id: 'sc4',
+    date: 'Jun 8, 2026',
+    type: 'in_person',
+    direction: 'outbound',
+    summary: 'Met Sandra at Toastmasters Monday. Great conversation about scaling the DC Hub project. She mentioned interest in a larger master lease arrangement.',
+    nextAction: 'Send DC Hub master lease proposal',
+    followUpDate: 'Jun 15',
+    followUpOverdue: false,
+    howMet: 'in_person',
+    whereMet: 'Toastmasters Monday June 8',
+    businessCard: true,
+  },
+]
+
 const CONTACTS: Contact[] = [
   {
     id: '1',
@@ -63,14 +126,15 @@ const CONTACTS: Contact[] = [
     contract: { ref: 'CF-2024-0089', location: 'Whistler' },
     quoted: true,
     lastConv: {
-      date: 'Jun 5',
-      type: 'call',
-      summary: 'Confirmed extension through September. Will send updated PO by end of week.',
+      date: 'Jun 8',
+      type: 'in_person',
+      summary: 'Met at Toastmasters Monday. Interested in DC Hub master lease.',
     },
-    nextAction: 'Send updated contract addendum',
-    followUpDate: 'Jun 12',
-    followUpOverdue: true,
+    nextAction: 'Send DC Hub master lease proposal',
+    followUpDate: 'Jun 15',
+    followUpOverdue: false,
     followUpToday: false,
+    conversations: SANDRA_CONVERSATIONS,
   },
   {
     id: '2',
@@ -222,6 +286,18 @@ const CONVERSATIONS: Conversation[] = [
   {
     id: 'c1',
     date: 'Jun 8',
+    type: 'in_person',
+    direction: 'outbound',
+    contactName: 'Sandra Leigh',
+    company: 'Meridian Construction Group',
+    summary: 'Met at Toastmasters Monday. Interested in DC Hub master lease.',
+    nextAction: 'Send DC Hub proposal',
+    followUpDate: 'Jun 15',
+    followUpOverdue: false,
+  },
+  {
+    id: 'c2',
+    date: 'Jun 8',
     type: 'text',
     direction: 'outbound',
     contactName: 'Kelly Marsh',
@@ -232,7 +308,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c2',
+    id: 'c3',
     date: 'Jun 7',
     type: 'email',
     direction: 'inbound',
@@ -244,7 +320,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c3',
+    id: 'c4',
     date: 'Jun 7',
     type: 'meeting',
     direction: 'outbound',
@@ -256,7 +332,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c4',
+    id: 'c5',
     date: 'Jun 6',
     type: 'meeting',
     direction: 'outbound',
@@ -268,7 +344,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c5',
+    id: 'c6',
     date: 'Jun 5',
     type: 'call',
     direction: 'outbound',
@@ -280,7 +356,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c6',
+    id: 'c7',
     date: 'Jun 5',
     type: 'email',
     direction: 'outbound',
@@ -292,7 +368,7 @@ const CONVERSATIONS: Conversation[] = [
     followUpOverdue: true,
   },
   {
-    id: 'c7',
+    id: 'c8',
     date: 'Jun 4',
     type: 'call',
     direction: 'inbound',
@@ -302,42 +378,6 @@ const CONVERSATIONS: Conversation[] = [
     nextAction: 'Respond with final offer',
     followUpDate: 'Jun 8',
     followUpOverdue: false,
-  },
-  {
-    id: 'c8',
-    date: 'Jun 3',
-    type: 'email',
-    direction: 'outbound',
-    contactName: 'Raj Patel',
-    company: 'Waterloo Research Institute',
-    summary: 'Met at Vancouver tech event. Sent intro email about ERS research housing program.',
-    nextAction: 'Schedule intro call',
-    followUpDate: 'Jun 11',
-    followUpOverdue: false,
-  },
-  {
-    id: 'c9',
-    date: 'May 28',
-    type: 'email',
-    direction: 'outbound',
-    contactName: 'Dr. Patricia Yuen',
-    company: 'Northern Health',
-    summary: 'Initial outreach re: Dawson Creek Hub master lease. Expressed interest, forwarded to her team.',
-    nextAction: 'Follow up — check if team reviewed',
-    followUpDate: 'Jun 3',
-    followUpOverdue: true,
-  },
-  {
-    id: 'c10',
-    date: 'May 15',
-    type: 'call',
-    direction: 'outbound',
-    contactName: 'Angela Burnett',
-    company: 'Interior Health Authority',
-    summary: 'Cold outreach. Mentioned they have 8 nurses needing housing in Kamloops through August.',
-    nextAction: 'Send Kamloops unit availability + rates',
-    followUpDate: 'May 20',
-    followUpOverdue: true,
   },
 ]
 
@@ -354,7 +394,9 @@ const TYPE_ICON: Record<ConvType, string> = {
   text:      '💬',
   email:     '📧',
   meeting:   '🤝',
+  in_person: '🤝',
   voicemail: '📱',
+  other:     '📝',
 }
 
 const TYPE_LABEL: Record<ConvType, string> = {
@@ -362,7 +404,18 @@ const TYPE_LABEL: Record<ConvType, string> = {
   text:      'Text',
   email:     'Email',
   meeting:   'Meeting',
+  in_person: 'In Person',
   voicemail: 'Voicemail',
+  other:     'Other',
+}
+
+const HOW_MET_LABELS: Record<HowMet, string> = {
+  cold_outreach:         'Cold Outreach',
+  in_person:             'In Person',
+  referral_intro:        'Referral Intro',
+  event:                 'Event',
+  existing_relationship: 'Existing Relationship',
+  inbound_inquiry:       'Inbound Inquiry',
 }
 
 function initials(name: string) {
@@ -416,7 +469,6 @@ function FollowUpChip({ date, overdue, today }: { date: string; overdue: boolean
 }
 
 function AvatarCircle({ name, size = 36 }: { name: string; size?: number }) {
-  // Deterministic color from name
   const colors = [T, A, '#6366f1', '#ec4899', '#14b8a6', '#f97316']
   const idx = name.charCodeAt(0) % colors.length
   return (
@@ -444,13 +496,13 @@ function ContactCard({
   contact,
   expanded,
   onClick,
+  onLog,
 }: {
   contact: Contact
   expanded: boolean
   onClick: () => void
+  onLog: (contactId: string) => void
 }) {
-  const borderColor = expanded ? T : 'transparent'
-
   return (
     <div
       onClick={onClick}
@@ -488,10 +540,6 @@ function ContactCard({
         <div style={{ fontSize: 12, color: '#475569' }}>
           <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#94a3b8', marginRight: 4 }}>EMAIL</span>
           {contact.email}
-        </div>
-        <div style={{ fontSize: 12, color: '#475569' }}>
-          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#94a3b8', marginRight: 4 }}>PHONE</span>
-          {contact.phone}
         </div>
         {contact.referredBy && (
           <div style={{ fontSize: 11, color: '#6366f1', marginTop: 1 }}>
@@ -540,7 +588,7 @@ function ContactCard({
         </div>
       )}
 
-      {/* Follow-up + next action */}
+      {/* Follow-up + actions */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
         <FollowUpChip date={contact.followUpDate} overdue={contact.followUpOverdue} today={contact.followUpToday} />
         <div style={{ display: 'flex', gap: 6 }}>
@@ -561,7 +609,7 @@ function ContactCard({
             ✏️ Edit
           </button>
           <button
-            onClick={e => e.stopPropagation()}
+            onClick={e => { e.stopPropagation(); onLog(contact.id) }}
             style={{
               padding: '4px 12px',
               borderRadius: 6,
@@ -582,14 +630,19 @@ function ContactCard({
   )
 }
 
-// ─── Expanded Contact Detail Panel ────────────────────────────────────────────
-const SANDRA_CONVS = [
-  { date: 'Jun 5',  type: 'call'  as ConvType, dir: 'outbound' as ConvDirection, text: 'Confirmed extension through September. Will send updated PO by end of week.' },
-  { date: 'Jun 5',  type: 'email' as ConvType, dir: 'inbound'  as ConvDirection, text: 'Received updated invoice. Payment processing this week.' },
-  { date: 'May 22', type: 'call'  as ConvType, dir: 'outbound' as ConvDirection, text: 'Discussed Q3 headcount increase — 4 more staff from Aug 1.' },
-]
+// ─── Contact Detail Panel (slide-in) ─────────────────────────────────────────
+function ContactDetailPanel({
+  contact,
+  onClose,
+  onLog,
+}: {
+  contact: Contact
+  onClose: () => void
+  onLog: (contactId: string) => void
+}) {
+  const sm = STATUS_META[contact.status]
+  const convs = contact.conversations ?? []
 
-function ExpandedPanel({ contact }: { contact: Contact }) {
   return (
     <div style={{
       background: '#fff',
@@ -600,17 +653,50 @@ function ExpandedPanel({ contact }: { contact: Contact }) {
       display: 'flex',
       flexDirection: 'column',
       gap: 16,
+      position: 'sticky',
+      top: 20,
+      maxHeight: 'calc(100vh - 100px)',
+      overflowY: 'auto',
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <AvatarCircle name={contact.name} size={48} />
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontWeight: 800, fontSize: 17, color: N }}>{contact.name}</span>
-            <StatusBadge status={contact.status} />
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <AvatarCircle name={contact.name} size={48} />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontWeight: 800, fontSize: 17, color: N }}>{contact.name}</span>
+              <StatusBadge status={contact.status} />
+            </div>
+            <div style={{ fontSize: 13, color: '#64748b' }}>{contact.role} · {contact.company}</div>
           </div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>{contact.role} · {contact.company}</div>
         </div>
+        <button
+          onClick={onClose}
+          style={{ background: '#f1f5f9', border: 'none', borderRadius: 20, width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+        >
+          ×
+        </button>
+      </div>
+
+      {/* Edit contact button */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button style={{
+          flex: 1, padding: '8px', borderRadius: 8, border: `1px solid ${N}22`,
+          background: '#f8f9fb', color: N, fontSize: 12, fontWeight: 600,
+          cursor: 'pointer', fontFamily: 'inherit',
+        }}>
+          ✏️ Edit Contact
+        </button>
+        <button
+          onClick={() => onLog(contact.id)}
+          style={{
+            flex: 1, padding: '8px', borderRadius: 8, border: 'none',
+            background: T, color: '#fff', fontSize: 12, fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          💬 Log Conversation
+        </button>
       </div>
 
       {/* Contact details */}
@@ -652,7 +738,7 @@ function ExpandedPanel({ contact }: { contact: Contact }) {
         </div>
       </div>
 
-      {/* Conversation history */}
+      {/* Full conversation timeline */}
       <div>
         <div style={{
           fontFamily: "'IBM Plex Mono', monospace",
@@ -660,61 +746,84 @@ function ExpandedPanel({ contact }: { contact: Contact }) {
           color: '#94a3b8',
           fontWeight: 700,
           letterSpacing: '0.06em',
-          marginBottom: 8,
+          marginBottom: 10,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}>
-          CONVERSATION HISTORY
+          <span>CONVERSATION TIMELINE ({convs.length})</span>
+          <span style={{ fontSize: 9, color: '#cbd5e1' }}>newest first</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {SANDRA_CONVS.map((c, i) => (
-            <div key={i} style={{
+
+        {convs.length === 0 && (
+          <div style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic', padding: '12px 0' }}>
+            No conversations logged yet.
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[...convs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((conv) => (
+            <div key={conv.id} style={{
               display: 'flex',
               gap: 10,
-              padding: '10px 12px',
+              padding: '12px 14px',
               background: '#f8f9fb',
               borderRadius: 8,
-              borderLeft: `3px solid ${c.dir === 'inbound' ? T : A}`,
+              borderLeft: `3px solid ${conv.direction === 'inbound' ? T : A}`,
             }}>
-              <div style={{ fontSize: 16 }}>{TYPE_ICON[c.type]}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
-                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#94a3b8' }}>{c.date}</span>
+              <div style={{ fontSize: 16, flexShrink: 0 }}>{TYPE_ICON[conv.type]}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: '#94a3b8' }}>{conv.date}</span>
                   <span style={{
                     fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 9,
-                    fontWeight: 700,
-                    color: c.dir === 'inbound' ? T : A,
-                    background: c.dir === 'inbound' ? `${T}15` : `${A}15`,
-                    padding: '1px 5px',
-                    borderRadius: 3,
+                    fontSize: 9, fontWeight: 700,
+                    color: conv.direction === 'inbound' ? T : A,
+                    background: conv.direction === 'inbound' ? `${T}15` : `${A}15`,
+                    padding: '1px 5px', borderRadius: 3,
                   }}>
-                    {c.dir === 'inbound' ? '← IN' : '→ OUT'}
+                    {conv.direction === 'inbound' ? '← IN' : '→ OUT'}
+                  </span>
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: '#94a3b8', textTransform: 'uppercase' }}>
+                    {TYPE_LABEL[conv.type]}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.45 }}>&ldquo;{c.text}&rdquo;</div>
+                <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.45, marginBottom: conv.nextAction || conv.followUpDate || conv.howMet ? 6 : 0 }}>
+                  &ldquo;{conv.summary}&rdquo;
+                </div>
+                {conv.nextAction && (
+                  <div style={{ fontSize: 11, color: T, marginBottom: 3 }}>→ {conv.nextAction}</div>
+                )}
+                {conv.followUpDate && (
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: conv.followUpOverdue ? '#ef4444' : '#94a3b8', marginBottom: 4 }}>
+                    {conv.followUpOverdue ? '⚠ OVERDUE — ' : '📅 '}Follow up: {conv.followUpDate}
+                  </div>
+                )}
+                {/* New fields display */}
+                {(conv.howMet || conv.whereMet || conv.businessCard) && (
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                    {conv.howMet && (
+                      <span style={{ fontSize: 10, color: '#6366f1', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', padding: '2px 7px', borderRadius: 10 }}>
+                        {HOW_MET_LABELS[conv.howMet]}
+                      </span>
+                    )}
+                    {conv.whereMet && (
+                      <span style={{ fontSize: 10, color: '#64748b', background: '#f0f2f5', border: '1px solid #e2e8f0', padding: '2px 7px', borderRadius: 10 }}>
+                        📍 {conv.whereMet}
+                      </span>
+                    )}
+                    {conv.businessCard && (
+                      <span style={{ fontSize: 10, color: T, background: `${T}10`, border: `1px solid ${T}33`, padding: '2px 7px', borderRadius: 10 }}>
+                        📇 Card received
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Log conversation button */}
-      <button style={{
-        padding: '10px 16px',
-        borderRadius: 8,
-        border: 'none',
-        background: T,
-        color: '#fff',
-        fontWeight: 700,
-        fontSize: 13,
-        cursor: 'pointer',
-        fontFamily: 'inherit',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-      }}>
-        💬 Log Conversation
-      </button>
     </div>
   )
 }
@@ -729,13 +838,13 @@ function ConversationsTab() {
     { key: 'text', label: '💬 Texts' },
     { key: 'email', label: '📧 Emails' },
     { key: 'meeting', label: '🤝 Meetings' },
+    { key: 'in_person', label: '🤝 In Person' },
   ]
 
   const filtered = typeFilter === 'all' ? CONVERSATIONS : CONVERSATIONS.filter(c => c.type === typeFilter)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {/* Filter bar */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {filters.map(f => (
           <button
@@ -759,7 +868,6 @@ function ConversationsTab() {
         ))}
       </div>
 
-      {/* Conversation rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filtered.map(conv => (
           <div
@@ -775,50 +883,29 @@ function ConversationsTab() {
               borderLeft: conv.followUpOverdue ? '4px solid #ef4444' : '4px solid transparent',
             }}
           >
-            {/* Date badge */}
             <div style={{
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 10,
-              fontWeight: 700,
-              color: '#94a3b8',
-              minWidth: 38,
-              paddingTop: 2,
-              textAlign: 'center',
-              lineHeight: 1.3,
+              fontSize: 10, fontWeight: 700, color: '#94a3b8',
+              minWidth: 38, paddingTop: 2, textAlign: 'center', lineHeight: 1.3,
             }}>
               {conv.date.split(' ')[0]}<br />
               <span style={{ fontSize: 9 }}>{conv.date.split(' ')[1]}</span>
             </div>
-
-            {/* Type icon */}
             <div style={{ fontSize: 18, paddingTop: 1, flexShrink: 0 }}>{TYPE_ICON[conv.type]}</div>
-
-            {/* Direction arrow */}
             <div style={{
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              fontWeight: 700,
+              fontSize: 11, fontWeight: 700,
               color: conv.direction === 'inbound' ? T : A,
-              paddingTop: 3,
-              flexShrink: 0,
+              paddingTop: 3, flexShrink: 0,
             }}>
               {conv.direction === 'inbound' ? '←' : '→'}
             </div>
-
-            {/* Content */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
                 <span style={{ fontWeight: 700, fontSize: 13, color: N }}>{conv.contactName}</span>
                 <span style={{ fontSize: 11, color: '#64748b' }}>{conv.company}</span>
                 {conv.followUpOverdue && (
-                  <span style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: '#ef4444',
-                    display: 'inline-block',
-                    flexShrink: 0,
-                  }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block', flexShrink: 0 }} />
                 )}
               </div>
               <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.4, marginBottom: 6 }}>
@@ -827,13 +914,9 @@ function ConversationsTab() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 {conv.nextAction && (
                   <span style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 10,
-                    color: '#6366f1',
-                    background: 'rgba(99,102,241,0.08)',
-                    border: '1px solid rgba(99,102,241,0.2)',
-                    borderRadius: 4,
-                    padding: '2px 7px',
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: 10,
+                    color: '#6366f1', background: 'rgba(99,102,241,0.08)',
+                    border: '1px solid rgba(99,102,241,0.2)', borderRadius: 4, padding: '2px 7px',
                   }}>
                     → {truncate(conv.nextAction, 48)}
                   </span>
@@ -855,61 +938,55 @@ function ConversationsTab() {
 }
 
 // ─── Log Conversation Modal ───────────────────────────────────────────────────
-function LogConvModal({ onClose }: { onClose: () => void }) {
-  const [recording, setRecording] = useState(true)
+function LogConvModal({ onClose, prefillContactId }: { onClose: () => void; prefillContactId?: string }) {
+  const [recording, setRecording] = useState(false)
+  const [convType, setConvType] = useState<ConvType>('in_person')
+  const [howMet, setHowMet] = useState<HowMet | ''>('in_person')
+  const [whereMet, setWhereMet] = useState('Toastmasters Monday June 8')
+  const [businessCard, setBusinessCard] = useState(true)
+  const [summary, setSummary] = useState(
+    prefillContactId === '1'
+      ? 'Met Sandra at Toastmasters Monday. Great conversation about scaling the DC Hub project. She mentioned interest in a larger master lease arrangement.'
+      : ''
+  )
+
+  const contactName = prefillContactId
+    ? CONTACTS.find(c => c.id === prefillContactId)?.name ?? 'Contact'
+    : 'Kelly Marsh'
+  const contactCompany = prefillContactId
+    ? CONTACTS.find(c => c.id === prefillContactId)?.company ?? ''
+    : 'Maxwell Floors'
+
+  const showWhereMet = howMet === 'in_person' || howMet === 'event'
 
   return (
     <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(11,37,64,0.55)',
-      backdropFilter: 'blur(3px)',
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 16,
+      position: 'fixed', inset: 0,
+      background: 'rgba(11,37,64,0.55)', backdropFilter: 'blur(3px)',
+      zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
     }}>
       <div style={{
-        background: '#fff',
-        borderRadius: 16,
-        width: '100%',
-        maxWidth: 520,
-        maxHeight: '90vh',
-        overflowY: 'auto',
+        background: '#fff', borderRadius: 16, width: '100%', maxWidth: 540,
+        maxHeight: '92vh', overflowY: 'auto',
         boxShadow: '0 24px 60px rgba(11,37,64,0.22)',
       }}>
-        {/* Modal header */}
+        {/* Header */}
         <div style={{
-          padding: '18px 22px 14px',
-          borderBottom: '1px solid #e8edf2',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          padding: '18px 22px 14px', borderBottom: '1px solid #e8edf2',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
             <div style={{ fontWeight: 800, fontSize: 16, color: N }}>💬 Log Conversation</div>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Kelly Marsh · Maxwell Floors</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{contactName} · {contactCompany}</div>
           </div>
           <button
             onClick={onClose}
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              border: 'none',
-              background: '#f1f5f9',
-              color: '#64748b',
-              fontSize: 16,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'inherit',
+              width: 32, height: 32, borderRadius: '50%', border: 'none',
+              background: '#f1f5f9', color: '#64748b', fontSize: 16, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit',
             }}
-          >
-            ×
-          </button>
+          >×</button>
         </div>
 
         <div style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -918,30 +995,19 @@ function LogConvModal({ onClose }: { onClose: () => void }) {
             <button
               onClick={() => setRecording(!recording)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '8px 16px',
-                borderRadius: 20,
-                border: 'none',
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 16px', borderRadius: 20, border: 'none',
                 background: recording ? '#fee2e2' : `${T}15`,
                 color: recording ? '#ef4444' : T,
-                fontWeight: 700,
-                fontSize: 12,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
+                fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit',
                 position: 'relative',
               }}
             >
               {recording && (
                 <span style={{
-                  position: 'absolute',
-                  inset: -2,
-                  borderRadius: 22,
-                  border: '2px solid #ef4444',
-                  animation: 'pulse 1.2s ease-in-out infinite',
-                  opacity: 0.6,
-                  pointerEvents: 'none',
+                  position: 'absolute', inset: -2, borderRadius: 22,
+                  border: '2px solid #ef4444', animation: 'pulse 1.2s ease-in-out infinite',
+                  opacity: 0.6, pointerEvents: 'none',
                 }} />
               )}
               🎤 {recording ? 'Recording...' : 'Record Voice Note'}
@@ -953,221 +1019,137 @@ function LogConvModal({ onClose }: { onClose: () => void }) {
             )}
           </div>
 
-          {/* Type + Direction row */}
+          {/* Type + Direction */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#94a3b8',
-                letterSpacing: '0.06em',
-                display: 'block',
-                marginBottom: 5,
-              }}>
-                TYPE
-              </label>
-              <select style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                fontSize: 13,
-                color: N,
-                background: '#fff',
-                fontFamily: 'inherit',
-                outline: 'none',
-              }}>
-                <option value="call" selected>📞 Call</option>
+              <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>TYPE</label>
+              <select
+                value={convType}
+                onChange={e => setConvType(e.target.value as ConvType)}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none' }}
+              >
+                <option value="call">📞 Call</option>
                 <option value="text">💬 Text</option>
                 <option value="email">📧 Email</option>
                 <option value="meeting">🤝 Meeting</option>
+                <option value="in_person">🤝 In Person</option>
+                <option value="voicemail">📱 Voicemail</option>
+                <option value="other">📝 Other</option>
               </select>
             </div>
             <div>
-              <label style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#94a3b8',
-                letterSpacing: '0.06em',
-                display: 'block',
-                marginBottom: 5,
-              }}>
-                DIRECTION
-              </label>
-              <select style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                fontSize: 13,
-                color: N,
-                background: '#fff',
-                fontFamily: 'inherit',
-                outline: 'none',
-              }}>
-                <option value="outbound" selected>→ Outbound</option>
+              <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>DIRECTION</label>
+              <select style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none' }}>
+                <option value="outbound">→ Outbound</option>
                 <option value="inbound">← Inbound</option>
               </select>
             </div>
           </div>
 
+          {/* How you met */}
+          <div style={{ display: 'grid', gridTemplateColumns: showWhereMet ? '1fr 1fr' : '1fr', gap: 12 }}>
+            <div>
+              <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>HOW YOU MET</label>
+              <select
+                value={howMet}
+                onChange={e => setHowMet(e.target.value as HowMet | '')}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none' }}
+              >
+                <option value="">— Select —</option>
+                <option value="cold_outreach">Cold Outreach</option>
+                <option value="in_person">In Person</option>
+                <option value="referral_intro">Referral Intro</option>
+                <option value="event">Event</option>
+                <option value="existing_relationship">Existing Relationship</option>
+                <option value="inbound_inquiry">Inbound Inquiry</option>
+              </select>
+            </div>
+            {showWhereMet && (
+              <div>
+                <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>
+                  WHERE / EVENT NAME
+                </label>
+                <input
+                  type="text"
+                  value={whereMet}
+                  onChange={e => setWhereMet(e.target.value)}
+                  placeholder={howMet === 'event' ? 'e.g. Vancouver Real Estate Mixer' : 'e.g. Tim Hortons on Main St'}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            )}
+          </div>
+
           {/* Summary */}
           <div>
-            <label style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 10,
-              fontWeight: 700,
-              color: '#94a3b8',
-              letterSpacing: '0.06em',
-              display: 'block',
-              marginBottom: 5,
-            }}>
-              SUMMARY
-            </label>
+            <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>SUMMARY</label>
             <textarea
-              defaultValue="Called Kelly re: July unit request. She needs 3 more beds from Jul 3. Checking unit 104 and 105 availability."
+              value={summary}
+              onChange={e => setSummary(e.target.value)}
               rows={3}
               style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                fontSize: 13,
-                color: N,
-                background: '#fff',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                outline: 'none',
-                lineHeight: 1.5,
-                boxSizing: 'border-box',
+                width: '100%', padding: '8px 10px', borderRadius: 8,
+                border: '1.5px solid #e2e8f0', fontSize: 13, color: N,
+                background: '#fff', fontFamily: 'inherit', resize: 'vertical',
+                outline: 'none', lineHeight: 1.5, boxSizing: 'border-box',
               }}
             />
+          </div>
+
+          {/* Business card checkbox */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="checkbox"
+              id="bcard-preview"
+              checked={businessCard}
+              onChange={e => setBusinessCard(e.target.checked)}
+              style={{ width: 16, height: 16, accentColor: T, cursor: 'pointer' }}
+            />
+            <label htmlFor="bcard-preview" style={{ fontSize: 13, color: N, cursor: 'pointer', fontWeight: businessCard ? 600 : 400 }}>
+              📇 Business card received
+            </label>
+            {businessCard && (
+              <span style={{ fontSize: 11, color: T, background: `${T}12`, border: `1px solid ${T}33`, padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>
+                ✓ logged
+              </span>
+            )}
           </div>
 
           {/* Next action */}
           <div>
-            <label style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 10,
-              fontWeight: 700,
-              color: '#94a3b8',
-              letterSpacing: '0.06em',
-              display: 'block',
-              marginBottom: 5,
-            }}>
-              NEXT ACTION
-            </label>
+            <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>NEXT ACTION</label>
             <input
               type="text"
-              defaultValue="Confirm unit availability and send updated contract addendum"
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                fontSize: 13,
-                color: N,
-                background: '#fff',
-                fontFamily: 'inherit',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
+              defaultValue="Send DC Hub master lease proposal"
+              style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
             />
           </div>
 
-          {/* Follow-up + Contract row */}
+          {/* Follow-up + Contract */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#94a3b8',
-                letterSpacing: '0.06em',
-                display: 'block',
-                marginBottom: 5,
-              }}>
-                FOLLOW-UP DATE
-              </label>
+              <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>FOLLOW-UP DATE</label>
               <input
                 type="date"
-                defaultValue="2026-06-10"
-                style={{
-                  width: '100%',
-                  padding: '8px 10px',
-                  borderRadius: 8,
-                  border: '1.5px solid #e2e8f0',
-                  fontSize: 13,
-                  color: N,
-                  background: '#fff',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
+                defaultValue="2026-06-15"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
               />
             </div>
             <div>
-              <label style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#94a3b8',
-                letterSpacing: '0.06em',
-                display: 'block',
-                marginBottom: 5,
-              }}>
-                CONTRACT
-              </label>
-              <select style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                fontSize: 13,
-                color: N,
-                background: '#fff',
-                fontFamily: 'inherit',
-                outline: 'none',
-              }}>
-                <option value="CF-2024-0012" selected>CF-2024-0012</option>
+              <label style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', display: 'block', marginBottom: 5 }}>CONTRACT</label>
+              <select style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, color: N, background: '#fff', fontFamily: 'inherit', outline: 'none' }}>
                 <option value="CF-2024-0089">CF-2024-0089</option>
+                <option value="CF-2024-0012">CF-2024-0012</option>
               </select>
             </div>
           </div>
 
           {/* Buttons */}
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', paddingTop: 4 }}>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '9px 20px',
-                borderRadius: 8,
-                border: '1.5px solid #e2e8f0',
-                background: '#fff',
-                color: '#64748b',
-                fontWeight: 600,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
+            <button onClick={onClose} style={{ padding: '9px 20px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: '#fff', color: '#64748b', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel
             </button>
-            <button
-              style={{
-                padding: '9px 24px',
-                borderRadius: 8,
-                border: 'none',
-                background: T,
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
+            <button onClick={onClose} style={{ padding: '9px 24px', borderRadius: 8, border: 'none', background: T, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
               Save
             </button>
           </div>
@@ -1184,6 +1166,7 @@ export default function CRMPreviewPage() {
   const [expandedId, setExpandedId] = useState<string | null>('1') // Sandra open by default
   const [showModal, setShowModal] = useState(true)
   const [showOverdue, setShowOverdue] = useState(false)
+  const [logContactId, setLogContactId] = useState<string | undefined>(undefined)
 
   const filterButtons: { key: 'all' | ContactStatus; label: string; count: number }[] = [
     { key: 'all',      label: 'All',      count: CONTACTS.length },
@@ -1204,46 +1187,43 @@ export default function CRMPreviewPage() {
   const overdueContacts = CONTACTS.filter(c => c.followUpOverdue)
   const overdueNames = overdueContacts.map(c => c.name.split(' ')[0]).join(', ')
 
+  const handleLog = (contactId: string) => {
+    setLogContactId(contactId)
+    setShowModal(true)
+  }
+
+  const handleCardClick = (id: string) => {
+    // clicking a card opens its detail panel; clicking again or on a different one switches
+    setExpandedId(prev => prev === id ? null : id)
+    setShowModal(false) // close modal if open
+  }
+
   return (
     <>
-      {/* Pulse animation keyframes */}
       <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 0.6; }
           50% { transform: scale(1.18); opacity: 0.9; }
         }
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
         * { box-sizing: border-box; }
         body { margin: 0; }
       `}</style>
 
-      <div style={{
-        minHeight: '100vh',
-        background: '#f8f9fb',
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      }}>
+      <div style={{ minHeight: '100vh', background: '#f8f9fb', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
         {/* ── Preview Banner ── */}
         <div style={{
-          background: '#fef08a',
-          color: '#713f12',
+          background: '#fef08a', color: '#713f12',
           fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: 12,
-          fontWeight: 700,
-          textAlign: 'center',
-          padding: '8px 16px',
-          letterSpacing: '0.04em',
+          fontSize: 12, fontWeight: 700, textAlign: 'center',
+          padding: '8px 16px', letterSpacing: '0.04em',
           borderBottom: '2px solid #fbbf24',
         }}>
           ⚡ PREVIEW MODE — No live data · All information is hardcoded mock data
         </div>
 
         {/* ── Page Header ── */}
-        <div style={{
-          background: N,
-          color: '#fff',
-          padding: '20px 24px 0',
-        }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ background: N, color: '#fff', padding: '20px 24px 0' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div>
                 <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: '-0.01em' }}>
@@ -1254,18 +1234,11 @@ export default function CRMPreviewPage() {
                 </p>
               </div>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => { setLogContactId(undefined); setShowModal(true) }}
                 style={{
-                  padding: '9px 18px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: T,
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  marginBottom: 4,
+                  padding: '9px 18px', borderRadius: 8, border: 'none',
+                  background: T, color: '#fff', fontWeight: 700, fontSize: 13,
+                  cursor: 'pointer', fontFamily: 'inherit', marginBottom: 4,
                 }}
               >
                 + Log Conversation
@@ -1279,17 +1252,12 @@ export default function CRMPreviewPage() {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   style={{
-                    padding: '10px 22px',
-                    border: 'none',
-                    background: 'transparent',
+                    padding: '10px 22px', border: 'none', background: 'transparent',
                     color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.5)',
                     fontWeight: activeTab === tab ? 700 : 500,
-                    fontSize: 14,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
+                    fontSize: 14, cursor: 'pointer', fontFamily: 'inherit',
                     borderBottom: activeTab === tab ? `3px solid ${T}` : '3px solid transparent',
-                    transition: 'all 0.15s',
-                    textTransform: 'capitalize',
+                    transition: 'all 0.15s', textTransform: 'capitalize',
                   }}
                 >
                   {tab === 'contacts' ? `👥 Contacts` : `💬 Conversations`}
@@ -1305,12 +1273,10 @@ export default function CRMPreviewPage() {
           style={{
             background: showOverdue ? '#fef3c7' : '#fff7ed',
             borderBottom: `1px solid ${A}44`,
-            padding: '10px 24px',
-            cursor: 'pointer',
-            transition: 'background 0.15s',
+            padding: '10px 24px', cursor: 'pointer', transition: 'background 0.15s',
           }}
         >
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 16 }}>⚠️</span>
             <span style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>
               {overdueContacts.length} follow-ups overdue
@@ -1318,11 +1284,8 @@ export default function CRMPreviewPage() {
             <span style={{ fontSize: 12, color: '#92400e', opacity: 0.8 }}>—</span>
             <span style={{ fontSize: 12, color: '#b45309' }}>{overdueNames}</span>
             <span style={{
-              marginLeft: 'auto',
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 10,
-              color: '#b45309',
-              fontWeight: 600,
+              marginLeft: 'auto', fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 10, color: '#b45309', fontWeight: 600,
             }}>
               {showOverdue ? 'Show all →' : 'Filter overdue →'}
             </span>
@@ -1330,7 +1293,7 @@ export default function CRMPreviewPage() {
         </div>
 
         {/* ── Main content ── */}
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 16px 40px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 16px 40px' }}>
 
           {activeTab === 'contacts' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -1340,16 +1303,9 @@ export default function CRMPreviewPage() {
                   type="search"
                   placeholder="🔍  Search contacts..."
                   style={{
-                    flex: '1 1 200px',
-                    padding: '9px 14px',
-                    borderRadius: 8,
-                    border: '1.5px solid #e2e8f0',
-                    fontSize: 13,
-                    color: N,
-                    background: '#fff',
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                    minWidth: 180,
+                    flex: '1 1 200px', padding: '9px 14px', borderRadius: 8,
+                    border: '1.5px solid #e2e8f0', fontSize: 13, color: N,
+                    background: '#fff', fontFamily: 'inherit', outline: 'none', minWidth: 180,
                   }}
                 />
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -1358,8 +1314,7 @@ export default function CRMPreviewPage() {
                       key={f.key}
                       onClick={() => setStatusFilter(f.key)}
                       style={{
-                        padding: '6px 14px',
-                        borderRadius: 20,
+                        padding: '6px 14px', borderRadius: 20,
                         border: `1.5px solid ${statusFilter === f.key ? (f.key === 'all' ? N : STATUS_META[f.key as ContactStatus]?.color ?? N) : '#e2e8f0'}`,
                         background: statusFilter === f.key
                           ? (f.key === 'all' ? `${N}12` : STATUS_META[f.key as ContactStatus]?.bg ?? `${N}12`)
@@ -1368,10 +1323,7 @@ export default function CRMPreviewPage() {
                           ? (f.key === 'all' ? N : STATUS_META[f.key as ContactStatus]?.color ?? N)
                           : '#64748b',
                         fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 11,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
+                        fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
                       }}
                     >
                       {f.label} <span style={{ opacity: 0.7 }}>({f.count})</span>
@@ -1380,10 +1332,10 @@ export default function CRMPreviewPage() {
                 </div>
               </div>
 
-              {/* Contact grid + expanded panel */}
+              {/* Contact grid + detail panel */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: expandedId ? 'minmax(0,1fr) minmax(0,360px)' : 'repeat(auto-fill, minmax(300px, 1fr))',
+                gridTemplateColumns: expandedId ? 'minmax(0,1.1fr) minmax(0,420px)' : 'repeat(auto-fill, minmax(300px, 1fr))',
                 gap: 16,
                 alignItems: 'start',
               }}>
@@ -1399,15 +1351,22 @@ export default function CRMPreviewPage() {
                       key={contact.id}
                       contact={contact}
                       expanded={expandedId === contact.id}
-                      onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)}
+                      onClick={() => handleCardClick(contact.id)}
+                      onLog={handleLog}
                     />
                   ))}
                 </div>
 
-                {/* Right: expanded detail */}
+                {/* Right: detail panel */}
                 {expandedId && (() => {
                   const c = CONTACTS.find(x => x.id === expandedId)
-                  return c ? <ExpandedPanel contact={c} /> : null
+                  return c ? (
+                    <ContactDetailPanel
+                      contact={c}
+                      onClose={() => setExpandedId(null)}
+                      onLog={handleLog}
+                    />
+                  ) : null
                 })()}
               </div>
             </div>
@@ -1418,7 +1377,12 @@ export default function CRMPreviewPage() {
       </div>
 
       {/* Modal */}
-      {showModal && <LogConvModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <LogConvModal
+          onClose={() => setShowModal(false)}
+          prefillContactId={logContactId}
+        />
+      )}
     </>
   )
 }

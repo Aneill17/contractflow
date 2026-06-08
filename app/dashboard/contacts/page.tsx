@@ -7,7 +7,8 @@ import { getAuthHeaders } from '@/lib/auth'
 
 type ContactStatus = 'prospect' | 'quoted' | 'active' | 'inactive'
 type ContactSource = 'direct' | 'referral' | 'event' | 'cold'
-type ConvType = 'call' | 'text' | 'email' | 'meeting' | 'voicemail' | 'other'
+type ConvType = 'call' | 'text' | 'email' | 'meeting' | 'in_person' | 'voicemail' | 'other'
+type HowMet = 'cold_outreach' | 'in_person' | 'referral_intro' | 'event' | 'existing_relationship' | 'inbound_inquiry'
 type ConvDirection = 'outbound' | 'inbound'
 
 interface Conversation {
@@ -68,13 +69,23 @@ const CONV_ICONS: Record<ConvType, string> = {
   text:      '💬',
   email:     '📧',
   meeting:   '🤝',
+  in_person: '🤝',
   voicemail: '📳',
   other:     '📝',
 }
 
 const CONV_TYPE_LABELS: Record<ConvType, string> = {
   call: 'Call', text: 'Text', email: 'Email',
-  meeting: 'Meeting', voicemail: 'Voicemail', other: 'Other',
+  meeting: 'Meeting', in_person: 'In Person', voicemail: 'Voicemail', other: 'Other',
+}
+
+const HOW_MET_LABELS: Record<HowMet, string> = {
+  cold_outreach: 'Cold Outreach',
+  in_person: 'In Person',
+  referral_intro: 'Referral Intro',
+  event: 'Event',
+  existing_relationship: 'Existing Relationship',
+  inbound_inquiry: 'Inbound Inquiry',
 }
 
 const SOURCE_LABELS: Record<ContactSource, string> = {
@@ -308,6 +319,9 @@ function ConversationModal({
   const [nextAction, setNextAction] = useState('')
   const [followUpDate, setFollowUpDate] = useState('')
   const [actor] = useState('Austin')
+  const [howMet, setHowMet] = useState<HowMet | ''>('')
+  const [whereMet, setWhereMet] = useState('')
+  const [businessCard, setBusinessCard] = useState(false)
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
@@ -349,6 +363,9 @@ function ConversationModal({
           next_action: nextAction || null,
           follow_up_date: followUpDate || null,
           actor,
+          how_met: howMet || null,
+          where_met: whereMet || null,
+          business_card: businessCard,
         }),
       })
       if (!r.ok) { const d = await r.json(); setErr(d.error || 'Failed'); return }
@@ -473,6 +490,44 @@ function ConversationModal({
               <div style={lbl}>Follow-Up Date</div>
               <input style={{ ...inp, colorScheme: 'light' }} type="date" value={followUpDate} onChange={e => setFollowUpDate(e.target.value)} />
             </div>
+          </div>
+
+          {/* How Met */}
+          <div style={{ ...grid2, marginTop: 14 }}>
+            <div>
+              <div style={lbl}>How You Met</div>
+              <select style={inp} value={howMet} onChange={e => setHowMet(e.target.value as HowMet | '')}>
+                <option value="">— Select —</option>
+                {(Object.entries(HOW_MET_LABELS) as [HowMet, string][]).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+            </div>
+            {(howMet === 'in_person' || howMet === 'event') && (
+              <div>
+                <div style={lbl}>Where / Event Name</div>
+                <input
+                  style={inp}
+                  value={whereMet}
+                  onChange={e => setWhereMet(e.target.value)}
+                  placeholder={howMet === 'event' ? 'e.g. Vancouver Real Estate Mixer' : 'e.g. Tim Hortons on Main St'}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Business card */}
+          <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="checkbox"
+              id="bcard-cb"
+              checked={businessCard}
+              onChange={e => setBusinessCard(e.target.checked)}
+              style={{ width: 16, height: 16, accentColor: T }}
+            />
+            <label htmlFor="bcard-cb" style={{ ...lbl, marginBottom: 0, cursor: 'pointer', fontSize: 12, textTransform: 'none', letterSpacing: 0 }}>
+              📇 Business card received
+            </label>
           </div>
 
           {/* Contract link */}
@@ -715,6 +770,25 @@ function ContactDetail({
             {conv.follow_up_date && (
               <div style={{ fontSize: 11, color: isOverdue(conv.follow_up_date) ? A : '#94a3b8', marginTop: 3, fontFamily: 'IBM Plex Mono, monospace' }}>
                 {isOverdue(conv.follow_up_date) ? '⚠ OVERDUE — ' : '📅 '}Follow up: {fmtDate(conv.follow_up_date)}
+              </div>
+            )}
+            {((conv as any).how_met || (conv as any).where_met || (conv as any).business_card) && (
+              <div style={{ marginTop: 6, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {(conv as any).how_met && (
+                  <span style={{ fontSize: 10, color: '#6366f1', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', padding: '2px 8px', borderRadius: 10 }}>
+                    {HOW_MET_LABELS[(conv as any).how_met as HowMet] ?? (conv as any).how_met}
+                  </span>
+                )}
+                {(conv as any).where_met && (
+                  <span style={{ fontSize: 10, color: '#64748b', background: '#f8f9fb', border: '1px solid #e8ecf0', padding: '2px 8px', borderRadius: 10 }}>
+                    📍 {(conv as any).where_met}
+                  </span>
+                )}
+                {(conv as any).business_card && (
+                  <span style={{ fontSize: 10, color: T, background: 'rgba(0,191,166,0.08)', border: '1px solid rgba(0,191,166,0.2)', padding: '2px 8px', borderRadius: 10 }}>
+                    📇 Card received
+                  </span>
+                )}
               </div>
             )}
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 3 }}>— {conv.actor}</div>
